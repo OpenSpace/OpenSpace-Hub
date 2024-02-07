@@ -1,0 +1,344 @@
+[{
+  "name": "Powers of Ten",
+  "type": "asset",
+  "description": "A series of concentric rings to demonstrate the powers of ten. This asset is centered on AMNH in NYC, to change the location open the powersoften.asset file and edit the Latitude and Longitude",
+  "author": {
+    "name": "OpenSpace/Micah",
+    "link": "https://www.openspaceproject.com",
+    "institution": "New York University",
+    "favorites": {}
+  },
+  "version": [
+    "0.17.1"
+  ],
+  "image": "https://raw.githubusercontent.com/OpenSpaceHub/educational/master/powersoften/screenshot.png",
+  "download": {
+    "0.19.0": "https://raw.githubusercontent.com/OpenSpaceHub/educational/master/powersoften/powersoften.zip",
+    "0.18.0": "https://raw.githubusercontent.com/OpenSpaceHub/educational/master/powersoften/powersoften.zip",
+    "0.17.1": "https://raw.githubusercontent.com/OpenSpaceHub/educational/master/powersoften/powersoften_0_17_1.zip"
+  },
+  "date_added": "2021-08-24",
+  "date_modified": "2022-06-13"
+},
+{
+  "name": "650pc GalaxyMap",
+  "type": "asset",
+  "description": "3D map of dust and star density within a 650pc region. The models are rendered without depth culling so that interior regions can be viewed. To change this uncheck 'Disable Depth Test' in each model's Renderable menu. These meshes come from Kevin Jardine's Galaxy Map (https://twitter.com/galaxy_map) with original data sources here: https://gruze.org/sn/sources.pdf A rendering can be seen here: https://gruze.org/galaxymap/quartet/wallpapers/wallpaper_0650pc.png",
+  "author": {
+    "name": "Deion Desir/Jackie Faherty via Kevin Jardine",
+    "link": "https://twitter.com/galaxy_map",
+    "institution": "New York University",
+    "favorites": {}
+  },
+  "version": [
+    "0.17.0"
+  ],
+  "image": "https://raw.githubusercontent.com/OpenSpaceHub/milkyway/master/galaxymap650pc/screenshot.png",
+  "download": {
+    "0.19.0": "https://raw.githubusercontent.com/OpenSpaceHub/milkyway/master/galaxymap650pc/galaxymap650pc.zip",
+    "0.18.0": "https://raw.githubusercontent.com/OpenSpaceHub/milkyway/master/galaxymap650pc/galaxymap650pc.zip",
+    "0.17.0": "https://github.com/OpenSpaceHub/milkyway/raw/master/galaxymap650pc/galaxymap650pc_0_17_0.zip"
+  },
+  "date_added": "2021-08-04",
+  "date_modified": "2022-06-28"
+},
+{
+  "name": "Neil Armstrong Spacesuit 3D model",
+  "type": "asset",
+  "description": "This 3D model of Neil Armstrong's spacesuit comes from the Smithsonian's 3D Digitization library. This asset contains the model placed at Little West crater near the Apollo 11 landing site, specifically fitted for use with the 'LRO NAC Apollo 11' height layer for the moon. This height layer is only available if OpenSpace is launched with the 'apollo' scene, or it can be downloaded from the 'Additional Datasets' section of the install page on openspaceproject.com",
+  "author": {
+    "name": "OpenSpace/Micah",
+    "link": "https://3d.si.edu/object/3d/neil-armstrong-spacesuit:d8c63ba6-4ebc-11ea-b77f-2e728ce88125",
+    "institution": "New York University",
+    "favorites": {}
+  },
+  "version": [
+    "0.17.0"
+  ],
+  "image": "https://raw.githubusercontent.com/OpenSpaceHub/misc/master/armstrong/screenshot.png",
+  "download": {
+    "0.19.0": "https://raw.githubusercontent.com/OpenSpaceHub/misc/master/armstrong/armstrong.zip",
+    "0.18.0": "https://raw.githubusercontent.com/OpenSpaceHub/misc/master/armstrong/armstrong.zip",
+    "0.17.0": "https://raw.githubusercontent.com/OpenSpaceHub/misc/master/armstrong/armstrong_0_17_0.zip"
+  },
+  "date_added": "2021-08-04",
+  "date_modified": "2022-06-28"
+},
+{
+  "name": "Space Weather Bastille Day",
+  "type": "asset",
+  "description": "(Already included in v18+) This asset contains a volume rendering and fieldline rendering of the Bastille Day space weather event. The data in this asset is time-coded to July 2000; if you want to see it, the 'MAS Fieldlines' scene graph node has a button called 'Jump to Start of Sequence' that will set the time in OpenSpace to where data is available",
+  "author": {
+    "name": "OpenSpace/Alex",
+    "link": "http://openspaceproject.com",
+    "institution": "New York University",
+    "favorites": {}
+  },
+  "version": [
+    "0.17.0"
+  ],
+  "image": "https://raw.githubusercontent.com/OpenSpaceHub/solarsystem/master/bastille_day/screenshot.png",
+  "download": "https://raw.githubusercontent.com/OpenSpaceHub/solarsystem/master/bastille_day/bastille_day.zip",
+  "date_added": "2021-07-22",
+  "date_modified": "2021-07-22"
+},
+{
+  "name": "Milky Way streams",
+  "type": "asset",
+  "description": "This asset contains data for streams of stars in the Milky Way. Prepared for OpenSpace with this Jupyter Notebook: https://github.com/OpenSpace/scripts/blob/master/jupyter-notebooks/mwstreams/MilkyWayStreams.ipynb original data from https://ui.adsabs.harvard.edu/abs/2021MNRAS.501.2279V/abstract",
+  "author": {
+    "name": "OpenSpace/Micah via Adrian Price-Whelan",
+    "link": "http://adrian.pw/visualizations/mwstreams/",
+    "institution": "New York University",
+    "favorites": {}
+  },
+  "version": [
+    "0.17.0"
+  ],
+  "image": "https://raw.githubusercontent.com/OpenSpaceHub/misc/master/mwstreams/screenshot.png",
+  "download": {
+    "0.19.0": "https://github.com/OpenSpaceHub/milkyway/raw/master/mwstreams/mwstreams.zip",
+    "0.18.0": "https://github.com/OpenSpaceHub/milkyway/raw/master/mwstreams/mwstreams.zip",
+    "0.17.0": "https://github.com/OpenSpaceHub/misc/raw/master/mwstreams/mwstreams.zip"
+  },
+  "date_added": "2021-07-19",
+  "date_modified": "2022-06-28"
+},
+{
+  "name": "Historical ISS Trail",
+  "type": "asset",
+  "description": "This asset contains a historical trail of the ISS with data ranging from 1998 NOV 19 to 2005 JAN 01. For performance reasons, the asset file only shows the last two months of the trail. This can be edited to show the desired timeframe. Historical data is from Celestrak archives.",
+  "author": {
+    "name": "OpenSpace/Micah",
+    "link": "https://celestrak.com/NORAD/archives/",
+    "institution": "New York University",
+    "favorites": {}
+  },
+  "version": [
+    "0.17.0"
+  ],
+  "image": "https://raw.githubusercontent.com/OpenSpaceHub/spacecraft/master/historicaliss/screenshot.png",
+  "download": {
+    "0.19.0": "https://github.com/OpenSpaceHub/spacecraft/raw/master/historicaliss/historicaliss.zip",
+    "0.18.0": "https://github.com/OpenSpaceHub/spacecraft/raw/master/historicaliss/historicaliss.zip",
+    "0.17.0": "https://github.com/OpenSpaceHub/spacecraft/raw/master/historicaliss/historicaliss_0_17_0.zip"
+  },
+  "date_added": "2021-06-21",
+  "date_modified": "2022-06-28"
+},
+{
+  "name": "NYC 3D Model",
+  "type": "asset",
+  "description": "This asset contains 3D obj files for the building in NYC (Manhattan). The data was originally acquired from: NYC DOITT https://www1.nyc.gov/site/doitt/initiatives/3d-building.page. More information available at author URL.",
+  "author": {
+    "name": "James Hedberg/CCNY Planetarium",
+    "link": "http://www.jameshedberg.com/creations/2020/07/28/nyc-buildings-3dmodel.html",
+    "institution": "New York University",
+    "favorites": {}
+  },
+  "version": [
+    "0.17.0"
+  ],
+  "image": "https://raw.githubusercontent.com/OpenSpaceHub/misc/master/nyc3dmodel/screenshot.png",
+  "download": {
+    "0.19.0": "https://github.com/OpenSpaceHub/misc/raw/master/nyc3dmodel/nyc3dmodel.zip",
+    "0.18.0": "https://github.com/OpenSpaceHub/misc/raw/master/nyc3dmodel/nyc3dmodel.zip",
+    "0.17.0": "https://github.com/OpenSpaceHub/misc/raw/master/nyc3dmodel/nyc3dmodel_0_17_0.zip"
+  },
+  "date_added": "2021-06-21",
+  "date_modified": "2022-06-28"
+},
+{
+  "name": "Spitzer",
+  "type": "asset",
+  "description": "3D model and trail for Spitzer Space Telescope",
+  "author": {
+    "name": "Morrison Planetarium/Dan Tell",
+    "link": "https://www.calacademy.org/exhibits/morrison-planetarium",
+    "institution": "New York University",
+    "favorites": {}
+  },
+  "version": [
+    "0.18.0"
+  ],
+  "image": "https://raw.githubusercontent.com/OpenSpaceHub/spacecraft/master/spitzer/screenshot.png",
+  "download": {
+    "0.19.0": "https://github.com/OpenSpaceHub/spacecraft/raw/master/spitzer/spitzer.zip",
+    "0.18.0": "https://github.com/OpenSpaceHub/spacecraft/raw/master/spitzer/spitzer_0_18_0.zip"
+  },
+  "date_added": "2021-04-22",
+  "date_modified": "2022-06-28"
+},
+{
+  "name": "Hubble",
+  "type": "asset",
+  "description": "3D model and trail for Hubble Space Telescope",
+  "author": {
+    "name": "Morrison Planetarium/Dan Tell",
+    "link": "https://www.calacademy.org/exhibits/morrison-planetarium",
+    "institution": "New York University",
+    "favorites": {}
+  },
+  "version": [
+    "0.16.0"
+  ],
+  "image": "https://raw.githubusercontent.com/OpenSpaceHub/spacecraft/master/hubble/screenshot.png",
+  "download": {
+    "0.19.0": "https://github.com/OpenSpaceHub/spacecraft/raw/master/hubble/hubble.zip",
+    "0.18.0": "https://github.com/OpenSpaceHub/spacecraft/raw/master/hubble/hubble_0180.zip",
+    "0.17.0": "https://github.com/OpenSpaceHub/spacecraft/raw/master/hubble/hubble_0170.zip",
+    "0.16.1": "https://github.com/OpenSpaceHub/spacecraft/raw/master/hubble/hubble_0_16_1.zip"
+  },
+  "date_added": "2021-04-22",
+  "date_modified": "2022-06-28"
+},
+{
+  "name": "Kleopatra",
+  "type": "asset",
+  "description": "3D model and trail for Kleopatra",
+  "author": {
+    "name": "Morrison Planetarium/Dan Tell",
+    "link": "https://www.calacademy.org/exhibits/morrison-planetarium",
+    "institution": "New York University",
+    "favorites": {}
+  },
+  "version": [
+    "0.16.0"
+  ],
+  "image": "https://raw.githubusercontent.com/OpenSpaceHub/solarsystem/master/kleopatra/screenshot.png",
+  "download": {
+    "0.19.0": "https://github.com/OpenSpaceHub/solarsystem/raw/master/kleopatra/kleopatra.zip",
+    "0.16.0": "https://github.com/OpenSpaceHub/solarsystem/raw/master/kleopatra/kleopatra_0_16_0.zip"
+  },
+  "date_added": "2021-04-26",
+  "date_modified": "2022-06-28"
+},
+{
+  "name": "Eros",
+  "type": "asset",
+  "description": "3D model and trail for Eros",
+  "author": {
+    "name": "Bergen County Academies/AMNH",
+    "link": "https://bca-admissions.bergen.org/",
+    "institution": "New York University",
+    "favorites": {}
+  },
+  "version": [
+    "0.16.0"
+  ],
+  "image": "https://raw.githubusercontent.com/OpenSpaceHub/solarsystem/master/eros/screenshot.png",
+  "download": {
+    "0.19.0": "https://github.com/OpenSpaceHub/solarsystem/raw/master/eros/eros.zip",
+    "0.16.0": "https://github.com/OpenSpaceHub/solarsystem/raw/master/eros/eros_0_16_0.zip"
+  },
+  "date_added": "2021-04-26",
+  "date_modified": "2022-06-28"
+},
+{
+  "name": "Extragalactic",
+  "type": "asset",
+  "description": "Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys.",
+  "author": {
+    "name": "Morrison Planetarium/Dan Tell",
+    "link": "https://www.calacademy.org/exhibits/morrison-planetarium",
+    "institution": "New York University",
+    "favorites": {}
+  },
+  "version": [
+    "0.16.0",
+    "0.18.0",
+    "0.19.0"
+  ],
+  "image": "https://raw.githubusercontent.com/OpenSpaceHub/misc/master/extragalactic/screenshot.png",
+  "download": {
+    "0.19.0": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic.zip",
+    "0.18.0": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic_0180.zip",
+    "0.16.0": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic_0_16_0.zip"
+  },
+  "date_added": "2021-04-26",
+  "date_modified": "2022-06-28"
+},
+{
+  "name": "Close Approaches 2021",
+  "type": "asset",
+  "description": "Trails for the ten closest approach NEOs of 2021 from JPL Horizons (as of 05/28)",
+  "author": {
+    "name": "Zach Shaffer",
+    "link": "",
+    "institution": "New York University",
+    "favorites": {}
+  },
+  "version": "0.16.1",
+  "image": "https://raw.githubusercontent.com/OpenSpaceHub/solarsystem/master/closeapproach2021/screenshot.png",
+  "download": {
+    "0.18.0": "https://github.com/OpenSpaceHub/solarsystem/raw/master/closeapproach2021/closeapproach2021.zip",
+    "0.16.1": "https://github.com/OpenSpaceHub/solarsystem/raw/master/closeapproach2021/closeapproach2021_0_16_1.zip"
+  },
+  "date_added": "2021-05-28",
+  "date_modified": "2022-06-28"
+},
+{
+  "name": "Nodelines",
+  "type": "asset",
+  "description": "Use a CSV file to create lines between nodes in the scene.",
+  "author": {
+    "name": "Irene Pease/Micah",
+    "link": "http://friendlyneighborhoodastronomer.com/",
+    "institution": "New York University",
+    "favorites": {}
+  },
+  "version": "0.16.0",
+  "image": "https://raw.githubusercontent.com/OpenSpaceHub/misc/master/nodelines/screenshot.png",
+  "download": {
+    "0.19.0": "https://github.com/OpenSpaceHub/misc/raw/master/nodelines/nodelines.zip",
+    "0.16.0": "https://github.com/OpenSpaceHub/misc/raw/master/nodelines/nodelines_0_16_0.zip"
+  },
+  "date_added": "2021-05-01",
+  "date_modified": "2022-06-28"
+},
+{
+  "name": "Empty profile",
+  "type": "profile",
+  "description": "An almost empty scene, that is very close to the minimal scene and still render something",
+  "author": {
+    "name": "OpenSpace Team",
+    "link": "https://www.openspaceproject.com",
+    "institution": "New York University",
+    "favorites": {}
+  },
+  "version": "0.16.0",
+  "image": "https://github.com/OpenSpaceHub/misc/raw/master/empty-profile/empty-profile.png",
+  "download": "https://raw.githubusercontent.com/OpenSpaceHub/misc/master/empty-profile/empty.profile",
+  "date_added": "2021-01-01",
+  "date_modified": "2021-01-01"
+},
+{
+  "name": "Orbiting the Earth",
+  "type": "recording",
+  "description": "Just a single rotation around the Earth",
+  "author": {
+    "name": "OpenSpace Team",
+    "link": "https://www.openspaceproject.com",
+    "institution": "New York University",
+    "favorites": {}
+  },
+  "version": "0.16.0",
+  "image": "https://github.com/OpenSpaceHub/misc/raw/master/flight-around-earth/flight-around-earth.png",
+  "download": "https://github.com/OpenSpaceHub/misc/raw/master/flight-around-earth/flight-around-earth.osrec",
+  "date_added": "2021-01-01",
+  "date_modified": "2021-01-01"
+},
+{
+  "name": "Insight landing sequence",
+  "type": "video",
+  "description": "Shows the sequence of the landing of Insight",
+  "author": {
+    "name": "OpenSpace Team",
+    "link": "https://www.openspaceproject.com",
+    "institution": "New York University",
+    "favorites": {}
+  },
+  "link": "https://www.youtube.com/watch?v=vWA0LbCuzho",
+  "date_added": "2021-01-01",
+  "date_modified": "2021-01-01"
+}]

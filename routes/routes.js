@@ -6,25 +6,66 @@ const router = express.Router()
 
 module.exports = router;
 
-//Post Method
-// router.post('/post', (req, res) => {
-//     res.send('Post API')
-// })
+/**
+ * @swagger
+ * /api/health:
+ *  get:
+ *      summary: Health Check
+ *      description: Check if server is up.
+ *      responses:
+ *          200:
+ *              description: Successful response with data.
+ *          500:
+ *              description: Internal server error.
+ */
+router.get('/health', (req, res) => {
+    const data = {
+        uptime: process.uptime(),
+        message: 'Ok',
+        date: new Date()
+    }
+    res.status(200).send(data);
+});
 
-//Get all Method
-router.get('/getAll', async (req, res) => {
+/**
+ * @swagger
+ * /api/getAllItems:
+ *  get:
+ *      summary: Get all items
+ *      description: Retrieve all itmes from the database.
+ *      responses:
+ *          200:
+ *              description: Successful response with data.
+ *          500:
+ *              description: Internal server error.
+ */
+router.get('/getAllItems', async (req, res) => {
     try {
-        // Assuming Model is the Mongoose model you're working with
         const data = await Model.find();
         res.status(200).json(data);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-    // res.send('Get All API')
 })
 
-//Get by ID Method
-router.get('/getOne/:id', (req, res) => {
+/**
+ * @swagger
+ * /api/getItem/{id}:
+ *  get:
+ *      summary: Get item by id.
+ *      description: Retrieve the item using id from the database.
+ *      parameters:
+ *          - in : path
+ *            name : itemId
+ *            required : true
+ *            description: ID of the item to get
+ *      responses:
+ *          200:
+ *              description: Successful response with data.
+ *          500:
+ *              description: Internal server error.
+ */
+router.get('/getItem/:id', (req, res) => {
     res.send(req.params.id)
 })
 
@@ -38,7 +79,19 @@ router.delete('/delete/:id', (req, res) => {
     res.send('Delete by ID API')
 })
 
-router.post('/post', async (req, res) => {
+/**
+ * @swagger
+ * /api/addItem:
+ *  post:
+ *      summary: Add a new item.
+ *      description: Add a new hub item.
+ *      responses:
+ *          200:
+ *              description: Successful response with data.
+ *          500:
+ *              description: Internal server error.
+ */
+router.post('/addItem', async (req, res) => {
     const data = new Model({
         name: req.body.name,
         type: req.body.type,
