@@ -96,4 +96,4 @@ const dataSchema2 = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('hub_item', dataSchema)
+module.exports = mongoose.model('hubitems', dataSchema)

@@ -44,6 +44,7 @@ router.get('/getAllItems', async (req, res) => {
         const data = await Model.find();
         res.status(200).json(data);
     } catch (error) {
+        console.log(error)
         res.status(500).json({ message: error.message });
     }
 })
@@ -62,11 +63,21 @@ router.get('/getAllItems', async (req, res) => {
  *      responses:
  *          200:
  *              description: Successful response with data.
+ *          404:
+ *              description: Item not found
  *          500:
  *              description: Internal server error.
  */
-router.get('/getItem/:id', (req, res) => {
-    res.send(req.params.id)
+router.get('/getItem/:id', async (req, res) => {
+    try {
+        const data = await Model.findOne({ _id: req.params.id });
+        if (!data) {
+            return res.status(404).json({ message: 'Item not found' });
+        }
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 })
 
 //Update by ID Method
@@ -82,12 +93,14 @@ router.delete('/delete/:id', (req, res) => {
 /**
  * @swagger
  * /api/addItem:
- *  post:
+ *  get:
  *      summary: Add a new item.
  *      description: Add a new hub item.
  *      responses:
  *          200:
  *              description: Successful response with data.
+ *          404:
+ *              description: Item not found
  *          500:
  *              description: Internal server error.
  */

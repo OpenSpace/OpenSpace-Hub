@@ -1,26 +1,24 @@
 const { Seeder } = require('mongo-seeding');
-const config = {
-    database: {
-      host: '127.0.0.1',
-      port: 27017,
-      name: 'openspacehub',
-    },
-    dropDatabase: true,
-  };
 
-const seeder = new Seeder(config);
+const mongoose = require("mongoose")
+const dotenv = require('dotenv')
+const MONGODB_URL = process.env.MONGODB_URL
 
-const path = require('path');
-const collections = seeder.readCollectionsFromPath(
-  path.resolve('./../data'),
-);
+dotenv.config()
 
 const mongo = async() => {
     try {
+        const con  = await mongoose.connect(MONGODB_URL)
+        console.log(`mongodb connected: ${con.connection.host}`)
+        const path = require('path');
+        const seeder = new Seeder(mongo);
+        const collections = seeder.readCollectionsFromPath(
+            path.resolve('./../data'),
+        );
         await seeder.import(collections);
         console.log("data imported successfully")
-    } catch (err) {
-        // Handle errors
+    } catch (error) {
+        console.error(error)
     }
 }
 
