@@ -5,7 +5,31 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 
-// User Registration
+/**
+ * @swagger
+ * /auth/register:
+ *  post:
+ *      summary: Creates a new user
+ *      description: Register a new user
+ *      consumes:
+ *          - application/json
+ *      parameters:
+ *          - in: body
+ *            name: user
+ *            description: The user to create.
+ *            schema:
+ *              type: object
+ *            required:
+ *              - username
+ *            properties:
+ *              username:
+ *                  type: string
+ *      responses:
+ *          201:
+ *              description: User registered successfully.
+ *          500:
+ *              description: Internal server error. Registration failed.
+ */
 router.post('/register', async (req, res) => {
     try {
         const {username, password} = req.body;
@@ -18,7 +42,36 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// User login
+/**
+ * @swagger
+ * /auth/login:
+ *  post:
+ *      summary: User Login
+ *      description: user login api
+ *      consumes:
+ *          - application/json
+ *      parameters:
+ *          - in: body
+ *            name: user
+ *            description: The user to create.
+ *            schema:
+ *              type: object
+ *            required:
+ *              - username
+ *              - password
+ *            properties:
+ *              username:
+ *                  type: string
+ *              password:
+ *                  type: string
+ *      responses:
+ *          201:
+ *              description: User logged in successfully.
+ *          401:
+ *              description: Authentication failed.
+ *          500:
+ *              description: Internal server error. Login failed.
+ */
 router.post('/login', async (req, res) => {
     try {
         const {username, password} = req.body;
