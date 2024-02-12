@@ -10,9 +10,9 @@ To-Do:
 - [x] Swagger Integration
 - [x] HubItems Schema Creation
 - [x] Users Schema Creation
-- [] Paging of GetItems
-- [] filtering of GetItems
-- [] Updaing of HubItem
-- [] File Uploads
-- [] Testing APIs with existing application
-- [] Front end webpage
+- [ ] Paging of GetItems
+- [ ] filtering of GetItems
+- [ ] Updaing of HubItem
+- [ ] File Uploads
+- [ ] Testing APIs with existing application
+- [ ] Front end webpage
