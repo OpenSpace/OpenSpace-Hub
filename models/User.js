@@ -1,7 +1,34 @@
 const mongoose = require('mongoose');
-const userSchema = new mongoose.Schema({
-    username: { type: String, unique: true, required: true},
-    password: { type: String, required: true}
+const userSchemaOld = new mongoose.Schema({
+    username: { type: String, unique: true, required: true },
+    password: { type: String, required: true }
 });
 
 module.exports = mongoose.model('User', userSchema)
+
+
+//name, {thumbnail pic, link, institution}, favorites
+
+const userSchema = new mongoose.Schema({
+    name: String,
+    thumbnail: {
+        type: String,
+        default: __dirname + "/../images/user-icon.jpg"
+    },
+    link: String,
+    institution: String,
+    created: {
+        type: String,
+        required: true
+    },
+    modified: {
+        type: String,
+        required: true
+    },
+    favorites: {
+        type: [ObjectId],
+        required: true
+    },
+    username: { type: String, unique: true, required: true },
+    password: { type: String, required: true }
+});

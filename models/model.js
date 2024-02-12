@@ -1,70 +1,31 @@
+const { ObjectId } = require('mongodb');
 const mongoose = require('mongoose');
+
+const authorSchema = new mongoose.Schema({
+    name: String,
+    link: String,
+    institution: String,
+});
+
+const versionSchema = new mongoose.Schema({
+    version: String,
+    url: String,
+});
+
+const archiveSchema = new mongoose.Schema({
+    version: String,
+    url: String,
+});
 
 const dataSchema = new mongoose.Schema({
     name: {
-        required: true,
-        type: String
-    },
-    type: {
-        required: true,
-        type: String
-    },
-    description: {
-        required: true,
-        type: String
-    },
-    image: {
-        required: true,
-        type: String
-    },
-    date_added: {
-        required: true,
-        type: String
-    },
-    date_modified: {
-        required: true,
-        type: String
-    }
-})
-
-const authorSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    link: {
-        type: String,
-        required: true
-    },
-    institution: {
-        type: String,
-        required: true
-    }
-});
-
-const downloadSchema = new mongoose.Schema({
-    '0.19.0': {
-        type: String,
-        required: true
-    },
-    '0.18.0': {
-        type: String,
-        required: true
-    },
-    '0.17.1': {
-        type: String,
-        required: true
-    }
-});
-
-const dataSchema2 = new mongoose.Schema({
-    name: {
         type: String,
         required: true
     },
     type: {
         type: String,
-        required: true
+        required: true,
+        enum: ['asset', 'profile', 'recording', 'www', 'video'] // add other types if required
     },
     description: {
         type: String,
@@ -74,24 +35,28 @@ const dataSchema2 = new mongoose.Schema({
         type: authorSchema,
         required: true
     },
-    version: {
-        type: [String],
+    currentVersion: {
+        type: versionSchema,
         required: true
     },
     image: {
         type: String,
         required: true
     },
-    download: {
-        type: downloadSchema,
+    archives: {
+        type: [archiveSchema],
         required: true
     },
-    date_added: {
+    created: {
         type: String,
         required: true
     },
-    date_modified: {
+    modified: {
         type: String,
+        required: true
+    },
+    favorites: {
+        type: [ObjectId],
         required: true
     }
 });

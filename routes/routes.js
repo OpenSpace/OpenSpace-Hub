@@ -1,5 +1,6 @@
 const express = require('express');
 const Model = require('./../models/model');
+const fomateDate = require('./../utils/utility')
 
 const router = express.Router()
 
@@ -93,7 +94,7 @@ router.delete('/delete/:id', (req, res) => {
 /**
  * @swagger
  * /api/addItem:
- *  get:
+ *  post:
  *      summary: Add a new item.
  *      description: Add a new hub item.
  *      responses:
@@ -109,14 +110,16 @@ router.post('/addItem', async (req, res) => {
         name: req.body.name,
         type: req.body.type,
         description: req.body.description,
+        author: req.body.author,
+        currentVersion: req.body.currentVersion,
         image: req.body.image,
-        date_added: req.body.date_added,
-        date_modified: req.body.date_modified
+        archives: req.body.archives,
+        created: fomateDate(new Date()),
+        modified: fomateDate(new Date()),
     })
 
     try {
         const dataToSave = await data.save();
-        console.log(dataToSave)
         res.status(200).json(dataToSave)
     }
     catch (error) {

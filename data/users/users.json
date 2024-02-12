@@ -1,0 +1,13 @@
+[
+    {
+        "name": "Morrison Planetarium/Dan Tell",
+        "thumbnail": "/path/to/thumbnail.jpg",
+        "link": "https://www.calacademy.org/exhibits/morrison-planetarium",
+        "institution": "New York University",
+        "favorites": [
+            "65ca6ba396f833b982d64096"
+        ],
+        "username": "abcdef",
+        "password": "password"
+    }
+]
