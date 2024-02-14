@@ -1,11 +1,9 @@
+const { ObjectId } = require('mongodb');
 const mongoose = require('mongoose');
 const userSchemaOld = new mongoose.Schema({
     username: { type: String, unique: true, required: true },
     password: { type: String, required: true }
 });
-
-module.exports = mongoose.model('User', userSchema)
-
 
 //name, {thumbnail pic, link, institution}, favorites
 
@@ -32,3 +30,5 @@ const userSchema = new mongoose.Schema({
     username: { type: String, unique: true, required: true },
     password: { type: String, required: true }
 });
+
+module.exports = mongoose.model('User', userSchema)
