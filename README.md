@@ -16,3 +16,7 @@ To-Do:
 - [ ] File Uploads
 - [ ] Testing APIs with existing application
 - [ ] Front end webpage
+  - [x] Home Page (having all itemtypes)
+  - [ ] Divide the items by type
+  - [ ] Login/Logout Page
+  - [ ] Search Functionality
