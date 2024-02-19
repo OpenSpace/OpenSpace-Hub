@@ -11,7 +11,7 @@ class App extends React.Component {
       <div>
         <NavBar />
         <Items />
-        <Footer />
+        <Footer style={{ position: "fixed", bottom: 0, left: 0, right: 0 }} />
       </div>
     );
   }

@@ -21,7 +21,7 @@ function Body() {
     return (
         <div className="pt-3 px-4">
             <div className="text-center fw-bold fs-4">
-                <u>Assets</u>
+                <u>Hub Items</u>
             </div>
             <div className="pt-3 px-4"></div>
             <Row xs={1} md={3} className="g-4">
@@ -38,20 +38,27 @@ function Body() {
                                     <b>Author: </b>
                                     <Card.Link href={item.author.link}>{item.author.name}</Card.Link>
                                 </Card.Text>
-                                <Card.Text>
-                                    <b>Current Version: </b>
-                                    <Card.Link href={item.currentVersion.url}>{item.currentVersion.version}</Card.Link>
-                                </Card.Text>
-                                <Card.Text>
-                                    <b>Other Versions: </b>
-                                    {item.archives.map(version => (
-                                        <Card.Link key={version.version} href={version.url}>{version.version}</Card.Link>
-                                    ))}
-                                </Card.Text>
+                                {item.currentVersion &&
+                                    <Card.Text>
+                                        <b>Current Version: </b>
+                                        <Card.Link href={item.currentVersion.url}>{item.currentVersion.version}</Card.Link>
+                                    </Card.Text>
+                                }
+                                {item.archives &&
+                                    <Card.Text>
+                                        <b>Other Versions: </b>
+                                        {item.archives.map(version => (
+                                            <Card.Link key={version.version} href={version.url}>{version.version}</Card.Link>
+                                        ))}
+                                    </Card.Text>
+                                }
                                 <Card.Text>
                                     <b>Last Update: </b> {item.modified}
                                 </Card.Text>
-                                <Button variant="primary">Import Asset</Button>
+                                {item.type === "asset" && <Button variant="primary">Import Asset</Button>}
+                                {item.type === "profiles" && <Button variant="primary">Import Profile</Button>}
+                                {item.type === "recordings" && <Button variant="primary">Import Recording</Button>}
+                                {item.type === "videos" && <Button variant="primary" href={item.link}>Link</Button>}
                             </Card.Body>
                         </Card>
                     </Col>

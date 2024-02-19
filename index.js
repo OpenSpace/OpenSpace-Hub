@@ -11,11 +11,13 @@ const morgan = require('morgan');
 const path = require('path');
 
 const app = express()
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 9000
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 
-  'access.log'), {flags: 'a'}); 
+  'access.log'), {flags: 'a'});
+const cors = require("cors");
 
 app.use(express.json());
+app.use(cors());
 app.use(morgan('combined', {stream: accessLogStream}));
 mongo()
 
