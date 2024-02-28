@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Form, Button, Alert } from "react-bootstrap";
+import { Form, Button, Alert, Nav } from "react-bootstrap";
 import "./../css/login.css";
 import { useGoogleLogin, googleLogout } from '@react-oauth/google';
 import axios from "axios";
 import APIService from './APIService';
 
-const Login = () => {
+const Signup = () => {
     const [inputUsername, setInputUsername] = useState("");
     const [inputPassword, setInputPassword] = useState("");
+    const [cnfPassword, setCnfPassword] = useState("");
 
-    const [showLoginError, setShowLoginError] = useState(false);
+    const [showSignUpError, setShowSignUpError] = useState(false);
+    const [showSignUpButton, setShowSignUpButton] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const [user, setUser] = useState(null);
@@ -57,19 +59,19 @@ const Login = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         setLoading(true);
-        setShowLoginError(false);
-        await delay(100);
-        APIService.Login(inputUsername, inputPassword)
+        setShowSignUpError(false);
+        await delay(500);
+        APIService.Register(inputUsername, inputPassword, cnfPassword)
             .then(resp => {
                 if (resp.error) {
                     throw (resp.error);
                 }
                 localStorage.setItem('user', JSON.stringify({ "username": inputUsername }));
-                console.log("Authentication Successful");
+                console.log("Authentication Successful")
                 redirectToHome();
             })
             .catch(error => {
-                setShowLoginError(true);
+                setShowSignUpError(true);
             });
         setLoading(false);
     };
@@ -78,10 +80,16 @@ const Login = () => {
         window.location.href = "/";
     };
 
-    const handlePassword = () => { };
-
     function delay(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    const updateShowSignUpButton = (inputPassword, cnfPassword) => {
+        if (inputPassword === cnfPassword) {
+            setShowSignUpButton(true);
+        } else {
+            setShowSignUpButton(false);
+        }
     }
 
     return (
@@ -97,12 +105,12 @@ const Login = () => {
                     alt="logo"
                     style={{ width: '120px', height: 'auto' }}
                 />
-                <div className="h4 mb-2 text-center">Sign In</div>
-                {showLoginError ? (
+                <div className="h4 mb-2 text-center">Sign Up</div>
+                {showSignUpError ? (
                     <Alert
                         className="mb-2"
                         variant="danger"
-                        onClose={() => setShowLoginError(false)}
+                        onClose={() => setShowSignUpError(false)}
                         dismissible
                     >
                         Incorrect username or password.
@@ -126,28 +134,47 @@ const Login = () => {
                         type="password"
                         value={inputPassword}
                         placeholder="Password"
-                        onChange={(e) => setInputPassword(e.target.value)}
+                        onChange={(e) => {setInputPassword(e.target.value); updateShowSignUpButton(e.target.value, cnfPassword);}}
                         required
                     />
-                    <div className="d-grid justify-content-end">
-                        <Button
-                            className="text-muted px-1"
-                            variant="link"
-                            onClick={handlePassword}
-                        >
-                            Forgot password?
-                        </Button>
-                    </div>
                 </Form.Group>
-                {!loading ? (
-                    <Button className="w-100" variant="primary" type="submit">
-                        Log In
-                    </Button>
+                <Form.Group className="mb-2" controlId="cnfPassword">
+                    <Form.Label>Confirm Password</Form.Label>
+                    <Form.Control
+                        type="password"
+                        value={cnfPassword}
+                        placeholder="Confirm Password"
+                        onChange={(e) => {setCnfPassword(e.target.value); updateShowSignUpButton(inputPassword, e.target.value);}}
+                        required
+                    />
+                </Form.Group>
+                {inputPassword !== cnfPassword ? (
+                    <Alert
+                        className="mb-2"
+                        variant="danger"
+                    >
+                        Password and Confirm Password do not match.
+                    </Alert>
                 ) : (
-                    <Button className="w-100" variant="primary" type="submit" disabled>
-                        Logging In...
-                    </Button>
+                    <div />
                 )}
+                {!loading ?
+                    showSignUpButton ? (
+                        <Button className="w-100" variant="primary" type="submit">
+                            Sign Up
+                        </Button>
+                    ) : (
+                        <Button className="w-100" variant="primary" type="submit" disabled>
+                            Sign Up
+                        </Button>
+                    )
+                    :
+                    (
+                        <Button className="w-100" variant="primary" type="submit" disabled>
+                            Signing up...
+                        </Button>
+                    )
+                }
                 {/* <div className="text-center mt-2">
                     Don't have an account?{" "}
                     <Button variant="link" href="/signup">
@@ -173,4 +200,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Signup;

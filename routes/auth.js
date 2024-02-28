@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('./../models/User');
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const fomateDate = require('./../utils/utility')
 
 
 /**
@@ -28,17 +29,29 @@ const jwt = require('jsonwebtoken')
  *          201:
  *              description: User registered successfully.
  *          500:
- *              description: Internal server error. Registration failed.
+ *              description: error message (User already exists / Password and confirm password do not match). 
  */
 router.post('/register', async (req, res) => {
     try {
-        const {username, password} = req.body;
+        const {username, password, cnfPassword} = req.body;
+        if (password !== cnfPassword) {
+            throw new Error('Password and confirm password do not match');
+        }
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({ username, password: hashedPassword});
-        await user.save();
+        const user = await User.findOne( {username} );
+        if (user) {
+            throw new Error('User already exists');
+        }
+        const newUser = new User({ 
+            username: username,
+            password: hashedPassword,
+            created: fomateDate(new Date()),
+            modified: fomateDate(new Date())
+        });
+        await newUser.save();
         res.status(201).json({ message: 'User registered successfully'});
     } catch (error) {
-        res.status(500).json({ error: 'Registration failed'});
+        res.status(500).json({ error: error.message});
     }
 });
 
