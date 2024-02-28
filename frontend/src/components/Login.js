@@ -155,15 +155,7 @@ const Login = () => {
                     </Button>
                 </div> */}
                 <div className="d-grid gap-2 mt-2">
-                    {profile ? (
-                        <div>
-                            <script>console.log(profile)</script>
-                            <img src={profile.picture} alt="" />
-                            <h5>Welcome {profile.name} !</h5>
-                            <p>Email Address: {profile.email}</p>
-                            <Button onClick={logOut}>Log out</Button>
-                        </div>
-                    ) : (
+                    {profile ? redirectToHome() : (
                         <Button variant="outline-primary" size="lg" onClick={login}>Sign in with Google 🚀 </Button>
                     )}
                 </div>
