@@ -18,5 +18,7 @@ To-Do:
 - [ ] Front end webpage
   - [x] Home Page (having all itemtypes)
   - [ ] Divide the items by type
-  - [ ] Login/Logout Page
+  - [x] Login and Signup Page
+  - [x] Google Auth Integration
+  - [x] Logout functionality
   - [ ] Search Functionality
