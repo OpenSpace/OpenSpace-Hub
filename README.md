@@ -22,3 +22,5 @@ To-Do:
   - [x] Google Auth Integration
   - [x] Logout functionality
   - [ ] Search Functionality
+  - [x] Integrate OpenSpace API
+  - [ ] Import Module
