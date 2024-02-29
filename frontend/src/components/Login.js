@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import "./../css/login.css";
-import { useGoogleLogin, googleLogout } from '@react-oauth/google';
+import { useGoogleLogin} from '@react-oauth/google';
 import axios from "axios";
 import APIService from './APIService';
 
@@ -46,13 +46,13 @@ const Login = () => {
         [user]
     );
 
-    // log out function to log the user out of google and set the profile array to null
-    const logOut = () => {
-        googleLogout();
-        localStorage.clear();
-        setProfile(null);
-        setUser(null);
-    };
+    // // log out function to log the user out of google and set the profile array to null
+    // const logOut = () => {
+    //     googleLogout();
+    //     localStorage.clear();
+    //     setProfile(null);
+    //     setUser(null);
+    // };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -77,8 +77,6 @@ const Login = () => {
     const redirectToHome = () => {
         window.location.href = "/";
     };
-
-    const handlePassword = () => { };
 
     function delay(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
@@ -129,7 +127,7 @@ const Login = () => {
                         onChange={(e) => setInputPassword(e.target.value)}
                         required
                     />
-                    <div className="d-grid justify-content-end">
+                    {/* <div className="d-grid justify-content-end">
                         <Button
                             className="text-muted px-1"
                             variant="link"
@@ -137,7 +135,7 @@ const Login = () => {
                         >
                             Forgot password?
                         </Button>
-                    </div>
+                    </div> */}
                 </Form.Group>
                 {!loading ? (
                     <Button className="w-100" variant="primary" type="submit">

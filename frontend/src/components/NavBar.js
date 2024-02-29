@@ -6,6 +6,7 @@ import { Outlet } from 'react-router-dom';
 import Footer from './Footer';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import Functions from './functions';
 
 
 const NavBar = () => {
@@ -35,14 +36,18 @@ const NavBar = () => {
                         localStorage.setItem('profile', JSON.stringify(res.data));
                         setShowLogin(false);
                     })
-                    .catch((err) => console.log(err));
+                    .catch((err) => {
+                        console.log(err);
+                        localStorage.clear();
+                        setUser(null);
+                        redirectToLogin();
+                    });
             }
             if (user && user.username) {
                 setShowLogin(false);
             }
-            // redirectToLogin();
         },
-        [user]
+        [user, showLogin]
     );
 
     return (
@@ -61,6 +66,7 @@ const NavBar = () => {
                                 <NavDropdown.Divider />
                                 <NavDropdown.Item href="#some-other-items">Some other items</NavDropdown.Item>
                             </NavDropdown>
+                            <Functions/>
                         </Nav>
                         {showLogin ? (
                             <Nav>
@@ -73,10 +79,6 @@ const NavBar = () => {
                                 <Nav.Link eventKey={2} href="logout" className="underline-on-active">Logout</Nav.Link>
                             </Nav>
                         )}
-                        {/* <Nav>
-                            <Nav.Link href="login" className="underline-on-active">Login</Nav.Link>
-                            <Nav.Link eventKey={2} href="signup" className="underline-on-active">Sign Up</Nav.Link>
-                        </Nav> */}
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
@@ -86,16 +88,3 @@ const NavBar = () => {
     )
 };
 export default NavBar;
-
-// {show ? (
-//     <Alert
-//         className="mb-2"
-//         variant="danger"
-//         onClose={() => setShow(false)}
-//         dismissible
-//     >
-//         Incorrect username or password.
-//     </Alert>
-// ) : (
-//     <div />
-// )}
