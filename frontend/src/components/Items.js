@@ -7,6 +7,7 @@ import React from 'react';
 import APIService from './APIService';
 import { useEffect, useState } from 'react';
 
+
 function Body() {
     const [items, setItems] = useState([]);
 
@@ -17,6 +18,37 @@ function Body() {
             })
             .catch(error => console.log(error))
     }, [])
+
+    const sendImportToOpenSpaceCommand = async(url, type) => {
+        var openspace = window.openspace;
+        var fileName = url.substr(url.lastIndexOf('/') + 1);
+        switch (type) {
+            case 'asset':
+                var absPath = await openspace.absPath('${TEMPORARY}/' + fileName)
+                var pathString = '${USER_ASSETS}/';
+                var scenePath = await openspace.absPath(pathString)
+                await openspace.downloadFile(url, absPath["1"], true);
+                await openspace.unzipFile(absPath["1"], scenePath["1"], true);
+                var noextension = fileName.substr(0, fileName.indexOf('.'));
+                await openspace.asset.add(scenePath["1"] + noextension + "/" + noextension);
+                await openspace.setPropertyValueSingle("Modules.CefWebGui.Reload", null)
+                break;
+            case 'profile':
+                var absPath = await openspace.absPath('${USER_PROFILES}/' + fileName);
+                await openspace.downloadFile(url, absPath["1"], true);
+                alert("Profile imported successfully");
+                break;
+            case 'recording':
+                var absPath = await openspace.absPath('${RECORDINGS}/' + fileName);
+                await openspace.downloadFile(url, absPath["1"], true);
+                alert("Profile downloaded successfully");
+                break;
+            default:
+                console.log('nothing to do')
+                break;
+        }
+    }
+
 
     return (
         <div className="pt-3 px-4">
@@ -55,9 +87,10 @@ function Body() {
                                 <Card.Text>
                                     <b>Last Update: </b> {item.modified}
                                 </Card.Text>
-                                {item.type === "asset" && <Button variant="primary">Import Asset</Button>}
-                                {item.type === "profiles" && <Button variant="primary">Import Profile</Button>}
-                                {item.type === "recordings" && <Button variant="primary">Import Recording</Button>}
+                                {/* item.currentVersion.url */}
+                                {item.type === "asset" && <Button onClick={() => sendImportToOpenSpaceCommand(item.currentVersion.url, item.type)} variant="primary">Import Asset</Button>}
+                                {item.type === "profile" && <Button onClick={() => sendImportToOpenSpaceCommand(item.currentVersion.url, item.type)} variant="primary">Import Profile</Button>}
+                                {item.type === "recording" && <Button onClick={() => sendImportToOpenSpaceCommand(item.currentVersion.url, item.type)} variant="primary">Import Recording</Button>}
                                 {item.type === "videos" && <Button variant="primary" href={item.link}>Link</Button>}
                             </Card.Body>
                         </Card>

@@ -54,7 +54,16 @@ const NavBar = () => {
         <>
             <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
                 <Container>
-                    <Navbar.Brand href="/">OpenSpaceHub</Navbar.Brand>
+                    <Navbar.Brand href="/">
+                        <img
+                            src="openspace-black-transparent.png"
+                            width="90"
+                            height="50"
+                            className="d-inline-block align-top"
+                            alt="OpenSpaceHub logo"
+                        />
+
+                    </Navbar.Brand>
                     <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                     <Navbar.Collapse id="responsive-navbar-nav">
                         <Nav variant="underline" defaultActiveKey="/home" className="me-auto">

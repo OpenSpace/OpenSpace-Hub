@@ -5,24 +5,29 @@ import openspaceApi from 'openspace-api-js';
 
 const Functions = () => {
     const [isConnected, setIsConnected] = useState(false);
-
-    const connectToOpenSpace = () => {
+    const connectToOpenSpace = async() => {
         // setup the api params
         const host = "127.0.0.1";
-        const socket = openspaceApi(host, 4682);
+        const api = openspaceApi(host, 4682);        
 
         //notify users on disconnect
-        socket.onDisconnect(() => {
+        api.onDisconnect(() => {
             alert("Connection Error! Please start OpenSpace software and try again.");
             setIsConnected(false);
         });
         //notify users and map buttons when connected
-        socket.onConnect(async () => {
+        api.onConnect(async () => {
+            window.openspace = await api.library();
             setIsConnected(true);
         })
         //connect
-        socket.connect();
+        api.connect();
     }
+
+    useEffect(() => {
+        connectToOpenSpace();
+    });
+
     return (
         <>
             {isConnected ?
