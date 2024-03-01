@@ -23,4 +23,8 @@ To-Do:
   - [x] Logout functionality
   - [ ] Search Functionality
   - [x] Integrate OpenSpace API
-  - [ ] Import Module
+  - [x] Import Profile, Asset, Recording module
+  - [ ] Linkedin Auth Integration
+  - [ ] Facebook Auth Integration
+  - [ ] Github Auth Integration
+  - [ ] Upload page
