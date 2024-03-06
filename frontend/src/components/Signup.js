@@ -48,13 +48,13 @@ const Signup = () => {
         [user]
     );
 
-    // log out function to log the user out of google and set the profile array to null
-    const logOut = () => {
-        googleLogout();
-        localStorage.clear();
-        setProfile(null);
-        setUser(null);
-    };
+    // // log out function to log the user out of google and set the profile array to null
+    // const logOut = () => {
+    //     googleLogout();
+    //     localStorage.clear();
+    //     setProfile(null);
+    //     setUser(null);
+    // };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -84,8 +84,9 @@ const Signup = () => {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
-    const updateShowSignUpButton = (inputPassword, cnfPassword) => {
-        if (inputPassword === cnfPassword) {
+    const updateShowSignUpButton = (inputUsername, inputPassword, cnfPassword) => {
+        const nonAlphanums = /[^a-z0-9]/i;
+        if (!inputUsername.match(nonAlphanums) && inputPassword === cnfPassword) {
             setShowSignUpButton(true);
         } else {
             setShowSignUpButton(false);
@@ -123,8 +124,8 @@ const Signup = () => {
                     <Form.Control
                         type="text"
                         value={inputUsername}
-                        placeholder="Username"
-                        onChange={(e) => setInputUsername(e.target.value)}
+                        placeholder="Username (alphanumeric only)"
+                        onChange={(e) => {setInputUsername(e.target.value); updateShowSignUpButton(e.target.value, inputPassword, cnfPassword);}}
                         required
                     />
                 </Form.Group>
@@ -134,7 +135,7 @@ const Signup = () => {
                         type="password"
                         value={inputPassword}
                         placeholder="Password"
-                        onChange={(e) => {setInputPassword(e.target.value); updateShowSignUpButton(e.target.value, cnfPassword);}}
+                        onChange={(e) => {setInputPassword(e.target.value); updateShowSignUpButton(inputUsername, e.target.value, cnfPassword);}}
                         required
                     />
                 </Form.Group>
@@ -144,7 +145,7 @@ const Signup = () => {
                         type="password"
                         value={cnfPassword}
                         placeholder="Confirm Password"
-                        onChange={(e) => {setCnfPassword(e.target.value); updateShowSignUpButton(inputPassword, e.target.value);}}
+                        onChange={(e) => {setCnfPassword(e.target.value); updateShowSignUpButton(inputUsername, inputPassword, e.target.value);}}
                         required
                     />
                 </Form.Group>
@@ -182,15 +183,7 @@ const Signup = () => {
                     </Button>
                 </div> */}
                 <div className="d-grid gap-2 mt-2">
-                    {profile ? (
-                        <div>
-                            <script>console.log(profile)</script>
-                            <img src={profile.picture} alt="" />
-                            <h5>Welcome {profile.name} !</h5>
-                            <p>Email Address: {profile.email}</p>
-                            <Button onClick={logOut}>Log out</Button>
-                        </div>
-                    ) : (
+                    {profile ? redirectToHome() : (
                         <Button variant="outline-primary" size="lg" onClick={login}>Sign in with Google 🚀 </Button>
                     )}
                 </div>

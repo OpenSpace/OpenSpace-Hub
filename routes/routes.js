@@ -126,3 +126,34 @@ router.post('/addItem', async (req, res) => {
         res.status(400).json({message: error.message})
     }
 })
+
+/**
+ * @swagger
+ * /api/upload:
+ *  post:
+ *      summary: Upload an item.
+ *      description: Upload an item to the database.
+ *      responses:
+ *          200:
+ *              description: Successful response with data.
+ *          500:
+ *              description: Internal server error.
+ */
+router.post('/upload', async (req, res) => {
+    console.log(req.body)
+    // if (!req.files || Object.keys(req.files).length === 0) {
+    //     return res.status(400).send('No files were uploaded.');
+    // }
+    // console.log(req.files)
+
+    // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+    // let sampleFile = req.files.sampleFile;
+
+    // Use the mv() method to place the file somewhere on your server
+    // sampleFile.mv('filename.jpg', function(err) {
+    //     if (err)
+    //         return res.status(500).send(err);
+    // });
+        
+    res.status(200).json("Upload API")
+})

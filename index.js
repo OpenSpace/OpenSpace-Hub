@@ -27,5 +27,5 @@ app.use('/protected', protectedRoute);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}`)
+  console.log(`OpenSpace-Hub listening on port ${PORT}`)
 })

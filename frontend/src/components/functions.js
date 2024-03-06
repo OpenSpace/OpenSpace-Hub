@@ -24,8 +24,23 @@ const Functions = () => {
         api.connect();
     }
 
+    // const initConnectToOpenSpace = async() => {
+    //     // setup the api params
+    //     const host = "127.0.0.1";
+    //     const api = openspaceApi(host, 4682);        
+
+    //     //notify users and map buttons when connected
+    //     api.onConnect(async () => {
+    //         window.openspace = await api.library();
+    //         setIsConnected(true);
+    //     })
+    //     //connect
+    //     api.connect();
+    // }
+
     useEffect(() => {
         connectToOpenSpace();
+        // initConnectToOpenSpace();
     });
 
     return (

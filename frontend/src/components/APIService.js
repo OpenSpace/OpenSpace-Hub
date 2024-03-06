@@ -34,23 +34,14 @@ export default class APIService {
         return await resp.json();
     }
 
-    // router.post('/login', async (req, res) => {
-    //     try {
-    //         const {username, password} = req.body;
-    //         const user = await User.findOne( {username} );
-    //         if (!user) {
-    //             return res.status(401).json({ error : 'Authentication failed' });
-    //         }
-    //         const passwordMatch = await bcrypt.compare(password, user.password);
-    //         if (!passwordMatch) {
-    //             return res.status(401).json( { error: 'Authentication failed'});
-    //         }
-    //         const token = jwt.sign( {userId : user._id }, process.env.SECRET_KEY, { expiresIn: '1h', });
-    //         res.status(200).json({ token });
-    //     } catch (error) {
-    //         res.status(500).json({ error: 'Login failed' });
-    //     }
-    // });
-
-
+    static async UploadItem(formData) {
+        const resp = await fetch(process.env.REACT_APP_API_HOST + `/api/upload`, {
+            'method': 'POST',
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            body: formData
+        });
+        return await resp.json();
+    }
 }

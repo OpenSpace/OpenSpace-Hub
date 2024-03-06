@@ -7,7 +7,6 @@ import React from 'react';
 import APIService from './APIService';
 import { useEffect, useState } from 'react';
 
-
 function Body() {
     const [items, setItems] = useState([]);
 

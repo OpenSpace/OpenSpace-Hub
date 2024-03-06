@@ -6,7 +6,8 @@ import { Outlet } from 'react-router-dom';
 import Footer from './Footer';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import Functions from './functions';
+import UploadItem from './UploadItem';
+import Function from './Functions';
 
 
 const NavBar = () => {
@@ -75,7 +76,7 @@ const NavBar = () => {
                                 <NavDropdown.Divider />
                                 <NavDropdown.Item href="#some-other-items">Some other items</NavDropdown.Item>
                             </NavDropdown>
-                            <Functions/>
+                            <Function/>
                         </Nav>
                         {showLogin ? (
                             <Nav>
@@ -84,6 +85,7 @@ const NavBar = () => {
                             </Nav>
                         ) : (
                             <Nav>
+                                <UploadItem/>
                                 <Nav.Link href="profile" className="underline-on-active">Profile</Nav.Link>
                                 <Nav.Link eventKey={2} href="logout" className="underline-on-active">Logout</Nav.Link>
                             </Nav>
