@@ -7,14 +7,14 @@ import APIService from './APIService';
 
 
 const UploadItem = () => {
-    const [show, setShow] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleClose = () => setShowModal(false);
+    const handleShowModal = () => setShowModal(true);
 
     const [itemType, setItemType] = useState('Asset');
 
-    const handleSelect = (e) => {
+    const handleItemTypeSelect = (e) => {
         setItemType(e);
     }
 
@@ -27,6 +27,12 @@ const UploadItem = () => {
 
     const handleTitleChange = (e) => {
         setTitle(e.target.value);
+    }
+
+    const [license, setLicense] = useState('');
+
+    const handleLicenseChange = (e) => {
+        setLicense(e.target.value);
     }
 
     const validateFileType = (file) => {
@@ -46,6 +52,7 @@ const UploadItem = () => {
             formData.append('file', file);
             formData.append('title', title);
             formData.append('itemType', itemType);
+            formData.append('license', license);
             APIService.UploadItem(formData)
                 .then(data => console.log(data))
                 .catch(err => console.log(err));
@@ -60,11 +67,11 @@ const UploadItem = () => {
 
     return (
         <>
-            <Button onClick={handleShow} variant="dark">
+            <Button onClick={handleShowModal} variant="dark">
                 Upload an Item
             </Button>
 
-            <Modal show={show} onHide={handleClose}>
+            <Modal show={showModal} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Upload an Item</Modal.Title>
                 </Modal.Header>
@@ -73,7 +80,7 @@ const UploadItem = () => {
                         <h5>Title</h5>
                         <input type="text" value={title} onChange={handleTitleChange} />
                         <div style={{ marginBottom: '20px', marginTop: '20px' }}>
-                            <Dropdown onSelect={handleSelect} >
+                            <Dropdown onSelect={handleItemTypeSelect} >
                                 <h5>Item Type</h5>
                                 <Dropdown.Toggle variant="success" id="dropdown-basic">
                                     {itemType}
@@ -84,6 +91,8 @@ const UploadItem = () => {
                                 </Dropdown.Menu>
                             </Dropdown>
                         </div>
+                        <h5> License </h5>
+                        <input type="text" value={license} onChange={handleLicenseChange} />
                         <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                             <h5>Upload a file <p style={{ fontSize: "15px" }}>(accepted formats: .zip, .asset)</p></h5>
                             <input type="file" onChange={handleFileChange} />
