@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import Modal from 'react-bootstrap/Modal';
@@ -44,20 +44,26 @@ const UploadItem = () => {
         }
     }
 
-    const handleUpload = (event) => {
+    const handleUpload = async(event) => {
         event.preventDefault();
         if (file) {
             validateFileType(file);
             const formData = new FormData();
             formData.append('file', file);
+            formData.append('fileName', file.name);
             formData.append('title', title);
             formData.append('itemType', itemType);
             formData.append('license', license);
-            APIService.UploadItem(formData)
-                .then(data => console.log(data))
-                .catch(err => console.log(err));
-            alert('File uploaded successfully!');
-            return;
+            await APIService.UploadItem(formData)
+                .then(data => {
+                    alert(data.message);
+                    handleClose();
+                })
+                .catch(err => {
+                    alert("Error uploading file");
+                    console.log(err);
+                });
+                return;
         } else {
             alert('Please select a file to upload.');
             return;

@@ -36,12 +36,12 @@ export default class APIService {
 
     static async UploadItem(formData) {
         const resp = await fetch(process.env.REACT_APP_API_HOST + `/api/upload`, {
-            'method': 'POST',
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            },
+            method: 'POST',
             body: formData
         });
-        return await resp.json();
+        if (resp.ok) {
+            return await resp.json();
+        }
+        throw new Error('Error uploading file');
     }
 }

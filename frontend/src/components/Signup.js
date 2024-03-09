@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Form, Button, Alert, Nav } from "react-bootstrap";
+import { Form, Button, Alert } from "react-bootstrap";
 import "./../css/login.css";
-import { useGoogleLogin, googleLogout } from '@react-oauth/google';
+import { useGoogleLogin} from '@react-oauth/google';
 import axios from "axios";
 import APIService from './APIService';
 
