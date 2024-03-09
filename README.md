@@ -12,9 +12,9 @@ To-Do:
 - [x] Users Schema Creation
 - [ ] Paging of GetItems
 - [ ] filtering of GetItems
-- [ ] Updaing of HubItem
+- [ ] Updating of HubItem
 - [ ] File Uploads
-- [ ] Testing APIs with existing application
+- [x] Testing APIs with existing application
 - [ ] Front end webpage
   - [x] Home Page (having all itemtypes)
   - [ ] Divide the items by type
@@ -27,4 +27,5 @@ To-Do:
   - [ ] Linkedin Auth Integration
   - [ ] Facebook Auth Integration
   - [ ] Github Auth Integration
-  - [ ] Upload page
+  - [x] Upload page Frontend
+  - [ ] Upload page Backend
