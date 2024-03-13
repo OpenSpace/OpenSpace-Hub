@@ -1,10 +1,24 @@
 const express = require('express');
+// const NodeClam = require('clamscan');
+// const formidable = require('formidable');
 const Model = require('./../models/model');
-const fomateDate = require('./../utils/utility')
-
+const utility = require('./../utils/utility')
+const multer = require('multer');
+const fs = require('fs');
+const unzipper = require('unzipper');
 const router = express.Router()
 
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
 
+        cb(null, 'frontend/public/upload/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+});
+
+const upload = multer({ storage: storage });
 module.exports = router;
 
 /**
@@ -123,7 +137,7 @@ router.post('/addItem', async (req, res) => {
         res.status(200).json(dataToSave)
     }
     catch (error) {
-        res.status(400).json({message: error.message})
+        res.status(400).json({ message: error.message })
     }
 })
 
@@ -132,28 +146,95 @@ router.post('/addItem', async (req, res) => {
  * /api/upload:
  *  post:
  *      summary: Upload an item.
+ *      consumes:
+ *         - multipart/form-data
+ *      parameters:
+ *        - in: formData
+ *          name: file
+ *          required: true
+ *          type: file
+ * 
  *      description: Upload an item to the database.
  *      responses:
  *          200:
  *              description: Successful response with data.
+ *          400:
+ *              description: Bad request.
  *          500:
  *              description: Internal server error.
  */
-router.post('/upload', async (req, res) => {
-    console.log(req.body)
-    // if (!req.files || Object.keys(req.files).length === 0) {
-    //     return res.status(400).send('No files were uploaded.');
+router.post('/upload_old', async (req, res) => {
+    if (!req.files || Object.keys(req.files).length === 0) {
+        res.status(400).json({ message: "No files were uploaded" });
+    }
+
+
+    let file = req.files.file;
+    try {
+        utility.validateItemFile(file);
+        utility.saveItemFile(file);
+        res.status(200).json({ message: "Uploaded successfully on server" });
+    } catch (error) {
+        console.log(`Error: ${error.message}`);
+        res.status(400).json({ message: error.message });
+    }
+})
+
+router.post('/upload', upload.single('file'), async (req, res) => {
+    originalItemname = req.file.originalname.split('.')[0];
+    if (req.file.mimetype === 'application/zip') {
+        console.log('file is of type zip');
+        fs.createReadStream(req.file.path)
+            .pipe(unzipper.Extract({ path: `frontend/public/upload/unzipped/` }))
+            .on('close', () => {
+                fs.readdir(`frontend/public/upload/unzipped/${originalItemname}`, (err, files) => {
+                    if (err) {
+                        console.log(err);
+                        return res.status(500).send({ error: 'Error reading directory' });
+                    }
+                    const assetFiles = files.filter(file => file.endsWith('.asset') && (file === originalItemname + ".asset"));
+                    if (assetFiles.length > 0) {
+                        res.status(200).send({ message: 'Zip file contains .asset files' });
+                    } else {
+                        fs.rm(`frontend/public/upload/unzipped/${originalItemname}`, { recursive: true }, (err) => {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                console.log('Folder deleted');
+                            }
+                        });
+                        res.status(200).send({ message: 'Zip file does not contain .asset files' });
+                    }
+                });
+                fs.unlink(req.file.path, (err) => {
+                    console.log('file deleted');
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+            });
+    }
+    else if (req.file.originalname.split('.').pop() === 'asset') {
+        console.log('file is of type asset');
+        res.status(200).send({ message: 'file is of type.asset' });
+    } else {
+        fs.unlink(req.file.path, (err) => {
+            console.log('unwanted file deleted');
+            if (err) {
+                console.log(err);
+            }
+        });
+        res.status(400).json({ message: "Invalid file type. Please upload a .zip or .asset file." });
+    }
+
+    // return;
+    // let file = req.files.file;
+    // try {
+    //     utility.validateItemFile(file);
+    //     utility.saveItemFile(file);
+    //     res.status(200).json({ message: "Uploaded successfully on server" });
+    // } catch (error) {
+    //     console.log(`Error: ${error.message}`);
+    //     res.status(400).json({ message: error.message });
     // }
-    // console.log(req.files)
-
-    // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-    // let sampleFile = req.files.sampleFile;
-
-    // Use the mv() method to place the file somewhere on your server
-    // sampleFile.mv('filename.jpg', function(err) {
-    //     if (err)
-    //         return res.status(500).send(err);
-    // });
-        
-    res.status(200).json("Upload API")
 })
