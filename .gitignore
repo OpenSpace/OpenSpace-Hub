@@ -133,3 +133,4 @@ dist
 *.DS_Store
 package-lock.json
 frontend/package-lock.json
+frontend/public/upload/

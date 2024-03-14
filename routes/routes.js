@@ -1,11 +1,9 @@
 const express = require('express');
-// const NodeClam = require('clamscan');
-// const formidable = require('formidable');
 const Model = require('./../models/model');
 const utility = require('./../utils/utility')
 const multer = require('multer');
-const fs = require('fs');
-const unzipper = require('unzipper');
+
+
 const router = express.Router()
 
 const storage = multer.diskStorage({
@@ -163,78 +161,14 @@ router.post('/addItem', async (req, res) => {
  *          500:
  *              description: Internal server error.
  */
-router.post('/upload_old', async (req, res) => {
-    if (!req.files || Object.keys(req.files).length === 0) {
-        res.status(400).json({ message: "No files were uploaded" });
-    }
-
-
-    let file = req.files.file;
+router.post('/upload', upload.single('file'), async (req, res) => {
     try {
-        utility.validateItemFile(file);
-        utility.saveItemFile(file);
+        utility.validateItemFileType(req.file);
+        utility.validateItemFileSize(req.file);
+        await utility.uploadToServer(req, res);
         res.status(200).json({ message: "Uploaded successfully on server" });
     } catch (error) {
         console.log(`Error: ${error.message}`);
         res.status(400).json({ message: error.message });
     }
-})
-
-router.post('/upload', upload.single('file'), async (req, res) => {
-    originalItemname = req.file.originalname.split('.')[0];
-    if (req.file.mimetype === 'application/zip') {
-        console.log('file is of type zip');
-        fs.createReadStream(req.file.path)
-            .pipe(unzipper.Extract({ path: `frontend/public/upload/unzipped/` }))
-            .on('close', () => {
-                fs.readdir(`frontend/public/upload/unzipped/${originalItemname}`, (err, files) => {
-                    if (err) {
-                        console.log(err);
-                        return res.status(500).send({ error: 'Error reading directory' });
-                    }
-                    const assetFiles = files.filter(file => file.endsWith('.asset') && (file === originalItemname + ".asset"));
-                    if (assetFiles.length > 0) {
-                        res.status(200).send({ message: 'Zip file contains .asset files' });
-                    } else {
-                        fs.rm(`frontend/public/upload/unzipped/${originalItemname}`, { recursive: true }, (err) => {
-                            if (err) {
-                                console.log(err);
-                            } else {
-                                console.log('Folder deleted');
-                            }
-                        });
-                        res.status(200).send({ message: 'Zip file does not contain .asset files' });
-                    }
-                });
-                fs.unlink(req.file.path, (err) => {
-                    console.log('file deleted');
-                    if (err) {
-                        console.log(err);
-                    }
-                });
-            });
-    }
-    else if (req.file.originalname.split('.').pop() === 'asset') {
-        console.log('file is of type asset');
-        res.status(200).send({ message: 'file is of type.asset' });
-    } else {
-        fs.unlink(req.file.path, (err) => {
-            console.log('unwanted file deleted');
-            if (err) {
-                console.log(err);
-            }
-        });
-        res.status(400).json({ message: "Invalid file type. Please upload a .zip or .asset file." });
-    }
-
-    // return;
-    // let file = req.files.file;
-    // try {
-    //     utility.validateItemFile(file);
-    //     utility.saveItemFile(file);
-    //     res.status(200).json({ message: "Uploaded successfully on server" });
-    // } catch (error) {
-    //     console.log(`Error: ${error.message}`);
-    //     res.status(400).json({ message: error.message });
-    // }
 })
