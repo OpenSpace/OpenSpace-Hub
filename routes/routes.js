@@ -126,8 +126,8 @@ router.post('/addItem', async (req, res) => {
         currentVersion: req.body.currentVersion,
         image: req.body.image,
         archives: req.body.archives,
-        created: fomateDate(new Date()),
-        modified: fomateDate(new Date()),
+        created: utility.getFormattedDate(new Date()),
+        modified: utility.getFormattedDate(new Date()),
     })
 
     try {
@@ -163,10 +163,26 @@ router.post('/addItem', async (req, res) => {
  */
 router.post('/upload', upload.single('file'), async (req, res) => {
     try {
+        utility.validateInputFields(req.body);
         utility.validateItemFileType(req.file);
         utility.validateItemFileSize(req.file);
-        await utility.uploadToServer(req, res);
-        res.status(200).json({ message: "Uploaded successfully on server" });
+        await utility.uploadItemToServer(req, res);
+        const author = {
+            name: req.body.author,
+            link: req.body.link
+        }
+        const data = new Model({
+            name: req.body.title,
+            type: req.body.itemType,
+            description: req.body.description,
+            author: author,
+            created: utility.getFormattedDate(new Date()),
+            modified: utility.getFormattedDate(new Date()),
+        })
+        console.log(data);
+        const dataToSave = await data.save();
+        const message = "Uploaded successfully on server";
+        res.status(200).json({ message: message, data: dataToSave })
     } catch (error) {
         console.log(`Error: ${error.message}`);
         res.status(400).json({ message: error.message });

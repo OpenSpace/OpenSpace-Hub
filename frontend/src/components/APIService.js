@@ -22,13 +22,24 @@ export default class APIService {
         return await resp.json();
     }
 
-    static async Register(username, password, cnfPassword) {
+    static async VerifyToken(token) {
+        const resp = await fetch(process.env.REACT_APP_API_HOST + `/auth/verify-token`, {
+            'method': 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+        return await resp.json();
+    }
+
+    static async Register(firstname, lastname, username, password, cnfPassword) {
         const resp = await fetch(process.env.REACT_APP_API_HOST + `/auth/register`, {
             'method': 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({username, password, cnfPassword})
+            body: JSON.stringify({firstname, lastname, username, password, cnfPassword})
         });
         console.log(resp);
         return await resp.json();

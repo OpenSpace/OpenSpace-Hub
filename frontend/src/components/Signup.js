@@ -6,6 +6,8 @@ import axios from "axios";
 import APIService from './APIService';
 
 const Signup = () => {
+    const [inputFirstname, setInputFirstname] = useState("");
+    const [inputLastname, setInputLastname] = useState("");
     const [inputUsername, setInputUsername] = useState("");
     const [inputPassword, setInputPassword] = useState("");
     const [cnfPassword, setCnfPassword] = useState("");
@@ -31,18 +33,35 @@ const Signup = () => {
                 setUser(JSON.parse(localStorage.getItem('user')));
             }
             if (user) {
-                axios
-                    .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
-                        headers: {
-                            Authorization: `Bearer ${user.access_token}`,
-                            Accept: 'application/json'
-                        }
-                    })
-                    .then((res) => {
-                        setProfile(res.data);
-                        localStorage.setItem('profile', JSON.stringify(res.data));
-                    })
-                    .catch((err) => console.log(err));
+                if (user.token) {
+                    console.log(user.token);
+                    APIService.VerifyToken(user.token)
+                        .then(resp => {
+                            if (resp.error) {
+                                throw (resp.error);
+                            }
+                            console.log("Authentication Successful");
+                            redirectToHome();
+                        })
+                        .catch(error => {
+                            localStorage.clear();
+                        });
+
+                }
+                else if (user.access_token) {
+                    axios
+                        .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
+                            headers: {
+                                Authorization: `Bearer ${user.access_token}`,
+                                Accept: 'application/json'
+                            }
+                        })
+                        .then((res) => {
+                            setProfile(res.data);
+                            localStorage.setItem('profile', JSON.stringify(res.data));
+                        })
+                        .catch((err) => console.log(err));
+                }
             }
         },
         [user]
@@ -61,12 +80,23 @@ const Signup = () => {
         setLoading(true);
         setShowSignUpError(false);
         await delay(500);
-        APIService.Register(inputUsername, inputPassword, cnfPassword)
+        APIService.Register(inputFirstname, inputLastname, inputUsername, inputPassword, cnfPassword)
             .then(resp => {
                 if (resp.error) {
                     throw (resp.error);
                 }
-                localStorage.setItem('user', JSON.stringify({ "username": inputUsername }));
+                console.log(resp.message);
+                localStorage.setItem('user',
+                    JSON.stringify({
+                        "username": resp.username,
+                        "firstname": resp.firstname,
+                        "lastname": resp.lastname,
+                        "link": resp.link,
+                        "thumbnail": resp.thumbnail,
+                        "token": resp.token,
+                        "institution": resp.institution,
+                        "favorites": resp.favorites
+                    }));
                 console.log("Authentication Successful")
                 redirectToHome();
             })
@@ -119,6 +149,26 @@ const Signup = () => {
                 ) : (
                     <div />
                 )}
+                <Form.Group className="mb-2" controlId="firstname">
+                    <Form.Label>First Name</Form.Label>
+                    <Form.Control
+                        type="text"
+                        value={inputFirstname}
+                        placeholder="First Name"
+                        onChange={(e) => {setInputFirstname(e.target.value);}}
+                        required
+                    />
+                </Form.Group>
+                <Form.Group className="mb-2" controlId="lastname">
+                    <Form.Label>Last Name</Form.Label>
+                    <Form.Control
+                        type="text"
+                        value={inputLastname}
+                        placeholder="Last Name"
+                        onChange={(e) => {setInputLastname(e.target.value);}}
+                        required
+                    />
+                </Form.Group>
                 <Form.Group className="mb-2" controlId="username">
                     <Form.Label>Username</Form.Label>
                     <Form.Control

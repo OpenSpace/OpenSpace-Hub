@@ -18,9 +18,20 @@ const UploadItem = () => {
         setItemType(e);
     }
 
+    const [description, setDescription] = useState('');
+
+    const handleDescription = (e) => {
+        setDescription(e.target.value);
+    }
+
     const [file, setFile] = useState(null);
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
+    }
+
+    const [image, setImage] = useState(null);
+    const handleImageChange = (e) => {
+        setImage(e.target.files[0]);
     }
 
     const [title, setTitle] = useState('');
@@ -35,25 +46,35 @@ const UploadItem = () => {
         setLicense(e.target.value);
     }
 
-    const validateFileType = (file) => {
+    //To-Do: Remove this method. Already handled in HTML input tag.
+    const isValidateFileType = (file) => {
         const fileName = file.name;
         const fileExtension = fileName.split('.').pop();
         if (fileExtension !== 'zip' && fileExtension !== 'asset') {
-            alert('Invalid file type. Please upload a .zip or .asset file.');
-            return;
+            document.getElementById('fileInput').value = '';
+            return true;
         }
+        return true;
     }
 
-    const handleUpload = async(event) => {
+    const handleUpload = async (event) => {
         event.preventDefault();
-        if (file) {
-            validateFileType(file);
+        if (file === '' || title.trim() === '' || itemType.trim() === '' || license.trim() === '' || description.trim() === '' || image === ''){
+            alert('Please fill in all fields.');
+            return;
+        }
+        if (file && isValidateFileType(file)) {
+            const author = JSON.parse(localStorage.getItem('user'))
             const formData = new FormData();
             formData.append('file', file);
+            // formData.append('image', image); //TO-Do: Add image to formData
             formData.append('fileName', file.name);
             formData.append('title', title);
-            formData.append('itemType', itemType);
+            formData.append('itemType', itemType.toLowerCase());
             formData.append('license', license);
+            formData.append('author', author.firstname + ' ' + author.lastname);
+            formData.append('link', author.link);
+            formData.append('description', description);
             await APIService.UploadItem(formData)
                 .then(data => {
                     alert(data.message);
@@ -63,9 +84,9 @@ const UploadItem = () => {
                     alert("Error uploading file");
                     console.log(err);
                 });
-                return;
+            return;
         } else {
-            alert('Please select a file to upload.');
+            alert('Please select a valid file to upload.');
             return;
         }
     }
@@ -85,6 +106,8 @@ const UploadItem = () => {
                     <form style={{ display: 'flex', flexDirection: 'column' }}>
                         <h5>Title</h5>
                         <input type="text" value={title} onChange={handleTitleChange} />
+                        <h5  style={{marginTop:'20px'}} >Description</h5>
+                        <input type="text"  value={description} onChange={handleDescription} />
                         <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                             <Dropdown onSelect={handleItemTypeSelect} >
                                 <h5>Item Type</h5>
@@ -92,16 +115,22 @@ const UploadItem = () => {
                                     {itemType}
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
-                                    <Dropdown.Item eventKey="Asset">Asset</Dropdown.Item>
-                                    <Dropdown.Item eventKey="Profile">Profile</Dropdown.Item>
+                                    <Dropdown.Item eventKey="asset">Asset</Dropdown.Item>
+                                    <Dropdown.Item eventKey="profile">Profile</Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
                         </div>
                         <h5> License </h5>
                         <input type="text" value={license} onChange={handleLicenseChange} />
+
+                        <div style={{ marginBottom: '20px', marginTop: '20px' }}>
+                            <h5>Upload item-image <p style={{ fontSize: "15px" }}></p></h5>
+                            <input id='imageInput' type="file" accept=".jpg, .jpeg, .png" onChange={handleImageChange} />
+                        </div>
+
                         <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                             <h5>Upload a file <p style={{ fontSize: "15px" }}>(accepted formats: .zip, .asset)</p></h5>
-                            <input type="file" onChange={handleFileChange} />
+                            <input id='fileInput' type="file" accept=".zip, .asset" onChange={handleFileChange} />
                         </div>
                     </form>
                 </Modal.Body>

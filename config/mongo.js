@@ -1,10 +1,7 @@
-const { Seeder } = require('mongo-seeding');
-
 const mongoose = require("mongoose")
 const dotenv = require('dotenv')
-const MONGODB_URL = process.env.MONGODB_URL
-
 dotenv.config()
+const MONGODB_URL = process.env.MONGODB_URL
 
 const mongo = async() => {
     try {

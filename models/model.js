@@ -33,19 +33,19 @@ const dataSchema = new mongoose.Schema({
     },
     author: {
         type: authorSchema,
-        required: true
+        // required: true
     },
     currentVersion: {
         type: versionSchema,
-        required: true
+        // required: true
     },
     image: {
         type: String,
-        required: true
+        // required: true
     },
     archives: {
         type: [archiveSchema],
-        required: true
+        // required: true
     },
     created: {
         type: String,
@@ -57,7 +57,7 @@ const dataSchema = new mongoose.Schema({
     },
     favorites: {
         type: [ObjectId],
-        required: true
+        // required: true
     }
 });
 

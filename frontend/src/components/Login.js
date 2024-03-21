@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import "./../css/login.css";
-import { useGoogleLogin} from '@react-oauth/google';
+import { useGoogleLogin } from '@react-oauth/google';
 import axios from "axios";
 import APIService from './APIService';
 
@@ -29,18 +29,35 @@ const Login = () => {
                 setUser(JSON.parse(localStorage.getItem('user')));
             }
             if (user) {
-                axios
-                    .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
-                        headers: {
-                            Authorization: `Bearer ${user.access_token}`,
-                            Accept: 'application/json'
-                        }
-                    })
-                    .then((res) => {
-                        setProfile(res.data);
-                        localStorage.setItem('profile', JSON.stringify(res.data));
-                    })
-                    .catch((err) => console.log(err));
+                if (user.token) {
+                    console.log(user.token);
+                    APIService.VerifyToken(user.token)
+                        .then(resp => {
+                            if (resp.error) {
+                                throw (resp.error);
+                            }
+                            console.log("Authentication Successful");
+                            redirectToHome();
+                        })
+                        .catch(error => {
+                            localStorage.clear();
+                        });
+
+                }
+                else if (user.access_token) {
+                    axios
+                        .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
+                            headers: {
+                                Authorization: `Bearer ${user.access_token}`,
+                                Accept: 'application/json'
+                            }
+                        })
+                        .then((res) => {
+                            setProfile(res.data);
+                            localStorage.setItem('profile', JSON.stringify(res.data));
+                        })
+                        .catch((err) => console.log(err));
+                }
             }
         },
         [user]
@@ -64,7 +81,17 @@ const Login = () => {
                 if (resp.error) {
                     throw (resp.error);
                 }
-                localStorage.setItem('user', JSON.stringify({ "username": inputUsername }));
+                localStorage.setItem('user',
+                    JSON.stringify({
+                        "username": resp.username,
+                        "firstname": resp.firstname,
+                        "lastname": resp.lastname,
+                        "link": resp.link,
+                        "thumbnail": resp.thumbnail,
+                        "token": resp.token,
+                        "institution": resp.institution,
+                        "favorites": resp.favorites
+                    }));
                 console.log("Authentication Successful");
                 redirectToHome();
             })

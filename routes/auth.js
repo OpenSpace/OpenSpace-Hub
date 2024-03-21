@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require('./../models/User');
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const fomateDate = require('./../utils/utility')
+const utility = require('./../utils/utility')
 
 
 /**
@@ -33,7 +33,7 @@ const fomateDate = require('./../utils/utility')
  */
 router.post('/register', async (req, res) => {
     try {
-        const {username, password, cnfPassword} = req.body;
+        const {firstname, lastname, username, password, cnfPassword} = req.body;
         if (password !== cnfPassword) {
             throw new Error('Password and confirm password do not match');
         }
@@ -43,10 +43,12 @@ router.post('/register', async (req, res) => {
             throw new Error('User already exists');
         }
         const newUser = new User({ 
+            firstname: firstname,
+            lastname: lastname,
             username: username,
             password: hashedPassword,
-            created: fomateDate(new Date()),
-            modified: fomateDate(new Date())
+            created: utility.getFormattedDate(new Date()),
+            modified: utility.getFormattedDate(new Date())
         });
         await newUser.save();
         res.status(201).json({ message: 'User registered successfully'});
@@ -97,10 +99,25 @@ router.post('/login', async (req, res) => {
             return res.status(401).json( { error: 'Authentication failed'});
         }
         const token = jwt.sign( {userId : user._id }, process.env.SECRET_KEY, { expiresIn: '1h', });
-        res.status(200).json({ token });
+        res.status(200).json({ token, username: user.username, firstname: user.firstname, lastname: user.lastname, link: user.link,
+            thumbnail: user.thumbnail, institution: user.institution, favorites: user.favorites});
     } catch (error) {
         res.status(500).json({ error: 'Login failed' });
     }
+});
+
+router.post('/verify-token', async (req, res) => {
+        const token = req.headers['authorization'].split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ error: 'Unauthorized request' });
+        }
+        try {
+            jwt.verify(token, process.env.SECRET_KEY);
+            res.status(200).json({ message: 'Token verified successfully'});
+        } catch (error) {
+            console.log(error);
+            res.status(401).json({ error: 'Unauthorized request' });
+        }
 });
 
 module.exports = router;

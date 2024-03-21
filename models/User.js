@@ -8,13 +8,30 @@ const mongoose = require('mongoose');
 //name, {thumbnail pic, link, institution}, favorites
 
 const userSchema = new mongoose.Schema({
-    name: String,
+    firstname: {
+        type: String,
+        default: "firstName",
+        required: true
+    },
+    lastname: {
+        type: String,
+        default: "lastname",
+        required: true
+    },
     thumbnail: {
         type: String,
         default: __dirname + "/../images/user-icon.jpg"
     },
-    link: String,
-    institution: String,
+    link: {
+        type: String,
+        default: "www.example.com",
+        required: true
+    },
+    institution: {
+        type: String,
+        default: "OpenSpace",
+        required: true
+    },
     created: {
         type: String,
         required: true

@@ -2,11 +2,23 @@ const fs = require('fs');
 const unzipper = require('unzipper');
 const moment = require('moment');
 
-function formatDate(date) {
+exports.getFormattedDate = (date) => {
     return moment(date).format('MM/DD/YYYY, HH:mm:ss [GMT]ZZ');
 }
 
-function validateItemFileType(file) {
+exports.validateInputFields = (body) =>  {
+    console.log(body);
+    if (!body.title || !body.title.trim() || 
+        !body.itemType || !body.itemType.trim() || 
+        !body.license || !body.license.trim() || 
+        !body.author || !body.author.trim() ||
+        !body.description || !body.description.trim()
+    ){
+        throw new Error('Invalid Input Fields');
+    }
+}
+
+exports.validateItemFileType = (file) => {
     const fileName = file.originalname;
     const fileExtension = fileName.split('.').pop();
     if (fileExtension !== 'zip' && fileExtension !== 'asset') {
@@ -14,13 +26,14 @@ function validateItemFileType(file) {
     }
 }
 
-function validateItemFileSize(file) {
+exports.validateItemFileSize = (file) => {
     if (file.size > 5 * Math.pow(10, 9)) {
         throw new Error('File size exceeds 5 GB limit');
     }
 }
 
-async function uploadToServer(req) {
+
+exports.uploadItemToServer = async (req) => {
     if (req.file.mimetype === 'application/zip') {
         originalItemname = req.file.originalname.split('.')[0];
         await new Promise((resolve, reject) => {
@@ -67,8 +80,3 @@ function unlinkUploadedDir(dir) {
         }
     });
 }
-
-exports.formatDate = formatDate;
-exports.validateItemFileType = validateItemFileType;
-exports.validateItemFileSize = validateItemFileSize;
-exports.uploadToServer = uploadToServer;
