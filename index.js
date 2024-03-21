@@ -25,6 +25,12 @@ function errorHandler(error, req, res, next) {
   });
 }
 
+const uploadDir = path.join(__dirname, 'frontend', 'public', 'upload');
+if (!fs.existsSync(uploadDir)){
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+
 app.use(express.json());
 app.use(cors());
 app.use(morgan('combined', { stream: accessLogStream }));
