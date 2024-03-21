@@ -39,6 +39,7 @@ router.post('/register', async (req, res) => {
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await User.findOne( {username} );
+        // console.log(user);
         if (user) {
             throw new Error('User already exists');
         }
@@ -51,8 +52,11 @@ router.post('/register', async (req, res) => {
             modified: utility.getFormattedDate(new Date())
         });
         await newUser.save();
-        res.status(201).json({ message: 'User registered successfully'});
+        const token = jwt.sign( {userId : newUser._id }, process.env.SECRET_KEY, { expiresIn: '1h', });
+        res.status(200).json({ token, username: newUser.username, firstname: newUser.firstname, lastname: newUser.lastname, link: newUser.link,
+            thumbnail: newUser.thumbnail, institution: newUser.institution, favorites: newUser.favorites});
     } catch (error) {
+        console.log(error);
         res.status(500).json({ error: error.message});
     }
 });
