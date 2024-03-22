@@ -67,7 +67,7 @@ const UploadItem = () => {
             const author = JSON.parse(localStorage.getItem('user'))
             const formData = new FormData();
             formData.append('file', file);
-            // formData.append('image', image); //TO-Do: Add image to formData
+            formData.append('image', image);
             formData.append('fileName', file.name);
             formData.append('title', title);
             formData.append('itemType', itemType.toLowerCase());

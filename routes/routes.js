@@ -2,14 +2,15 @@ const express = require('express');
 const Model = require('./../models/model');
 const utility = require('./../utils/utility')
 const multer = require('multer');
+const path = require('path');
 
 
 const router = express.Router()
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-
-        cb(null, 'frontend/public/upload/')
+        const destination = file.fieldname === 'file' ? 'public/upload/' : 'public/upload/images/';
+        cb(null, destination)
     },
     filename: function (req, file, cb) {
         cb(null, file.originalname);
@@ -161,25 +162,48 @@ router.post('/addItem', async (req, res) => {
  *          500:
  *              description: Internal server error.
  */
-router.post('/upload', upload.single('file'), async (req, res) => {
+router.post('/upload', upload.fields([{name: 'image', maxCount:1}, {name: 'file', maxCount:1}]), async (req, res) => {
     try {
+        console.log(req.files);
+
+        if (!req.files || !req.files['image'] || !req.files['file']) {
+            return res.status(400).json({ message: 'Both image and asset files are required' });
+        }
+        const imageFile = req.files['image'][0];
+        const assetFile = req.files['file'][0];
+
         utility.validateInputFields(req.body);
-        utility.validateItemFileType(req.file);
-        utility.validateItemFileSize(req.file);
-        await utility.uploadItemToServer(req, res);
+
+        // asset file upload
+        utility.validateItemFileType(assetFile);
+        utility.validateItemFileSize(assetFile);
+        await utility.uploadItemToServer(assetFile);
+
+        // image file upload
+        utility.validateImageFileType(imageFile);
+        utility.validateImageFileSize(imageFile);
+        await utility.uploadItemToServer(imageFile);
+
         const author = {
             name: req.body.author,
             link: req.body.link
         }
+
+        const currentVersion = {
+            version: "1.0",
+            url: path.relative('public', assetFile.path)
+        }
+
         const data = new Model({
             name: req.body.title,
             type: req.body.itemType,
             description: req.body.description,
             author: author,
+            currentVersion: currentVersion,
+            image: path.relative('public', imageFile.path),
             created: utility.getFormattedDate(new Date()),
             modified: utility.getFormattedDate(new Date()),
         })
-        console.log(data);
         const dataToSave = await data.save();
         const message = "Uploaded successfully on server";
         res.status(200).json({ message: message, data: dataToSave })

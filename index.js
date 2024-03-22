@@ -25,13 +25,14 @@ function errorHandler(error, req, res, next) {
   });
 }
 
-const uploadDir = path.join(__dirname, 'frontend', 'public', 'upload');
+const uploadDir = path.join(__dirname, 'public', 'upload', 'images');
 if (!fs.existsSync(uploadDir)){
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 
 // Serve the static files from the React app
 app.use(express.static(path.join(__dirname, 'frontend/build')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(express.json());
 app.use(cors());

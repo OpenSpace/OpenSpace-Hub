@@ -21,6 +21,7 @@ function Body() {
     const sendImportToOpenSpaceCommand = async(url, type) => {
         var openspace = window.openspace;
         var fileName = url.substr(url.lastIndexOf('/') + 1);
+        url = window.location+url;
         switch (type) {
             case 'asset':
                 var absPath = await openspace.absPath('${TEMPORARY}/' + fileName)
