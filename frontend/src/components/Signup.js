@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import "./../css/login.css";
-import { useGoogleLogin} from '@react-oauth/google';
+import { useGoogleLogin } from '@react-oauth/google';
+import FacebookLogin from 'react-facebook-login';
 import axios from "axios";
 import APIService from './APIService';
 
@@ -26,6 +27,24 @@ const Signup = () => {
         },
         onError: (error) => console.log('Login Failed:', error)
     });
+
+    // Facebook login
+    const responseFacebook = (response) => {
+        console.log(response);
+        // setUser(response)
+
+        setUser({
+            name: response.name,
+            email: response.email,
+            picture: response.picture.data.url
+        })
+        localStorage.setItem('user', JSON.stringify({
+            name: response.name,
+            email: response.email,
+            picture: response.picture.data.url
+        }));
+        redirectToHome();
+    }
 
     useEffect(
         () => {
@@ -56,9 +75,33 @@ const Signup = () => {
                                 Accept: 'application/json'
                             }
                         })
-                        .then((res) => {
-                            setProfile(res.data);
+                        .then(async (res) => {
                             localStorage.setItem('profile', JSON.stringify(res.data));
+                            console.log(res.data['email']);
+                            await APIService.Register(res.data['given_name'], res.data['family_name'], res.data['email'], user.access_token, user.access_token)
+                                .then(resp => {
+                                    if (resp.error) {
+                                        throw (resp.error);
+                                    }
+                                    console.log(resp.message);
+                                    localStorage.setItem('user',
+                                        JSON.stringify({
+                                            "username": resp.username,
+                                            "firstname": resp.firstname,
+                                            "lastname": resp.lastname,
+                                            "link": resp.link,
+                                            "thumbnail": resp.thumbnail,
+                                            "token": resp.token,
+                                            "institution": resp.institution,
+                                            "favorites": resp.favorites
+                                        }));
+                                    console.log("Authentication Successful")
+                                    redirectToHome();
+                                })
+                                .catch(error => {
+                                    setShowSignUpError(true);
+                                });
+                            setProfile(res.data);
                         })
                         .catch((err) => console.log(err));
                 }
@@ -155,7 +198,7 @@ const Signup = () => {
                         type="text"
                         value={inputFirstname}
                         placeholder="First Name"
-                        onChange={(e) => {setInputFirstname(e.target.value);}}
+                        onChange={(e) => { setInputFirstname(e.target.value); }}
                         required
                     />
                 </Form.Group>
@@ -165,7 +208,7 @@ const Signup = () => {
                         type="text"
                         value={inputLastname}
                         placeholder="Last Name"
-                        onChange={(e) => {setInputLastname(e.target.value);}}
+                        onChange={(e) => { setInputLastname(e.target.value); }}
                         required
                     />
                 </Form.Group>
@@ -175,7 +218,7 @@ const Signup = () => {
                         type="text"
                         value={inputUsername}
                         placeholder="Username (alphanumeric only)"
-                        onChange={(e) => {setInputUsername(e.target.value); updateShowSignUpButton(e.target.value, inputPassword, cnfPassword);}}
+                        onChange={(e) => { setInputUsername(e.target.value); updateShowSignUpButton(e.target.value, inputPassword, cnfPassword); }}
                         required
                     />
                 </Form.Group>
@@ -185,7 +228,7 @@ const Signup = () => {
                         type="password"
                         value={inputPassword}
                         placeholder="Password"
-                        onChange={(e) => {setInputPassword(e.target.value); updateShowSignUpButton(inputUsername, e.target.value, cnfPassword);}}
+                        onChange={(e) => { setInputPassword(e.target.value); updateShowSignUpButton(inputUsername, e.target.value, cnfPassword); }}
                         required
                     />
                 </Form.Group>
@@ -195,7 +238,7 @@ const Signup = () => {
                         type="password"
                         value={cnfPassword}
                         placeholder="Confirm Password"
-                        onChange={(e) => {setCnfPassword(e.target.value); updateShowSignUpButton(inputUsername, inputPassword, e.target.value);}}
+                        onChange={(e) => { setCnfPassword(e.target.value); updateShowSignUpButton(inputUsername, inputPassword, e.target.value); }}
                         required
                     />
                 </Form.Group>
@@ -237,6 +280,29 @@ const Signup = () => {
                         <Button variant="outline-primary" size="lg" onClick={login}>Sign in with Google 🚀 </Button>
                     )}
                 </div>
+                {user ? (
+                    <div>
+                        <img src={user.picture} alt={user.name} />
+                        <p>Welcome, {user.name}</p>
+                        <p>Email: {user.email}</p>
+                    </div>
+                ) : (
+                    <FacebookLogin
+                        appId={process.env.REACT_APP_FACEBOOK_APP_ID}
+                        autoLoad={false}
+                        fields="name, email, picture"
+                        scope="public_profile,email"
+                        callback={responseFacebook}
+                        render={(renderProps) => (
+                            <Button
+                                variant="outline-primary"
+                                size="lg"
+                                onClick={renderProps.onClick}
+                            >Sign in with Facebook
+                            </Button>
+                        )}
+                    />
+                )}
 
             </Form>
         </div>

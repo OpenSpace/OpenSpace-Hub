@@ -25,11 +25,6 @@ const Login = () => {
     });
 
     // Facebook login
-
-    // const [fblogin, setFBLogin] = useState(false);
-    // const [data, setData] = useState({});
-    // const [picture, setPicture] = useState('');
-
     const responseFacebook = (response) => {
         console.log(response);
         // setUser(response)
@@ -222,7 +217,12 @@ const Login = () => {
                         scope="public_profile,email"
                         callback={responseFacebook}
                         render={(renderProps) => (
-                            <button onClick={renderProps.onClick}>This is my custom FB button</button>
+                            <Button
+                                variant="outline-primary"
+                                size="lg"
+                                onClick={renderProps.onClick}
+                            >Sign in with Facebook
+                            </Button>
                         )}
                     />
                 )}
