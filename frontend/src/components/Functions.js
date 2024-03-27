@@ -33,7 +33,7 @@ const Functions = () => {
     }
 
     useEffect(() => {
-        connectToOpenSpace();
+        // connectToOpenSpace();
     });
 
     return (

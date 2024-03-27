@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import "./../css/login.css";
 import { useGoogleLogin } from '@react-oauth/google';
+import FacebookLogin from 'react-facebook-login';
 import axios from "axios";
 import APIService from './APIService';
 
@@ -22,6 +23,29 @@ const Login = () => {
         },
         onError: (error) => console.log('Login Failed:', error)
     });
+
+    // Facebook login
+
+    // const [fblogin, setFBLogin] = useState(false);
+    // const [data, setData] = useState({});
+    // const [picture, setPicture] = useState('');
+
+    const responseFacebook = (response) => {
+        console.log(response);
+        // setUser(response)
+
+        setUser({
+            name: response.name,
+            email: response.email,
+            picture: response.picture.data.url
+        })
+        localStorage.setItem('user', JSON.stringify({
+            name: response.name,
+            email: response.email,
+            picture: response.picture.data.url
+        }));
+        redirectToHome();
+    }
 
     useEffect(
         () => {
@@ -184,7 +208,24 @@ const Login = () => {
                         <Button variant="outline-primary" size="lg" onClick={login}>Sign in with Google 🚀 </Button>
                     )}
                 </div>
-
+                {user ? (
+                    <div>
+                        <img src={user.picture} alt={user.name} />
+                        <p>Welcome, {user.name}</p>
+                        <p>Email: {user.email}</p>
+                    </div>
+                ) : (
+                    <FacebookLogin
+                        appId={process.env.REACT_APP_FACEBOOK_APP_ID}
+                        autoLoad={false}
+                        fields="name, email, picture"
+                        scope="public_profile,email"
+                        callback={responseFacebook}
+                        render={(renderProps) => (
+                            <button onClick={renderProps.onClick}>This is my custom FB button</button>
+                        )}
+                    />
+                )}
             </Form>
         </div>
     );

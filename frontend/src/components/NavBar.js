@@ -47,6 +47,9 @@ const NavBar = () => {
             if (user && user.username) {
                 setShowLogin(false);
             }
+            if (user && user.email) {
+                setShowLogin(false);
+            }
         },
         [user, showLogin]
     );
