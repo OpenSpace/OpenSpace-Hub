@@ -25,7 +25,13 @@ To-Do:
   - [x] Integrate OpenSpace API
   - [x] Import Profile, Asset, Recording module
   - [ ] Linkedin Auth Integration
-  - [ ] Facebook Auth Integration
+  - [x] Facebook Auth Integration
   - [ ] Github Auth Integration
   - [x] Upload page Frontend
-  - [ ] Upload page Backend
+  - [x] Upload page Backend
+- [ ] Add Item Types - Profile
+- [ ] Add Item Types - Recording
+- [ ] Add Item Types - Web Panel (WWW)
+- [ ] Add Item Types - Config
+- [ ] User page
+- [ ] Profile Dependencies
