@@ -7,115 +7,88 @@ import axios from "axios";
 import APIService from './APIService';
 
 const Login = () => {
-    const [inputUsername, setInputUsername] = useState("");
+    const [inputEmail, setInputEmail] = useState("");
     const [inputPassword, setInputPassword] = useState("");
 
     const [showLoginError, setShowLoginError] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const [user, setUser] = useState(null);
-    const [profile, setProfile] = useState(null);
+    useEffect(
+        () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                APIService.VerifyToken(token)
+                    .then(resp => {
+                        if (resp.error) {
+                            throw (resp.error);
+                        }
+                        redirectToHome();
+                    })
+                    .catch(error => {
+                        localStorage.clear();
+                        console.log("Error: " + error);
+                    });
+            }
+        },
+        []
+    );
 
     const login = useGoogleLogin({
-        onSuccess: (response) => {
-            setUser(response);
-            localStorage.setItem('user', JSON.stringify(response));
+        onSuccess: async (response) => {
+            await axios.get(
+                `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${response.access_token}`, {
+                headers: {
+                    Authorization: `Bearer ${response.access_token}`,
+                    Accept: 'application/json'
+                }
+            }).then(async (res) => {
+                await APIService.SocialMediaLogin(
+                    res.data['given_name'] + " " + res.data['family_name'],
+                    response.access_token,
+                    res.data['email'],
+                    "google", // domain
+                    res.data['picture'],
+                ).then(resp => {
+                    localStorage.setItem('token', resp.token);
+                    redirectToHome();
+                }).catch((err) => console.log(err));
+            }).catch((err) => console.log(err));
         },
         onError: (error) => console.log('Login Failed:', error)
     });
 
+
     // Facebook login
-    const responseFacebook = (response) => {
-        console.log(response);
-        // setUser(response)
-
-        setUser({
-            name: response.name,
-            email: response.email,
-            picture: response.picture.data.url
-        })
-        localStorage.setItem('user', JSON.stringify({
-            name: response.name,
-            email: response.email,
-            picture: response.picture.data.url
-        }));
-        redirectToHome();
+    const responseFacebook = async (response) => {
+        await APIService.SocialMediaLogin(
+            response.name,
+            response.accessToken,
+            response.email,
+            "facebook", // domain
+            response.picture.data.url,
+        ).then(resp => {
+            localStorage.setItem('token', resp.token);
+            console.log(resp)
+            redirectToHome();
+        }).catch((err) => console.log(err));
     }
-
-    useEffect(
-        () => {
-            if (!user) {
-                setUser(JSON.parse(localStorage.getItem('user')));
-            }
-            if (user) {
-                if (user.token) {
-                    console.log(user.token);
-                    APIService.VerifyToken(user.token)
-                        .then(resp => {
-                            if (resp.error) {
-                                throw (resp.error);
-                            }
-                            console.log("Authentication Successful");
-                            redirectToHome();
-                        })
-                        .catch(error => {
-                            localStorage.clear();
-                        });
-
-                }
-                else if (user.access_token) {
-                    axios
-                        .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
-                            headers: {
-                                Authorization: `Bearer ${user.access_token}`,
-                                Accept: 'application/json'
-                            }
-                        })
-                        .then((res) => {
-                            setProfile(res.data);
-                            localStorage.setItem('profile', JSON.stringify(res.data));
-                        })
-                        .catch((err) => console.log(err));
-                }
-            }
-        },
-        [user]
-    );
-
-    // // log out function to log the user out of google and set the profile array to null
-    // const logOut = () => {
-    //     googleLogout();
-    //     localStorage.clear();
-    //     setProfile(null);
-    //     setUser(null);
-    // };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         setLoading(true);
         setShowLoginError(false);
-        await delay(100);
-        APIService.Login(inputUsername, inputPassword)
+        await delay(500);
+        APIService.Login(inputEmail, inputPassword)
             .then(resp => {
                 if (resp.error) {
                     throw (resp.error);
                 }
-                localStorage.setItem('user',
-                    JSON.stringify({
-                        "username": resp.username,
-                        "firstname": resp.firstname,
-                        "lastname": resp.lastname,
-                        "link": resp.link,
-                        "thumbnail": resp.thumbnail,
-                        "token": resp.token,
-                        "institution": resp.institution,
-                        "favorites": resp.favorites
-                    }));
-                console.log("Authentication Successful");
+                localStorage.setItem('token', resp.token);
+                console.log("Authentication Successful")
                 redirectToHome();
             })
             .catch(error => {
-                setShowLoginError(true);
+                alert("Error: " + error);
             });
         setLoading(false);
     };
@@ -154,13 +127,13 @@ const Login = () => {
                 ) : (
                     <div />
                 )}
-                <Form.Group className="mb-2" controlId="username">
-                    <Form.Label>Username</Form.Label>
+                <Form.Group className="mb-2" controlId="email">
+                    <Form.Label>Email</Form.Label>
                     <Form.Control
-                        type="text"
-                        value={inputUsername}
-                        placeholder="Username"
-                        onChange={(e) => setInputUsername(e.target.value)}
+                        type="email"
+                        value={inputEmail}
+                        placeholder="Email"
+                        onChange={(e) => setInputEmail(e.target.value)}
                         required
                     />
                 </Form.Group>
@@ -199,33 +172,24 @@ const Login = () => {
                     </Button>
                 </div> */}
                 <div className="d-grid gap-2 mt-2">
-                    {profile ? redirectToHome() : (
-                        <Button variant="outline-primary" size="lg" onClick={login}>Sign in with Google 🚀 </Button>
-                    )}
+                    <Button variant="outline-primary" size="lg" onClick={login}>Sign in with Google 🚀 </Button>
                 </div>
-                {user ? (
-                    <div>
-                        <img src={user.picture} alt={user.name} />
-                        <p>Welcome, {user.name}</p>
-                        <p>Email: {user.email}</p>
-                    </div>
-                ) : (
-                    <FacebookLogin
-                        appId={process.env.REACT_APP_FACEBOOK_APP_ID}
-                        autoLoad={false}
-                        fields="name, email, picture"
-                        scope="public_profile,email"
-                        callback={responseFacebook}
-                        render={(renderProps) => (
-                            <Button
-                                variant="outline-primary"
-                                size="lg"
-                                onClick={renderProps.onClick}
-                            >Sign in with Facebook
-                            </Button>
-                        )}
-                    />
-                )}
+
+                <FacebookLogin
+                    appId={process.env.REACT_APP_FACEBOOK_APP_ID}
+                    autoLoad={false}
+                    fields="name, email, picture"
+                    scope="public_profile,email"
+                    callback={responseFacebook}
+                    render={(renderProps) => (
+                        <Button
+                            variant="outline-primary"
+                            size="lg"
+                            onClick={renderProps.onClick}
+                        >Sign in with Facebook
+                        </Button>
+                    )}
+                />
             </Form>
         </div>
     );

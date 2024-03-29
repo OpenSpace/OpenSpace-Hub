@@ -3,6 +3,8 @@ const Model = require('./../models/model');
 const utility = require('./../utils/utility')
 const multer = require('multer');
 const path = require('path');
+const itemUtility = require('../utils/itemUtility');
+const authUtility = require('../utils/authUtility');
 
 
 const router = express.Router()
@@ -164,7 +166,8 @@ router.post('/addItem', async (req, res) => {
  */
 router.post('/upload', upload.fields([{name: 'image', maxCount:1}, {name: 'file', maxCount:1}]), async (req, res) => {
     try {
-        console.log(req.files);
+        const jwtToken = req.headers['authorization'].split(' ')[1];
+        const user = await authUtility.getUserInfo(jwtToken);
 
         if (!req.files || !req.files['image'] || !req.files['file']) {
             return res.status(400).json({ message: 'Both image and asset files are required' });
@@ -172,21 +175,21 @@ router.post('/upload', upload.fields([{name: 'image', maxCount:1}, {name: 'file'
         const imageFile = req.files['image'][0];
         const assetFile = req.files['file'][0];
 
-        utility.validateInputFields(req.body);
+        itemUtility.validateInputFields(req.body);
 
         // asset file upload
-        utility.validateItemFileType(assetFile);
-        utility.validateItemFileSize(assetFile);
-        await utility.uploadItemToServer(assetFile);
+        itemUtility.validateItemFileType(assetFile);
+        itemUtility.validateItemFileSize(assetFile);
+        await itemUtility.uploadItemToServer(assetFile);
 
         // image file upload
-        utility.validateImageFileType(imageFile);
-        utility.validateImageFileSize(imageFile);
-        await utility.uploadItemToServer(imageFile);
+        itemUtility.validateImageFileType(imageFile);
+        itemUtility.validateImageFileSize(imageFile);
+        await itemUtility.uploadItemToServer(imageFile);
 
         const author = {
-            name: req.body.author,
-            link: req.body.link
+            name: user.name,
+            link: user.link
         }
 
         const currentVersion = {

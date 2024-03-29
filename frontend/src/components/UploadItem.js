@@ -64,7 +64,6 @@ const UploadItem = () => {
             return;
         }
         if (file && isValidateFileType(file)) {
-            const author = JSON.parse(localStorage.getItem('user'))
             const formData = new FormData();
             formData.append('file', file);
             formData.append('image', image);
@@ -72,8 +71,6 @@ const UploadItem = () => {
             formData.append('title', title);
             formData.append('itemType', itemType.toLowerCase());
             formData.append('license', license);
-            formData.append('author', author.firstname + ' ' + author.lastname);
-            formData.append('link', author.link);
             formData.append('description', description);
             await APIService.UploadItem(formData)
                 .then(data => {

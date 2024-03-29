@@ -29,9 +29,11 @@ To-Do:
   - [ ] Github Auth Integration
   - [x] Upload page Frontend
   - [x] Upload page Backend
+  - [ ] Social Media Logout
 - [ ] Add Item Types - Profile
 - [ ] Add Item Types - Recording
 - [ ] Add Item Types - Web Panel (WWW)
 - [ ] Add Item Types - Config
 - [ ] User page
 - [ ] Profile Dependencies
+- [ ] Jenkinsfile
