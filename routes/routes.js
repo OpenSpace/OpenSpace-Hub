@@ -185,7 +185,8 @@ router.post('/upload', upload.fields([{name: 'image', maxCount:1}, {name: 'file'
         // image file upload
         itemUtility.validateImageFileType(imageFile);
         itemUtility.validateImageFileSize(imageFile);
-        await itemUtility.uploadItemToServer(imageFile);
+        let resizedFile = await itemUtility.resizeImage(imageFile);
+        await itemUtility.uploadItemToServer(resizedFile);
 
         const author = {
             name: user.name,
@@ -203,7 +204,7 @@ router.post('/upload', upload.fields([{name: 'image', maxCount:1}, {name: 'file'
             description: req.body.description,
             author: author,
             currentVersion: currentVersion,
-            image: path.relative('public', imageFile.path),
+            image: path.relative('public', resizedFile.path),
             created: utility.getFormattedDate(new Date()),
             modified: utility.getFormattedDate(new Date()),
         })

@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 const axios = require('axios');
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
+const sharp = require('sharp')
 
 exports.validateInputFields = (body) =>  {
     console.log(body);
@@ -58,6 +59,22 @@ exports.validateImageFileSize = (file) => {
     if (file.size > 5 * Math.pow(10, 6)) {
         throw new Error('File size exceeds 5 MB limit');
     }
+}
+
+exports.resizeImage = async (file) => {
+    let resizedFileName = 'r_' + file.filename;
+    let resizedFilePath = file.destination + resizedFileName;
+    let resizeResult = await sharp(file.path)
+    .resize(1280, 720)
+    .toFile(resizedFilePath)
+    .then(() => {
+        let newFile = {...file}
+        newFile.path = resizedFilePath;
+        newFile.filename = resizedFileName;
+        return newFile;
+    });
+    unlinkUploadedfile(file);
+    return resizeResult;
 }
 
 exports.uploadItemToServer = async (file) => {

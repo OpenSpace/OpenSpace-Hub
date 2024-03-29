@@ -17,7 +17,7 @@ const archiveSchema = new mongoose.Schema({
     url: String,
 });
 
-const dataSchema = new mongoose.Schema({
+const itemSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -58,7 +58,10 @@ const dataSchema = new mongoose.Schema({
     favorites: {
         type: [ObjectId],
         // required: true
+    },
+    required: {
+        type: [ObjectId]
     }
 });
 
-module.exports = mongoose.model('hubitems', dataSchema)
+module.exports = mongoose.model('hubitems', itemSchema)
