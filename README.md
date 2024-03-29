@@ -13,7 +13,7 @@ To-Do:
 - [ ] Paging of GetItems
 - [ ] filtering of GetItems
 - [ ] Updating of HubItem
-- [ ] File Uploads
+- [x] File Uploads
 - [x] Testing APIs with existing application
 - [ ] Front end webpage
   - [x] Home Page (having all itemtypes)
@@ -30,6 +30,7 @@ To-Do:
   - [x] Upload page Frontend
   - [x] Upload page Backend
   - [ ] Social Media Logout
+  - [ ] Forgot Password
 - [ ] Add Item Types - Profile
 - [ ] Add Item Types - Recording
 - [ ] Add Item Types - Web Panel (WWW)

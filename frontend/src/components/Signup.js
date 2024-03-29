@@ -216,13 +216,6 @@ const Signup = () => {
                 <div className="d-grid gap-2 mt-2">
                     <Button variant="outline-primary" size="lg" onClick={login}>Sign in with Google 🚀 </Button>
                 </div>
-                {/* {user ? (
-                    <div>
-                        <img src={user.picture_url} alt={user.name} />
-                        <p>Welcome, {user.name}</p>
-                        <p>Email: {user.email}</p>
-                    </div>
-                ) : ( */}
                 <FacebookLogin
                     appId={process.env.REACT_APP_FACEBOOK_APP_ID}
                     autoLoad={false}

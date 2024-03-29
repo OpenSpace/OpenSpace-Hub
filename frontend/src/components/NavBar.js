@@ -12,8 +12,6 @@ import APIService from './APIService';
 
 
 const NavBar = () => {
-    // const [user, setUser] = useState(null);
-    // const [profile, setProfile] = useState(null);
     const [showLogin, setShowLogin] = useState(true);
 
     const redirectToLogin = () => {
@@ -27,57 +25,18 @@ const NavBar = () => {
                 .then((res) => {
                     if (res.error) {
                         localStorage.clear();
-                        // setUser(null);
                         redirectToLogin();
                     }
-                    // setUser(res);
                     setShowLogin(false);
 
                 })
                 .catch((err) => {
                     console.log(err);
                     localStorage.clear();
-                    // setUser(null);
                     redirectToLogin();
                 });
         }
     }, []);
-
-
-    // useEffect(
-    //     () => {
-    //         if (!user) {
-    //             setUser(JSON.parse(localStorage.getItem('user')));
-    //         }
-    //         if (user && user.access_token) {
-    //             axios
-    //                 .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
-    //                     headers: {
-    //                         Authorization: `Bearer ${user.access_token}`,
-    //                         Accept: 'application/json'
-    //                     }
-    //                 })
-    //                 .then((res) => {
-    //                     // setProfile(res.data);
-    //                     localStorage.setItem('profile', JSON.stringify(res.data));
-    //                     setShowLogin(false);
-    //                 })
-    //                 .catch((err) => {
-    //                     console.log(err);
-    //                     localStorage.clear();
-    //                     setUser(null);
-    //                     redirectToLogin();
-    //                 });
-    //         }
-    //         if (user && user.username) {
-    //             setShowLogin(false);
-    //         }
-    //         if (user && user.email) {
-    //             setShowLogin(false);
-    //         }
-    //     },
-    //     [user, showLogin]
-    // );
 
     return (
         <>
