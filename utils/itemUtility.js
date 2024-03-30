@@ -213,8 +213,8 @@ exports.uploadAsset = async (req, user) => {
         existingItem.currentVersion = currentVersion;
         existingItem.image = path.relative('public', `${dir}/${resizedFile.originalname}`);
         existingItem.modified = utility.getFormattedDate(new Date());
-        const dataToSave = await existingItem.save();
-        return dataToSave;
+        const item = await existingItem.save();
+        return item;
     } else {
         const newItem = new Model({
             name: req.body.title,
@@ -226,7 +226,7 @@ exports.uploadAsset = async (req, user) => {
             created: utility.getFormattedDate(new Date()),
             modified: utility.getFormattedDate(new Date()),
         })
-        const dataToSave = await newItem.save();
-        return dataToSave;
+        const item = await newItem.save();
+        return item;
     }
 }
