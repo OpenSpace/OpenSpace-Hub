@@ -144,7 +144,7 @@ router.post('/addItem', async (req, res) => {
 
 /**
  * @swagger
- * /api/upload:
+ * /api/uploadItem:
  *  post:
  *      summary: Upload an item.
  *      consumes:
@@ -168,49 +168,33 @@ router.post('/upload', upload.fields([{name: 'image', maxCount:1}, {name: 'file'
     try {
         const jwtToken = req.headers['authorization'].split(' ')[1];
         const user = await authUtility.getUserInfo(jwtToken);
-
         if (!req.files || !req.files['image'] || !req.files['file']) {
             return res.status(400).json({ message: 'Both image and asset files are required' });
         }
-        const imageFile = req.files['image'][0];
-        const assetFile = req.files['file'][0];
 
         itemUtility.validateInputFields(req.body);
-
-        // asset file upload
-        itemUtility.validateItemFileType(assetFile);
-        itemUtility.validateItemFileSize(assetFile);
-        await itemUtility.uploadItemToServer(assetFile);
-
-        // image file upload
-        itemUtility.validateImageFileType(imageFile);
-        itemUtility.validateImageFileSize(imageFile);
-        let resizedFile = await itemUtility.resizeImage(imageFile);
-        await itemUtility.uploadItemToServer(resizedFile);
-
-        const author = {
-            name: user.name,
-            link: user.link
+        let data = ""
+        switch (req.body.itemType) {
+            case 'asset':
+                data = await itemUtility.uploadAsset(req, user);
+                break;
+            case 'profile':
+                data = await itemUtility.uploadProfile(req, user);
+                break;
+            case 'recording':
+                data = await itemUtility.uploadRecording(req, user);
+                break;
+            case 'webPanel':
+                data = await itemUtility.uploadWebPanel(req, user);
+                break;
+            case 'config':
+                data = await itemUtility.uploadConfig(req, user);
+                break;
+            default:
+                throw new Error('Invalid item type');
         }
-
-        const currentVersion = {
-            version: "1.0",
-            url: path.relative('public', assetFile.path)
-        }
-
-        const data = new Model({
-            name: req.body.title,
-            type: req.body.itemType,
-            description: req.body.description,
-            author: author,
-            currentVersion: currentVersion,
-            image: path.relative('public', resizedFile.path),
-            created: utility.getFormattedDate(new Date()),
-            modified: utility.getFormattedDate(new Date()),
-        })
-        const dataToSave = await data.save();
         const message = "Uploaded successfully on server";
-        res.status(200).json({ message: message, data: dataToSave })
+        res.status(200).json({ message: message, data: data });
     } catch (error) {
         console.log(`Error: ${error.message}`);
         res.status(400).json({ message: error.message });
