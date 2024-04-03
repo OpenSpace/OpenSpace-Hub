@@ -1,0 +1,14 @@
+# generate docker ignore file
+# Ignore everything
+**
+
+# But not these files...
+!Dockerfile
+!.dockerignore
+
+# Ignore specific directories
+node_modules/
+dist/
+
+# Ignore specific files
+*.log

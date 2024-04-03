@@ -1,0 +1,27 @@
+version: '3.4'
+
+services:
+  openspacehub:
+    image: ag9489/openspacehub:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9000:9000"
+    environment:
+      - MONGODB_URL=mongodb://mongo:27017/openspacehub  # Connection URI to MongoDB, mongo is the name of service
+      - SECRET_KEY=secret-key # Secret key for JWT token
+      - PORT=9000 # Port on which the server will run
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo_data:/data/db
+
+volumes:
+  mongo_data:
+    driver: local

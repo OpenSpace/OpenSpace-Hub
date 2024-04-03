@@ -59,7 +59,7 @@ const UploadItem = () => {
 
     const handleUpload = async (event) => {
         event.preventDefault();
-        if (file === '' || title.trim() === '' || itemType.trim() === '' || license.trim() === '' || description.trim() === '' || image === ''){
+        if (file === '' || title.trim() === '' || itemType.trim() === '' || license.trim() === '' || description.trim() === '' || image === '') {
             alert('Please fill in all fields.');
             return;
         }
@@ -103,8 +103,8 @@ const UploadItem = () => {
                     <form style={{ display: 'flex', flexDirection: 'column' }}>
                         <h5>Title</h5>
                         <input type="text" value={title} onChange={handleTitleChange} />
-                        <h5  style={{marginTop:'20px'}} >Description</h5>
-                        <input type="text"  value={description} onChange={handleDescription} />
+                        <h5 style={{ marginTop: '20px' }} >Description</h5>
+                        <input type="text" value={description} onChange={handleDescription} />
                         <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                             <Dropdown onSelect={handleItemTypeSelect} >
                                 <h5>Item Type</h5>
@@ -114,21 +114,68 @@ const UploadItem = () => {
                                 <Dropdown.Menu>
                                     <Dropdown.Item eventKey="asset">Asset</Dropdown.Item>
                                     <Dropdown.Item eventKey="profile">Profile</Dropdown.Item>
+                                    <Dropdown.Item eventKey="recording">Recording</Dropdown.Item>
+                                    <Dropdown.Item eventKey="webpanel">Web Panel</Dropdown.Item>
+                                    <Dropdown.Item eventKey="video">Video</Dropdown.Item>
+                                    <Dropdown.Item eventKey="config">Config</Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
                         </div>
-                        <h5> License </h5>
-                        <input type="text" value={license} onChange={handleLicenseChange} />
-
-                        <div style={{ marginBottom: '20px', marginTop: '20px' }}>
-                            <h5>Upload item-image <p style={{ fontSize: "15px" }}></p></h5>
-                            <input id='imageInput' type="file" accept=".jpg, .jpeg, .png" onChange={handleImageChange} />
+                        <div style={{ marginBottom: '20px' }}>
+                            <h5> License </h5>
+                            <input type="text" value={license} onChange={handleLicenseChange} />
                         </div>
 
-                        <div style={{ marginBottom: '20px', marginTop: '20px' }}>
+                        {(itemType === 'config' || itemType === 'video') ? null :
+                            (
+                                <div style={{ marginBottom: '20px', marginTop: '20px' }}>
+                                    <h5>Upload item-image <p style={{ fontSize: "15px" }}></p></h5>
+                                    <input id='imageInput' type="file" accept=".jpg, .jpeg, .png" onChange={handleImageChange} />
+                                </div>
+                            )
+                        }
+
+                        {itemType === 'asset' ? (
+                            <div style={{ marginBottom: '20px', marginTop: '20px' }}>
+                                <h5>Upload a file <p style={{ fontSize: "15px" }}>(accepted formats: .zip, .asset)</p></h5>
+                                <input id='fileInput' type="file" accept=".zip, .asset" onChange={handleFileChange} />
+                            </div>
+                        ) : itemType === 'profile' ? (
+                            <div style={{ marginBottom: '20px', marginTop: '20px' }}>
+                                <h5>Upload a file <p style={{ fontSize: "15px" }}>(accepted formats: .profile)</p></h5>
+                                <input id='fileInput' type="file" accept=".profile" onChange={handleFileChange} />
+                            </div>
+                        ) : itemType === 'recording' ? (
+                            <div style={{ marginBottom: '20px', marginTop: '20px' }}>
+                                <h5>Upload a file <p style={{ fontSize: "15px" }}>(accepted formats: .osrec, .osrectxt)</p></h5>
+                                <input id='fileInput' type="file" accept=".osrec, .osrectxt" onChange={handleFileChange} />
+                            </div>
+                        ) : itemType === 'webpanel' ? (
+                            <div style={{ marginBottom: '20px', marginTop: '20px' }}>
+                                <h5>Upload a file <p style={{ fontSize: "15px" }}>(accepted formats: .zip)</p></h5>
+                                <input id='fileInput' type="file" accept=".zip" onChange={handleFileChange} />
+                            </div>
+                        ) : itemType === 'video' ? (
+                            <>
+                                <h5> Video Link </h5>
+                                <input type="text" value={license} onChange={handleLicenseChange} />
+                            </>
+                        ) : itemType === 'config' ? (
+                            <div style={{ marginBottom: '20px', marginTop: '20px' }}>
+                                <h5>Upload a file <p style={{ fontSize: "15px" }}>(accepted formats: .json)</p></h5>
+                                <input id='fileInput' type="file" accept=".json" onChange={handleFileChange} />
+                            </div>
+                        ) : (
+                            <div style={{ marginBottom: '20px', marginTop: '20px' }}>
+                                <h5>Upload a file <p style={{ fontSize: "15px" }}>(accepted formats: .zip, .asset)</p></h5>
+                                <input id='fileInput' type="file" accept=".zip, .asset" onChange={handleFileChange} />
+                            </div>
+                        )}
+
+                        {/* <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                             <h5>Upload a file <p style={{ fontSize: "15px" }}>(accepted formats: .zip, .asset)</p></h5>
                             <input id='fileInput' type="file" accept=".zip, .asset" onChange={handleFileChange} />
-                        </div>
+                        </div> */}
                     </form>
                 </Modal.Body>
                 <Modal.Footer>
