@@ -38,3 +38,15 @@ To-Do:
 - [ ] User page
 - [ ] Profile Dependencies
 - [ ] Jenkinsfile
+- [x] Dockerfile and docker-compose file
+
+Steps to run the project:
+1. create a .env file inside frontend folder and add below content:
+```
+REACT_APP_API_HOST='http://127.0.0.1:9000'
+REACT_APP_GOOGLE_CLIENT_ID="<google-client-id>"
+REACT_APP_FACEBOOK_APP_ID="<facebook-client-id>"
+```
+2. CD to the project OpenSpace-Hub folder 
+3. docker-compose build
+4. docker-compose up
