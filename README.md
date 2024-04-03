@@ -48,5 +48,9 @@ REACT_APP_GOOGLE_CLIENT_ID="<google-client-id>"
 REACT_APP_FACEBOOK_APP_ID="<facebook-client-id>"
 ```
 2. CD to the project OpenSpace-Hub folder 
-3. `docker-compose build`
-4. `docker-compose up`
+3. ```
+  docker-compose build
+  ```
+4. ```
+  docker-compose up
+  ```
