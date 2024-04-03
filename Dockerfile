@@ -1,5 +1,3 @@
-# generate docker image for the project where front end is built using react and backend is built using express js
-
 FROM node:alpine
 WORKDIR /usr/src/app
 COPY package*.json ./
