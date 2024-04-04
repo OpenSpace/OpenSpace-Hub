@@ -18,21 +18,20 @@ const NavBar = () => {
         window.location.href = "/login";
     };
 
-    useEffect(() => {
+    useEffect( async() => {
         const token = localStorage.getItem('token');
         if (token) {
-            APIService.GetUser()
+            await APIService.GetUser()
                 .then((res) => {
+                    console.log(res);
                     if (res.error) {
-                        localStorage.clear();
-                        redirectToLogin();
+                        throw new Error(res.error);
                     }
                     setShowLogin(false);
-
                 })
                 .catch((err) => {
-                    console.log(err);
                     localStorage.clear();
+                    setShowLogin(true);
                     redirectToLogin();
                 });
         }
