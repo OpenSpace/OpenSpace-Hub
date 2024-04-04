@@ -168,8 +168,15 @@ router.post('/upload', upload.fields([{name: 'image', maxCount:1}, {name: 'file'
     try {
         const jwtToken = req.headers['authorization'].split(' ')[1];
         const user = await authUtility.getUserInfo(jwtToken);
+        if (req.body && req.body.video && req.body.video !== '') {
+            itemUtility.validateInputFields(req.body);
+            const data = await itemUtility.uploadVideo(req, user);
+            const message = "Uploaded successfully on server";
+            return res.status(200).json({ message: message, data: data });
+        }
+        
         if (!req.files || !req.files['image'] || !req.files['file']) {
-            return res.status(400).json({ message: 'Both image and asset files are required' });
+            return res.status(400).json({ message: 'Both image and hub-item file are required' });
         }
 
         itemUtility.validateInputFields(req.body);
@@ -186,6 +193,9 @@ router.post('/upload', upload.fields([{name: 'image', maxCount:1}, {name: 'file'
                 break;
             case 'webPanel':
                 data = await itemUtility.uploadWebPanel(req, user);
+                break;
+            case 'video':
+                data = await itemUtility.uploadVideo(req, user);
                 break;
             case 'config':
                 data = await itemUtility.uploadConfig(req, user);

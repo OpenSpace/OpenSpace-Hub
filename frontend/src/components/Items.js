@@ -20,6 +20,10 @@ function Body() {
 
     const sendImportToOpenSpaceCommand = async(url, type) => {
         var openspace = window.openspace;
+        if(!openspace) {
+            alert("Connect to OpenSpace first!");
+            return;
+        }
         var fileName = url.substr(url.lastIndexOf('/') + 1);
         url = window.location+url;
         switch (type) {
@@ -32,6 +36,7 @@ function Body() {
                 var noextension = fileName.substr(0, fileName.indexOf('.'));
                 await openspace.asset.add(scenePath["1"] + noextension + "/" + noextension);
                 await openspace.setPropertyValueSingle("Modules.CefWebGui.Reload", null)
+                alert("Asset imported successfully");
                 break;
             case 'profile':
                 var absPath = await openspace.absPath('${USER_PROFILES}/' + fileName);
@@ -41,7 +46,7 @@ function Body() {
             case 'recording':
                 var absPath = await openspace.absPath('${RECORDINGS}/' + fileName);
                 await openspace.downloadFile(url, absPath["1"], true);
-                alert("Profile downloaded successfully");
+                alert("Recording imported successfully");
                 break;
             default:
                 console.log('nothing to do')
@@ -60,7 +65,9 @@ function Body() {
                 {items.map(item => (
                     <Col key={item.id}>
                         <Card>
-                            <Card.Img variant="top" src={item.image} />
+                            {item.image && item.image != 'no-image' &&
+                                <Card.Img variant="top" src={item.image} />
+                            }
                             <Card.Body>
                                 <Card.Title>{item.name}</Card.Title>
                                 <Card.Text>
@@ -76,7 +83,7 @@ function Body() {
                                         <Card.Link href={item.currentVersion.url}>{item.currentVersion.version}</Card.Link>
                                     </Card.Text>
                                 }
-                                {item.archives &&
+                                {item.archives && item.archives.length > 0 &&
                                     <Card.Text>
                                         <b>Other Versions: </b>
                                         {item.archives.map(version => (
@@ -91,7 +98,7 @@ function Body() {
                                 {item.type === "asset" && <Button onClick={() => sendImportToOpenSpaceCommand(item.currentVersion.url, item.type)} variant="primary">Import Asset</Button>}
                                 {item.type === "profile" && <Button onClick={() => sendImportToOpenSpaceCommand(item.currentVersion.url, item.type)} variant="primary">Import Profile</Button>}
                                 {item.type === "recording" && <Button onClick={() => sendImportToOpenSpaceCommand(item.currentVersion.url, item.type)} variant="primary">Import Recording</Button>}
-                                {item.type === "videos" && <Button variant="primary" href={item.link}>Link</Button>}
+                                {item.type === "video" && <Button variant="primary" href={item.currentVersion.url}>Link</Button>}
                             </Card.Body>
                         </Card>
                     </Col>

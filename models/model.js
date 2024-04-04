@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 const authorSchema = new mongoose.Schema({
     name: String,
+    email: String,
     link: String,
     institution: String,
 });
@@ -33,11 +34,11 @@ const itemSchema = new mongoose.Schema({
     },
     author: {
         type: authorSchema,
-        // required: true
+        required: true
     },
     currentVersion: {
         type: versionSchema,
-        // required: true
+        required: true
     },
     image: {
         type: String,
@@ -45,7 +46,7 @@ const itemSchema = new mongoose.Schema({
     },
     archives: {
         type: [archiveSchema],
-        // required: true
+        required: true
     },
     created: {
         type: String,

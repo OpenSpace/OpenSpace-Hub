@@ -25,6 +25,26 @@ exports.isAssetFileType = (file) => {
     }
 }
 
+exports.isProfileFileType = (file) => {
+    const fileName = file.originalname;
+    validateFileName(file);
+    const fileExtension = fileName.split('.').pop();
+    if (fileExtension !== 'profile') {
+        unlinkUploadedfile(file);
+        throw new Error('Invalid file type. Please upload a .profile file.');
+    }
+}
+
+exports.isrecordingFileType = (file) => {
+    const fileName = file.originalname;
+    validateFileName(file);
+    const fileExtension = fileName.split('.').pop();
+    if (fileExtension !== 'osrec' && fileExtension !== 'osrectxt') {
+        unlinkUploadedfile(file);
+        throw new Error('Invalid file type. Please upload a .osrec or .osrectxt file.');
+    }
+}
+
 validateFileName = (file) => {
     if (file.originalname.split('.').length > 2) {
         unlinkUploadedfile(file);
@@ -121,6 +141,58 @@ exports.uploadAssetFileToServer = async (file, dir) => {
     }
 }
 
+exports.uploadProfileFileToServer = async (file, dir) => {
+    try {
+        if (file.originalname.split('.').pop() === 'profile') {
+            fs.renameSync(file.path, `${dir}/${file.originalname}`);
+            return Promise.resolve();
+        } else if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
+            // change file name
+            fs.renameSync(file.path, `${dir}/${file.originalname}`);
+            return Promise.resolve();
+        } else {
+            console.log('Invalid file type');
+            throw new Error('Invalid file type. Please upload a .profile file.');
+        }
+    } catch (err) {
+        console.log(err);
+        //delete uploaded file and directory
+        fs.rm(dir, { recursive: true }, (err) => {
+            if (err) {
+                console.log(err);
+            }
+        });
+        unlinkUploadedfile(file);
+        return Promise.reject(err);
+    }
+}
+
+exports.uploadRecordingFileToServer = async (file, dir) => {
+    try {
+        if (file.originalname.split('.').pop() === 'osrec' || file.originalname.split('.').pop() === 'osrectxt') {
+            fs.renameSync(file.path, `${dir}/${file.originalname}`);
+            return Promise.resolve();
+        } else if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
+            // change file name
+            fs.renameSync(file.path, `${dir}/${file.originalname}`);
+            return Promise.resolve();
+        } else {
+            console.log('Invalid file type');
+            throw new Error('Invalid file type. Please upload a .profile file.');
+        }
+    } catch (err) {
+        console.log(err);
+        //delete uploaded file and directory
+        fs.rm(dir, { recursive: true }, (err) => {
+            if (err) {
+                console.log(err);
+            }
+        });
+        unlinkUploadedfile(file);
+        return Promise.reject(err);
+    }
+}
+
 function unlinkUploadedfile(file) {
     fs.unlink(file.path, (err) => {
         if (err) {
@@ -194,6 +266,7 @@ exports.uploadAsset = async (req, user) => {
 
     const author = {
         name: user.name,
+        email: user.email,
         link: user.link
     }
 
@@ -209,6 +282,7 @@ exports.uploadAsset = async (req, user) => {
             url: existingItem.currentVersion.url
         }
         existingItem.archives.push(archive);
+        existingItem.author = author;
         existingItem.description = req.body.description;
         existingItem.currentVersion = currentVersion;
         existingItem.image = path.relative('public', `${dir}/${resizedFile.originalname}`);
@@ -223,6 +297,201 @@ exports.uploadAsset = async (req, user) => {
             author: author,
             currentVersion: currentVersion,
             image: path.relative('public', `${dir}/${resizedFile.originalname}`),
+            created: utility.getFormattedDate(new Date()),
+            modified: utility.getFormattedDate(new Date()),
+        })
+        const item = await newItem.save();
+        return item;
+    }
+}
+
+
+exports.uploadProfile = async (req, user) => {
+    const files = req.files;
+    if (!files['image'] || !files['file']) {
+        throw new Error('Both image and asset files are required');
+    }
+
+    const itemTitle = req.body.title.replace(/ /g, '_');
+    const itemType = req.body.itemType;
+    let dir = `public/upload/users/${user.username}/${itemType}/${itemTitle}`;
+    let version = getCurrentVersionNum(dir);
+    dir = `${dir}/V_${version}`;
+    let uploadDirectory = this.createUserDirectory(dir, itemType);
+
+    const imageFile = files['image'][0];
+    const profileFile = files['file'][0];
+    this.validateInputFields(req.body);
+
+    // profile file upload
+    this.isProfileFileType(profileFile);
+    this.isValidFileSize(profileFile);
+    await this.uploadProfileFileToServer(profileFile, uploadDirectory);
+
+    // image file upload
+    this.validateImageFileType(imageFile);
+    this.validateImageFileSize(imageFile);
+    let resizedFile = await this.resizeImage(imageFile);
+    let imageFileName = resizedFile.originalname.split('.');
+    imageFileName[0] = itemTitle;
+    resizedFile.originalname = imageFileName.join('.');
+    await this.uploadProfileFileToServer(resizedFile, uploadDirectory);
+
+    const author = {
+        name: user.name,
+        email: user.email,
+        link: user.link
+    }
+
+    const currentVersion = {
+        version: `V_${version}`,
+        url: path.relative('public', `${dir}/${profileFile.originalname}`)
+    }
+
+    const existingItem = await Model.findOne({ name: req.body.title, type: req.body.itemType });
+    if (existingItem) {
+        const archive = {
+            version: existingItem.currentVersion.version,
+            url: existingItem.currentVersion.url
+        }
+        existingItem.archives.push(archive);
+        existingItem.author = author;
+        existingItem.description = req.body.description;
+        existingItem.currentVersion = currentVersion;
+        existingItem.image = path.relative('public', `${dir}/${resizedFile.originalname}`);
+        existingItem.modified = utility.getFormattedDate(new Date());
+        console.log(author);
+        console.log(existingItem.author);
+        const item = await existingItem.save();
+        return item;
+    } else {
+        const newItem = new Model({
+            name: req.body.title,
+            type: req.body.itemType,
+            description: req.body.description,
+            author: author,
+            currentVersion: currentVersion,
+            image: path.relative('public', `${dir}/${resizedFile.originalname}`),
+            created: utility.getFormattedDate(new Date()),
+            modified: utility.getFormattedDate(new Date()),
+        })
+        const item = await newItem.save();
+        return item;
+    }
+}
+
+exports.uploadRecording = async (req, user) => {
+    const files = req.files;
+    if (!files['image'] || !files['file']) {
+        throw new Error('Both image and asset files are required');
+    }
+
+    const itemTitle = req.body.title.replace(/ /g, '_');
+    const itemType = req.body.itemType;
+    let dir = `public/upload/users/${user.username}/${itemType}/${itemTitle}`;
+    let version = getCurrentVersionNum(dir);
+    dir = `${dir}/V_${version}`;
+    let uploadDirectory = this.createUserDirectory(dir, itemType);
+
+    const imageFile = files['image'][0];
+    const recordingFile = files['file'][0];
+    this.validateInputFields(req.body);
+
+    // recording file upload
+    this.isrecordingFileType(recordingFile);
+    this.isValidFileSize(recordingFile);
+    await this.uploadRecordingFileToServer(recordingFile, uploadDirectory);
+
+    // image file upload
+    this.validateImageFileType(imageFile);
+    this.validateImageFileSize(imageFile);
+    let resizedFile = await this.resizeImage(imageFile);
+    let imageFileName = resizedFile.originalname.split('.');
+    imageFileName[0] = itemTitle;
+    resizedFile.originalname = imageFileName.join('.');
+    await this.uploadRecordingFileToServer(resizedFile, uploadDirectory);
+
+    const author = {
+        name: user.name,
+        email: user.email,
+        link: user.link
+    }
+
+    const currentVersion = {
+        version: `V_${version}`,
+        url: path.relative('public', `${dir}/${recordingFile.originalname}`)
+    }
+
+    const existingItem = await Model.findOne({ name: req.body.title, type: req.body.itemType });
+    if (existingItem) {
+        const archive = {
+            version: existingItem.currentVersion.version,
+            url: existingItem.currentVersion.url
+        }
+        existingItem.archives.push(archive);
+        existingItem.author = author;
+        existingItem.description = req.body.description;
+        existingItem.currentVersion = currentVersion;
+        existingItem.image = path.relative('public', `${dir}/${resizedFile.originalname}`);
+        existingItem.modified = utility.getFormattedDate(new Date());
+        const item = await existingItem.save();
+        return item;
+    } else {
+        const newItem = new Model({
+            name: req.body.title,
+            type: req.body.itemType,
+            description: req.body.description,
+            author: author,
+            currentVersion: currentVersion,
+            image: path.relative('public', `${dir}/${resizedFile.originalname}`),
+            created: utility.getFormattedDate(new Date()),
+            modified: utility.getFormattedDate(new Date()),
+        })
+        const item = await newItem.save();
+        return item;
+    }
+}
+
+exports.uploadVideo = async (req, user) => {
+    if (!req.body.video) {
+        throw new Error('Video link is required');
+    }
+
+    this.validateInputFields(req.body);
+
+    const author = {
+        name: user.name,
+        email: user.email,
+        link: user.link
+    }
+
+    const currentVersion = {
+        version: `V_0`,
+        url: req.body.video
+    }
+
+    const existingItem = await Model.findOne({ name: req.body.title, type: req.body.itemType });
+    if (existingItem) {
+        const archive = {
+            version: existingItem.currentVersion.version,
+            url: existingItem.currentVersion.url
+        }
+        existingItem.archives.push(archive);
+        existingItem.author = author;
+        existingItem.description = req.body.description;
+        currentVersion.version = `V_${parseInt(existingItem.currentVersion.version.split('_')[1]) + 1}`;
+        existingItem.currentVersion = currentVersion;
+        existingItem.modified = utility.getFormattedDate(new Date());
+        const item = await existingItem.save();
+        return item;
+    } else {
+        const newItem = new Model({
+            name: req.body.title,
+            type: req.body.itemType,
+            description: req.body.description,
+            author: author,
+            image: 'no-image',
+            currentVersion: currentVersion,
             created: utility.getFormattedDate(new Date()),
             modified: utility.getFormattedDate(new Date()),
         })

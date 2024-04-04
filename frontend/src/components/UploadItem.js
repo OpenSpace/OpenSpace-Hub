@@ -41,9 +41,13 @@ const UploadItem = () => {
     }
 
     const [license, setLicense] = useState('');
-
     const handleLicenseChange = (e) => {
         setLicense(e.target.value);
+    }
+
+    const [video, setVideo] = useState('');
+    const handleVideoChange = (e) => {
+        setVideo(e.target.value);
     }
 
     //To-Do: Remove this method. Already handled in HTML input tag.
@@ -59,15 +63,10 @@ const UploadItem = () => {
 
     const handleUpload = async (event) => {
         event.preventDefault();
-        if (file === '' || title.trim() === '' || itemType.trim() === '' || license.trim() === '' || description.trim() === '' || image === '') {
-            alert('Please fill in all fields.');
-            return;
-        }
-        if (file && isValidateFileType(file)) {
+
+        if (video != ''){
             const formData = new FormData();
-            formData.append('file', file);
-            formData.append('image', image);
-            formData.append('fileName', file.name);
+            formData.append('video', video);
             formData.append('title', title);
             formData.append('itemType', itemType.toLowerCase());
             formData.append('license', license);
@@ -76,18 +75,49 @@ const UploadItem = () => {
                 .then(data => {
                     alert(data.message);
                     handleClose();
+                    redirectToHome();
                 })
                 .catch(err => {
-                    alert("Error uploading file");
+                    alert("Error uploading item");
                     console.log(err);
                 });
             return;
-        } else {
-            alert('Please select a valid file to upload.');
-            return;
+        }
+        else{
+            if (!file || title.trim() === '' || itemType.trim() === '' || license.trim() === '' || description.trim() === '' || !image) {
+                alert('Please fill in all fields.');
+                return;
+            }
+            if (file && isValidateFileType(file)) {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('image', image);
+                formData.append('fileName', file.name);
+                formData.append('title', title);
+                formData.append('itemType', itemType.toLowerCase());
+                formData.append('license', license);
+                formData.append('description', description);
+                await APIService.UploadItem(formData)
+                    .then(data => {
+                        alert(data.message);
+                        handleClose();
+                        redirectToHome();
+                    })
+                    .catch(err => {
+                        alert("Error uploading item");
+                        console.log(err);
+                    });
+                return;
+            } else {
+                alert('Please select a valid file to upload.');
+                return;
+            }
         }
     }
 
+    const redirectToHome = () => {
+        window.location.href = "/";
+    };
 
     return (
         <>
@@ -158,7 +188,7 @@ const UploadItem = () => {
                         ) : itemType === 'video' ? (
                             <>
                                 <h5> Video Link </h5>
-                                <input type="text" value={license} onChange={handleLicenseChange} />
+                                <input type="text" value={video} onChange={handleVideoChange} />
                             </>
                         ) : itemType === 'config' ? (
                             <div style={{ marginBottom: '20px', marginTop: '20px' }}>

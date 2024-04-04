@@ -31,9 +31,10 @@ To-Do:
   - [x] Upload page Backend
   - [ ] Social Media Logout
   - [ ] Forgot Password
-- [ ] Add Item Types - Profile
-- [ ] Add Item Types - Recording
+- [x] Add Item Types - Profile
+- [x] Add Item Types - Recording
 - [ ] Add Item Types - Web Panel (WWW)
+- [x] Add Item Types - Video
 - [ ] Add Item Types - Config
 - [ ] User page
 - [ ] Profile Dependencies
