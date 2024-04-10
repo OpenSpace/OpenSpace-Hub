@@ -175,7 +175,7 @@ router.post('/upload', upload.fields([{name: 'image', maxCount:1}, {name: 'file'
             return res.status(200).json({ message: message, data: data });
         }
         
-        if (!req.files || !req.files['image'] || !req.files['file']) {
+        if (!req.files || (!req.files['image'] && !req.body.itemType === 'config') || !req.files['file']) {
             return res.status(400).json({ message: 'Both image and hub-item file are required' });
         }
 
@@ -191,7 +191,7 @@ router.post('/upload', upload.fields([{name: 'image', maxCount:1}, {name: 'file'
             case 'recording':
                 data = await itemUtility.uploadRecording(req, user);
                 break;
-            case 'webPanel':
+            case 'webpanel':
                 data = await itemUtility.uploadWebPanel(req, user);
                 break;
             case 'video':

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const authorSchema = new mongoose.Schema({
     name: String,
-    email: String,
+    username: String,
     link: String,
     institution: String,
 });
@@ -26,7 +26,7 @@ const itemSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['asset', 'profile', 'recording', 'www', 'video'] // add other types if required
+        enum: ['asset', 'profile', 'recording', 'webpanel', 'video', 'config'] // add other types if required
     },
     description: {
         type: String,

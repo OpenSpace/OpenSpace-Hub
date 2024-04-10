@@ -1,7 +1,7 @@
 export default class APIService {
 
     static async GetAllItems() {
-        const resp = await fetch(process.env.REACT_APP_API_HOST + `/api/getAllItems`, {
+        const resp = await fetch(`/api/getAllItems`, {
             'method': 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -11,7 +11,7 @@ export default class APIService {
     }
 
     static async Login(email, password) {
-        const resp = await fetch(process.env.REACT_APP_API_HOST + `/auth/login`, {
+        const resp = await fetch(`/auth/login`, {
             'method': 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -23,7 +23,7 @@ export default class APIService {
     }
 
     static async VerifyToken(token) {
-        const resp = await fetch(process.env.REACT_APP_API_HOST + `/auth/verify-token`, {
+        const resp = await fetch(`/auth/verify-token`, {
             'method': 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ export default class APIService {
     }
 
     static async Register(name, email, password, cnfPassword) {
-        const resp = await fetch(process.env.REACT_APP_API_HOST + `/auth/register`, {
+        const resp = await fetch(`/auth/register`, {
             'method': 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -46,7 +46,7 @@ export default class APIService {
     }
 
     static async SocialMediaLogin(name, accessToken, email, domain, pictureUrl) {
-        const resp = await fetch(process.env.REACT_APP_API_HOST + `/auth/social-media-login`, {
+        const resp = await fetch(`/auth/social-media-login`, {
             'method': 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -59,21 +59,18 @@ export default class APIService {
 
     
     static async UploadItem(formData) {
-        const resp = await fetch(process.env.REACT_APP_API_HOST + `/api/upload`, {
+        const resp = await fetch(`/api/upload`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
             body: formData
         });
-        if (resp.ok) {
-            return await resp.json();
-        }
-        throw new Error('Error uploading file');
+        return await resp.json();
     }
 
     static async GetUser() {
-        const resp = await fetch(process.env.REACT_APP_API_HOST + `/auth/getUser`, {
+        const resp = await fetch(`/auth/getUser`, {
             'method': 'GET',
             headers: {
                 'Content-Type': 'application/json',

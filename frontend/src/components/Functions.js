@@ -18,7 +18,7 @@ const Functions = () => {
                 api.connect();
                 retry++;
             } else {
-                // alert("Connection Error! Please start OpenSpace software and try again.");
+                alert("Connection Error! Please start OpenSpace software and try again.");
                 setIsConnected(false);
             }
         });

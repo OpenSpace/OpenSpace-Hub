@@ -10,7 +10,8 @@ const morgan = require('morgan');
 const path = require('path');
 
 const app = express()
-const PORT = process.env.PORT || 9000
+const PORT = process.env.PORT || 80
+const SECUREPORT = process.env.PORT || 80
 const accessLogStream = fs.createWriteStream(path.join(__dirname,
   'access.log'), { flags: 'a' });
 const cors = require("cors");
@@ -53,3 +54,8 @@ app.get('*', (req,res) =>{
 app.listen(PORT, () => {
   console.log(`OpenSpace-Hub listening on port ${PORT}`)
 })
+
+
+// app.listen(SECUREPORT, () => {
+//   console.log(`OpenSpace-Hub listening on port ${SECUREPORT}`)
+// })

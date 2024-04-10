@@ -78,13 +78,13 @@ const UploadItem = () => {
                     redirectToHome();
                 })
                 .catch(err => {
-                    alert("Error uploading item");
+                    alert("Error uploading item. ", err.message);
                     console.log(err);
                 });
             return;
         }
         else{
-            if (!file || title.trim() === '' || itemType.trim() === '' || license.trim() === '' || description.trim() === '' || !image) {
+            if (!file || title.trim() === '' || itemType.trim() === '' || license.trim() === '' || description.trim() === '' || (!image && (itemType !== 'config' && itemType !== 'video'))) {
                 alert('Please fill in all fields.');
                 return;
             }
@@ -104,7 +104,7 @@ const UploadItem = () => {
                         redirectToHome();
                     })
                     .catch(err => {
-                        alert("Error uploading item");
+                        alert("Error uploading item. " + err.message);
                         console.log(err);
                     });
                 return;
