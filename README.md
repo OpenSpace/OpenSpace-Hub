@@ -40,6 +40,7 @@ To-Do:
 - [ ] Profile Dependencies
 - [ ] Jenkinsfile
 - [x] Dockerfile and docker-compose file
+- [ ] Secure port
 
 Steps to run the project:
 1. create a .env file inside frontend folder and add below content:
