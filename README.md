@@ -1,4 +1,5 @@
-# openspace-hub
+Openspace-Hub
+=============
 server for hub.openspaceproject.com
 
 To-Do:
@@ -43,18 +44,30 @@ To-Do:
 - [ ] Secure port
 - [x] Default Item Image 
 
-Steps to run the project:
-1. create a .env file inside frontend folder and add below content:
+
+Local deployment / development setup
+====================================
+
+To deploy the system locally using docker-compose, follow those step:
+
+Set up environment
+------------------
+Copy env.default to .env inside frontend folder and update the variables there. 
 ```
-REACT_APP_GOOGLE_CLIENT_ID="<google-client-id>"
-REACT_APP_FACEBOOK_APP_ID="<facebook-client-id>"
+cd frontend
+cp .env.default .env
 ```
-2. CD to the project OpenSpace-Hub folder 
-3. build docker-compose.yaml file
+
+Build the containers
+--------------------
+Navigate to the root directory of the repository (OpenSpace-Hub folder) and build docker-compose.yaml file.
 ```
+cd ../
 docker-compose build
 ```
-4. run docker-compose
+
+Start the base containers
+-------------------------
 ```
 docker-compose up
 ```
