@@ -45,7 +45,6 @@ To-Do:
 Steps to run the project:
 1. create a .env file inside frontend folder and add below content:
 ```
-REACT_APP_API_HOST='http://127.0.0.1:9000'
 REACT_APP_GOOGLE_CLIENT_ID="<google-client-id>"
 REACT_APP_FACEBOOK_APP_ID="<facebook-client-id>"
 ```
