@@ -18,7 +18,7 @@ To-Do:
 - [x] Testing APIs with existing application
 - [ ] Front end webpage
   - [x] Home Page (having all itemtypes)
-  - [ ] Divide the items by type
+  - [x] Divide the items by type
   - [x] Login and Signup Page
   - [x] Google Auth Integration
   - [x] Logout functionality
