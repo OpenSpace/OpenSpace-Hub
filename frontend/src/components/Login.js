@@ -3,6 +3,8 @@ import { Form, Button, Alert } from "react-bootstrap";
 import "./../css/login.css";
 import { useGoogleLogin } from '@react-oauth/google';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
+import { useLinkedIn } from 'react-linkedin-login-oauth2';
+import linkedin from 'react-linkedin-login-oauth2/assets/linkedin.png';
 import axios from "axios";
 import APIService from './APIService';
 
@@ -73,6 +75,18 @@ const Login = () => {
             redirectToHome();
         }).catch((err) => console.log(err));
     }
+
+    // linkedin login
+    const { linkedInLogin } = useLinkedIn({
+        clientId: '78j5hyrf2wrp4z',
+        redirectUri: `${window.location.origin}`, // for Next.js, you can use `${typeof window === 'object' && window.location.origin}/linkedin`
+        onSuccess: (code) => {
+            console.log(code);
+        },
+        onError: (error) => {
+            console.log(error);
+        },
+    });
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -188,6 +202,10 @@ const Login = () => {
                             </div>
                     )}
                 />
+
+                <div className="d-grid gap-2 mt-2">
+                    <Button variant="outline-primary" size="lg" onClick={linkedInLogin}>Sign in with LinkedIn 🚀 </Button>
+                </div>
             </Form>
         </div>
     );

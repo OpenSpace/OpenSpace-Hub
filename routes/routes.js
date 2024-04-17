@@ -67,6 +67,32 @@ router.get('/getAllItems', async (req, res) => {
 
 /**
  * @swagger
+ * /api//getItemsByType/{type}:
+ *  get:
+ *      summary: Get items by type.
+ *      description: Retrieve the items using type from the database.
+ *      parameters:
+ *          - in : path
+ *            name : itemType
+ *            required : true
+ *            description: Type of the item to get
+ *      responses:
+ *          200:
+ *              description: Successful response with data.
+ *          500:
+ *              description: Internal server error.
+ */
+router.get('/getItemsByType/:type', async (req, res) => {
+    try {
+        const data = await Model.find({ type: req.params.type });
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}) 
+
+/**
+ * @swagger
  * /api/getItem/{id}:
  *  get:
  *      summary: Get item by id.

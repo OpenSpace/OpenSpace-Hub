@@ -10,6 +10,16 @@ export default class APIService {
         return await resp.json();
     }
 
+    static async GetItemsByType(type) {
+        const resp = await fetch(`/api/getItemsByType/${type}`, {
+            'method': 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return await resp.json();
+    }
+
     static async Login(email, password) {
         const resp = await fetch(`/auth/login`, {
             'method': 'POST',
