@@ -20,6 +20,7 @@ const Functions = () => {
             } else {
                 alert("Connection Error! Please start OpenSpace software and try again.");
                 setIsConnected(false);
+                window.openspace = null;
             }
         });
         //notify users and map buttons when connected

@@ -8,33 +8,10 @@ import { useEffect, useState } from 'react';
 import UploadItem from './UploadItem';
 import Function from './Functions';
 import APIService from './APIService';
+import UserProfile from './UserItems';
 
 
-const NavBar = () => {
-    const [showLogin, setShowLogin] = useState(true);
-
-    const redirectToLogin = () => {
-        window.location.href = "/login";
-    };
-
-    useEffect( async() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            await APIService.GetUser()
-                .then((res) => {
-                    if (res.error) {
-                        throw new Error(res.error);
-                    }
-                    setShowLogin(false);
-                })
-                .catch((err) => {
-                    localStorage.clear();
-                    setShowLogin(true);
-                    redirectToLogin();
-                });
-        }
-    }, []);
-
+const NavBar = ({ user, showLogin }) => {
     return (
         <>
             <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
@@ -71,7 +48,10 @@ const NavBar = () => {
                         ) : (
                             <Nav>
                                 <UploadItem />
-                                <Nav.Link href="profile" className="underline-on-active">Profile</Nav.Link>
+                                <NavDropdown title={user.name} id="collapsible-nav-dropdown">
+                                    <NavDropdown.Item href="useritems" className="underline-on-active">View Items</NavDropdown.Item>
+                                    <NavDropdown.Item href="userprofile" className="underline-on-active">Profile</NavDropdown.Item>
+                                </NavDropdown>
                                 <Nav.Link eventKey={2} href="logout" className="underline-on-active">Logout</Nav.Link>
                             </Nav>
                         )}

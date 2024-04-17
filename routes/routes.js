@@ -5,6 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const itemUtility = require('../utils/itemUtility');
 const authUtility = require('../utils/authUtility');
+const jwt = require('jsonwebtoken')
 
 
 const router = express.Router()
@@ -116,6 +117,40 @@ router.get('/getItem/:id', async (req, res) => {
         if (!data) {
             return res.status(404).json({ message: 'Item not found' });
         }
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+})
+
+/**
+ * @swagger
+ * /api/getUserItems/{username}:
+ *  get:
+ *      summary: Get user items.
+ *      description: Retrieve the items using username from the database.
+ *      parameters:
+ *          - in : path
+ *            name : username
+ *            required : true
+ *            description: Username of the user to get items
+ *      responses:
+ *          200:
+ *              description: Successful response with data.
+ *          404:
+ *              description: Item not found
+ *          500:
+ *              description: Internal server error.
+ */
+router.get('/getUserItems/:username', async (req, res) => {
+    try {
+        const token = req.headers['authorization'].split(' ')[1];
+        if (!token || token === 'null') {
+            console.log('Unauthorized request');
+            return res.status(401).json({ error: 'Unauthorized request' });
+        }
+        jwt.verify(token, process.env.SECRET_KEY);
+        const data = await Model.find({ 'author.username': req.params.username });
         res.status(200).json(data);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -258,7 +293,6 @@ router.delete('/deleteItem/:id', async (req, res) => {
             console.log('Unauthorized request');
             return res.status(401).json({ error: 'Unauthorized request' });
         }
-        console.log(token);
         jwt.verify(token, process.env.SECRET_KEY);
         const data = await Model.findOneAndDelete({ _id: req.params.id });
         if (!data) {

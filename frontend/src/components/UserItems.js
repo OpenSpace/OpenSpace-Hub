@@ -7,18 +7,19 @@ import React from 'react';
 import APIService from './APIService';
 import { useEffect, useState } from 'react';
 
-function Profiles({user}) {
+function UserItems({ user }) {
     const [items, setItems] = useState([]);
-
     useEffect(() => {
-        APIService.GetItemsByType("profile")
-            .then(resp => {
-                setItems(resp);
-            })
-            .catch(error => console.log(error))
-    }, [])
+        if (user) {
+            APIService.GetUserItems(user.username)
+                .then(resp => {
+                    setItems(resp);
+                })
+                .catch(error => console.log(error))
+        }
+    }, [user])
 
-    const deleteItem = async(item) => {
+    const deleteItem = async (item) => {
         await APIService.DeleteItem(item._id)
             .then(resp => {
                 if (resp.error) {
@@ -36,7 +37,7 @@ function Profiles({user}) {
     return (
         <div className="pt-3 px-4">
             <div className="text-center fw-bold fs-4">
-                <u>Profiles</u>
+                <u>Your Hub Items</u>
             </div>
             <div className="pt-3 px-4"></div>
             <Row xs={1} md={3} className="g-4">
@@ -93,4 +94,4 @@ function Profiles({user}) {
 }
 
 
-export default Profiles;
+export default UserItems;

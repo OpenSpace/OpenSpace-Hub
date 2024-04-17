@@ -13,21 +13,53 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Signup from './components/Signup';
 import Logout from './components/Logout';
+import UserItems from './components/UserItems';
+import UserProfile from './components/UserProfile';
+import APIService from './components/APIService';
+import { useEffect, useState } from 'react';
 
-class App extends React.Component {
-  render() {
-    return (
-      <BrowserRouter>
+
+function App() {
+  const [showLogin, setShowLogin] = useState(true);
+  const [user, setUser] = useState({});
+
+  const redirectToLogin = () => {
+    window.location.href = "/login";
+  };
+
+  useEffect(async () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      await APIService.GetUser()
+        .then((res) => {
+          if (res.error) {
+            throw new Error(res.error);
+          }
+          setUser(res);
+          setShowLogin(false);
+        })
+        .catch((err) => {
+          localStorage.clear();
+          setShowLogin(true);
+          redirectToLogin();
+        });
+    }
+  }, []);
+
+  return (
+    <BrowserRouter>
       <Routes>
-        <Route path="/" element={<NavBar />}>
-          <Route index element={<Items />} />
-          <Route path="assets" element={<Assets />} />
-          <Route path="profiles" element={<Profiles />} />
-          <Route path="recordings" element={<Recordings />} />
-          <Route path="webpanels" element={<WebPanels />} />
-          <Route path="configs" element={<Configs />} />
-          <Route path="videos" element={<Videos />} />
-          <Route path="items" element={<Items />} />
+        <Route path="/" element={<NavBar user={user} showLogin={showLogin}/>}>
+          <Route index element={<Items user={user}/>} />
+          <Route path="assets" element={<Assets user={user}/>} />
+          <Route path="profiles" element={<Profiles user={user}/>} />
+          <Route path="recordings" element={<Recordings user={user}/>} />
+          <Route path="webpanels" element={<WebPanels user={user}/>} />
+          <Route path="configs" element={<Configs user={user}/>} />
+          <Route path="videos" element={<Videos user={user}/>} />
+          <Route path="items" element={<Items user={user}/>} />
+          <Route path="useritems" element={<UserItems user={user}/>} />
+          <Route path="userprofile" element={<UserProfile user={user}/>} />
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />
           <Route path="logout" element={<Logout />} />
@@ -35,8 +67,7 @@ class App extends React.Component {
         </Route>
       </Routes>
     </BrowserRouter>
-    );
-  }
+  );
 }
 
 export default App;
