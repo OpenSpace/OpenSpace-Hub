@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import "./../css/login.css";
 import { useGoogleLogin } from '@react-oauth/google';
-import FacebookLogin from 'react-facebook-login';
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import axios from "axios";
 import APIService from './APIService';
 
@@ -33,7 +33,8 @@ const Login = () => {
         []
     );
 
-    const login = useGoogleLogin({
+    // google login
+    const googleLogin = useGoogleLogin({
         onSuccess: async (response) => {
             await axios.get(
                 `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${response.access_token}`, {
@@ -172,7 +173,7 @@ const Login = () => {
                     </Button>
                 </div> */}
                 <div className="d-grid gap-2 mt-2">
-                    <Button variant="outline-primary" size="lg" onClick={login}>Sign in with Google 🚀 </Button>
+                    <Button variant="outline-primary" size="lg" onClick={googleLogin}>Sign in with Google 🚀 </Button>
                 </div>
 
                 <FacebookLogin
@@ -182,12 +183,9 @@ const Login = () => {
                     scope="public_profile,email"
                     callback={responseFacebook}
                     render={(renderProps) => (
-                        <Button
-                            variant="outline-primary"
-                            size="lg"
-                            onClick={renderProps.onClick}
-                        >Sign in with Facebook
-                        </Button>
+                        <div className="d-grid gap-2 mt-2">
+                            <Button variant="outline-primary" size="lg" onClick={renderProps.onClick}>Sign in with Facebook 🚀 </Button>
+                            </div>
                     )}
                 />
             </Form>

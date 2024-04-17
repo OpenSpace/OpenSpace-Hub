@@ -13,6 +13,7 @@ To-Do:
 - [ ] Paging of GetItems
 - [ ] filtering of GetItems
 - [ ] Updating of HubItem
+- [x] Delete HubItem
 - [x] File Uploads
 - [x] Testing APIs with existing application
 - [ ] Front end webpage
