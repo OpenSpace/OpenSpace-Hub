@@ -69,6 +69,17 @@ export default class APIService {
         return await resp.json();
     }
 
+    static async DeleteItem(id) {
+        const resp = await fetch(`/api/deleteItem/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        return await resp.json();
+    }
+
     static async GetUser() {
         const resp = await fetch(`/auth/getUser`, {
             'method': 'GET',

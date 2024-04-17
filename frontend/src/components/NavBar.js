@@ -23,7 +23,6 @@ const NavBar = () => {
         if (token) {
             await APIService.GetUser()
                 .then((res) => {
-                    console.log(res);
                     if (res.error) {
                         throw new Error(res.error);
                     }

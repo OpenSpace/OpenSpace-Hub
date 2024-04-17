@@ -36,6 +36,10 @@ const itemSchema = new mongoose.Schema({
         type: authorSchema,
         required: true
     },
+    license: {
+        type: String,
+        required: true
+    },
     currentVersion: {
         type: versionSchema,
         required: true

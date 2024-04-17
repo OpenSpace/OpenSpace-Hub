@@ -156,7 +156,7 @@ router.post('/verify-token', async (req, res) => {
         jwt.verify(token, process.env.SECRET_KEY);
         //get user info
         console.log(jwt.decode(token, process.env.SECRET_KEY));
-        res.status(200).json({ message: 'Token verified successfully' });
+        res.status(200).json({ message: 'Valid Token' });
     } catch (error) {
         console.log(error);
         res.status(401).json({ error: 'Unauthorized request' });

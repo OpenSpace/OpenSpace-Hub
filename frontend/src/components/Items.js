@@ -9,11 +9,18 @@ import { useEffect, useState } from 'react';
 
 function Body() {
     const [items, setItems] = useState([]);
+    const [user, setUser] = useState({});
 
     useEffect(() => {
         APIService.GetAllItems()
             .then(resp => {
                 setItems(resp);
+            })
+            .catch(error => console.log(error))
+
+        APIService.GetUser()
+            .then(resp => {
+                setUser(resp);
             })
             .catch(error => console.log(error))
     }, [])
@@ -54,6 +61,20 @@ function Body() {
         }
     }
 
+    const deleteItem = async(item) => {
+        await APIService.DeleteItem(item._id)
+            .then(resp => {
+                if (resp.error) {
+                    throw new Error(resp.error);
+                }
+                setItems(items.filter(i => i._id !== item._id));
+                alert("Item deleted successfully");
+            })
+            .catch(error => {
+                console.log(error);
+                alert("Error deleting item. ", error.message);
+            })
+    }
 
     return (
         <div className="pt-3 px-4">
@@ -77,6 +98,10 @@ function Body() {
                                     <b>Author: </b>
                                     <Card.Link href={item.author.link}>{item.author.name}</Card.Link>
                                 </Card.Text>
+                                <Card.Text>
+                                    <b>License: </b>
+                                    {item.license}
+                                </Card.Text>
                                 {item.currentVersion &&
                                     <Card.Text>
                                         <b>Current Version: </b>
@@ -95,10 +120,12 @@ function Body() {
                                     <b>Last Update: </b> {item.modified}
                                 </Card.Text>
                                 {/* item.currentVersion.url */}
-                                {item.type === "asset" && <Button onClick={() => sendImportToOpenSpaceCommand(item.currentVersion.url, item.type)} variant="primary">Import Asset</Button>}
-                                {item.type === "profile" && <Button onClick={() => sendImportToOpenSpaceCommand(item.currentVersion.url, item.type)} variant="primary">Import Profile</Button>}
-                                {item.type === "recording" && <Button onClick={() => sendImportToOpenSpaceCommand(item.currentVersion.url, item.type)} variant="primary">Import Recording</Button>}
-                                {item.type === "video" && <Button variant="primary" href={item.currentVersion.url}>Link</Button>}
+                                {item.type === "asset" && <Button onClick={() => sendImportToOpenSpaceCommand(item.currentVersion.url, item.type)} variant="primary">Import Asset</Button>}{' '}
+                                {item.type === "profile" && <Button onClick={() => sendImportToOpenSpaceCommand(item.currentVersion.url, item.type)} variant="primary">Import Profile</Button>}{' '}
+                                {item.type === "recording" && <Button onClick={() => sendImportToOpenSpaceCommand(item.currentVersion.url, item.type)} variant="primary">Import Recording</Button>}{' '}
+                                {item.type === "video" && <Button variant="primary" href={item.currentVersion.url}>Link</Button>}{' '}
+                                {item.author.username === user.username && <Button variant="secondary">Edit</Button>}{' '}
+                                {item.author.username === user.username && <Button onClick={() => deleteItem(item)} variant="danger">Delete</Button>}{' '}
                             </Card.Body>
                         </Card>
                     </Col>

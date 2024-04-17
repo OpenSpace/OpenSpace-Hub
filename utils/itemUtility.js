@@ -384,11 +384,13 @@ exports.uploadAsset = async (req, user) => {
             type: req.body.itemType,
             description: req.body.description,
             author: author,
+            license: req.body.license,
             currentVersion: currentVersion,
             image: path.relative('public', `${dir}/${resizedFile.originalname}`),
             created: utility.getFormattedDate(new Date()),
             modified: utility.getFormattedDate(new Date()),
         })
+        console.log(newItem);
         const item = await newItem.save();
         return item;
     }
@@ -455,6 +457,7 @@ exports.uploadProfile = async (req, user) => {
             type: req.body.itemType,
             description: req.body.description,
             author: author,
+            license: req.body.license,
             currentVersion: currentVersion,
             image: path.relative('public', `${dir}/${resizedFile.originalname}`),
             created: utility.getFormattedDate(new Date()),
@@ -523,6 +526,7 @@ exports.uploadRecording = async (req, user) => {
             type: req.body.itemType,
             description: req.body.description,
             author: author,
+            license: req.body.license,
             currentVersion: currentVersion,
             image: path.relative('public', `${dir}/${resizedFile.originalname}`),
             created: utility.getFormattedDate(new Date()),
@@ -591,6 +595,7 @@ exports.uploadWebPanel = async (req, user) => {
             type: req.body.itemType,
             description: req.body.description,
             author: author,
+            license: req.body.license,
             currentVersion: currentVersion,
             image: path.relative('public', `${dir}/${resizedFile.originalname}`),
             created: utility.getFormattedDate(new Date()),
@@ -635,6 +640,7 @@ exports.uploadVideo = async (req, user) => {
             type: req.body.itemType,
             description: req.body.description,
             author: author,
+            license: req.body.license,
             image: 'defaults/images/video-icon.jpg',
             currentVersion: currentVersion,
             created: utility.getFormattedDate(new Date()),
@@ -681,6 +687,7 @@ exports.uploadConfig = async (req, user) => {
         }
         existingItem.archives.push(archive);
         existingItem.author = author;
+        license: req.body.license,
         existingItem.description = req.body.description;
         existingItem.currentVersion = currentVersion;
         existingItem.modified = utility.getFormattedDate(new Date());

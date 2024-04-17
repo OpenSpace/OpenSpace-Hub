@@ -101,11 +101,6 @@ router.patch('/update/:id', (req, res) => {
     res.send('Update by ID API')
 })
 
-//Delete by ID Method
-router.delete('/delete/:id', (req, res) => {
-    res.send('Delete by ID API')
-})
-
 /**
  * @swagger
  * /api/addItem:
@@ -208,5 +203,43 @@ router.post('/upload', upload.fields([{name: 'image', maxCount:1}, {name: 'file'
     } catch (error) {
         console.log(`Error: ${error.message}`);
         res.status(400).json({ message: error.message });
+    }
+})
+
+/**
+ * @swagger
+ * /api/deleteItem/{id}:
+ *  delete:
+ *      summary: Delete item by id.
+ *      description: Delete the item using id from the database.
+ *      parameters:
+ *          - in : path
+ *            name : itemId
+ *            required : true
+ *            description: ID of the item to delete
+ *      responses:
+ *          200:
+ *              description: Successful response with data.
+ *          404:
+ *              description: Item not found
+ *          500:
+ *              description: Internal server error.
+ */
+router.delete('/deleteItem/:id', async (req, res) => {
+    try {
+        const token = req.headers['authorization'].split(' ')[1];
+        if (!token || token === 'null') {
+            console.log('Unauthorized request');
+            return res.status(401).json({ error: 'Unauthorized request' });
+        }
+        console.log(token);
+        jwt.verify(token, process.env.SECRET_KEY);
+        const data = await Model.findOneAndDelete({ _id: req.params.id });
+        if (!data) {
+            return res.status(404).json({ message: 'Item not found' });
+        }
+        res.status(200).json({ message: 'Item deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 })
