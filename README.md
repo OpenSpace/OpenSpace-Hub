@@ -22,26 +22,26 @@ To-Do:
   - [x] Login and Signup Page
   - [x] Google Auth Integration
   - [x] Logout functionality
-  - [ ] Search Functionality
   - [x] Integrate OpenSpace API
   - [x] Import Profile, Asset, Recording module
-  - [ ] Linkedin Auth Integration
   - [x] Facebook Auth Integration
+  - [ ] Linkedin Auth Integration
   - [ ] Github Auth Integration
-  - [x] Upload page Frontend
-  - [x] Upload page Backend
   - [ ] Social Media Logout
   - [ ] Forgot Password
+  - [ ] Search Functionality
+  - [x] Upload page Frontend
+  - [x] Upload page Backend
 - [x] Add Item Types - Profile
 - [x] Add Item Types - Recording
 - [x] Add Item Types - Web Panel (WWW)
 - [x] Add Item Types - Video
 - [x] Add Item Types - Config
-- [ ] User page
+- [x] User page
 - [ ] Profile Dependencies
 - [ ] Jenkinsfile
-- [x] Dockerfile and docker-compose file
 - [ ] Secure port
+- [x] Dockerfile and docker-compose file
 - [x] Default Item Image 
 
 Steps to run the project:
