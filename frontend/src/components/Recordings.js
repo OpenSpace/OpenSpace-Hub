@@ -7,11 +7,11 @@ import React from 'react';
 import APIService from './APIService';
 import { useEffect, useState } from 'react';
 
-function Items({user}) {
+function Recordings({user}) {
     const [items, setItems] = useState([]);
 
     useEffect(() => {
-        APIService.GetAllItems()
+        APIService.GetItemsByType("recording")
             .then(resp => {
                 setItems(resp);
             })
@@ -36,7 +36,7 @@ function Items({user}) {
     return (
         <div className="pt-3 px-4">
             <div className="text-center fw-bold fs-4">
-                <u>Hub Items</u>
+                <u>Recordings</u>
             </div>
             <div className="pt-3 px-4"></div>
             <Row xs={1} md={3} className="g-4">
@@ -93,4 +93,4 @@ function Items({user}) {
 }
 
 
-export default Items;
+export default Recordings;

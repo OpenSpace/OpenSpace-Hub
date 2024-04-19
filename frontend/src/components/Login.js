@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import "./../css/login.css";
 import { useGoogleLogin } from '@react-oauth/google';
-import FacebookLogin from 'react-facebook-login';
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
+import { useLinkedIn } from 'react-linkedin-login-oauth2';
+import linkedin from 'react-linkedin-login-oauth2/assets/linkedin.png';
 import axios from "axios";
 import APIService from './APIService';
 
@@ -33,7 +35,8 @@ const Login = () => {
         []
     );
 
-    const login = useGoogleLogin({
+    // google login
+    const googleLogin = useGoogleLogin({
         onSuccess: async (response) => {
             await axios.get(
                 `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${response.access_token}`, {
@@ -72,6 +75,18 @@ const Login = () => {
             redirectToHome();
         }).catch((err) => console.log(err));
     }
+
+    // linkedin login
+    const { linkedInLogin } = useLinkedIn({
+        clientId: '78j5hyrf2wrp4z',
+        redirectUri: `${window.location.origin}`, // for Next.js, you can use `${typeof window === 'object' && window.location.origin}/linkedin`
+        onSuccess: (code) => {
+            console.log(code);
+        },
+        onError: (error) => {
+            console.log(error);
+        },
+    });
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -172,7 +187,7 @@ const Login = () => {
                     </Button>
                 </div> */}
                 <div className="d-grid gap-2 mt-2">
-                    <Button variant="outline-primary" size="lg" onClick={login}>Sign in with Google 🚀 </Button>
+                    <Button variant="outline-primary" size="lg" onClick={googleLogin}>Sign in with Google 🚀 </Button>
                 </div>
 
                 <FacebookLogin
@@ -182,14 +197,15 @@ const Login = () => {
                     scope="public_profile,email"
                     callback={responseFacebook}
                     render={(renderProps) => (
-                        <Button
-                            variant="outline-primary"
-                            size="lg"
-                            onClick={renderProps.onClick}
-                        >Sign in with Facebook
-                        </Button>
+                        <div className="d-grid gap-2 mt-2">
+                            <Button variant="outline-primary" size="lg" onClick={renderProps.onClick}>Sign in with Facebook 🚀 </Button>
+                            </div>
                     )}
                 />
+
+                <div className="d-grid gap-2 mt-2">
+                    <Button variant="outline-primary" size="lg" onClick={linkedInLogin}>Sign in with LinkedIn 🚀 </Button>
+                </div>
             </Form>
         </div>
     );

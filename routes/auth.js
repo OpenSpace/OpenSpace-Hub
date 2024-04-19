@@ -156,7 +156,7 @@ router.post('/verify-token', async (req, res) => {
         jwt.verify(token, process.env.SECRET_KEY);
         //get user info
         console.log(jwt.decode(token, process.env.SECRET_KEY));
-        res.status(200).json({ message: 'Token verified successfully' });
+        res.status(200).json({ message: 'Valid Token' });
     } catch (error) {
         console.log(error);
         res.status(401).json({ error: 'Unauthorized request' });
@@ -179,6 +179,59 @@ router.get('/getUser', async (req, res) => {
     try {
         const jwtToken = req.headers['authorization'].split(' ')[1];
         const user = await authUtility.getUserInfo(jwtToken);
+        const resp = await authUtility.getUserResponse(user, jwtToken);
+        res.status(200).json(resp);
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ error: error.message });
+    }
+})
+
+/**
+ * @swagger
+ * /api/updateUser:
+ *  put:
+ *      summary: Update User Info
+ *      description: Update user info.
+ *      consumes:
+ *          - application/json
+ *      parameters:
+ *          - in: body
+ *            name: user
+ *            description: The user to update.
+ *            schema:
+ *              type: object
+ *            required:
+ *              - name
+ *              - email
+ *              - institution
+ *            properties:
+ *              name:
+ *                  type: string
+ *              email:
+ *                  type: string
+ *              institution:
+ *                  type: string
+ *      responses:
+ *          200:
+ *              description: User updated successfully.
+ *          401:
+ *              description: Unauthorized request.
+ *          500:
+ *              description: Internal server error.
+ */
+router.put('/updateUser/:username', async (req, res) => {
+    try {
+        const jwtToken = req.headers['authorization'].split(' ')[1];
+        const user = await authUtility.getUserInfo(jwtToken);
+        if(!user || user.username !== req.params.username) {
+            return res.status(401).json({ error: 'Unauthorized request' });
+        }
+        const { name, email, institution } = req.body;
+        user.name = name;
+        user.email = email;
+        user.institution = institution;
+        await user.save();
         const resp = await authUtility.getUserResponse(user, jwtToken);
         res.status(200).json(resp);
     } catch (error) {
