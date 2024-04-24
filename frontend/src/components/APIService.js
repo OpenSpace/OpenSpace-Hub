@@ -1,17 +1,7 @@
 export default class APIService {
 
-    static async GetAllItems() {
-        const resp = await fetch(`/api/getAllItems`, {
-            'method': 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        return await resp.json();
-    }
-
-    static async GetItemsByType(type) {
-        const resp = await fetch(`/api/getItemsByType/${type}`, {
+    static async GetItems({ type = 'all', search = '', page = 1,  sort = 'name,asc', limit = 6}) {
+        const resp = await fetch(`/api/items?type=${type}&search=${search}&sort=${sort}&limit=${limit}&page=${page}`, {
             'method': 'GET',
             headers: {
                 'Content-Type': 'application/json'

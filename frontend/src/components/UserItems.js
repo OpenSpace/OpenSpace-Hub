@@ -6,9 +6,11 @@ import Button from 'react-bootstrap/Button';
 import React from 'react';
 import APIService from './APIService';
 import { useEffect, useState } from 'react';
+import EditItem from './EditItem';
 
 function UserItems({ user }) {
     const [items, setItems] = useState([]);
+    const [showEditItem, setShowEditItem] = useState(false);
     useEffect(() => {
         if (user) {
             APIService.GetUserItems(user.username)
@@ -32,6 +34,18 @@ function UserItems({ user }) {
                 console.log(error);
                 alert("Error deleting item. ", error.message);
             })
+    }
+
+    const editItem = (item) => {
+        console.log(item);
+        setShowEditItem(true);
+        console.log(showEditItem);
+        alert(showEditItem)
+        return (
+            <div>
+                {showEditItem && <EditItem item={item} editModal={showEditItem} />}
+            </div>
+        )
     }
 
     return (
@@ -82,7 +96,8 @@ function UserItems({ user }) {
                                 {item.type === "profile" && <Button onClick={() => APIService.SendImportToOpenSpaceCommand(item.currentVersion.url, item.type)} variant="primary">Import Profile</Button>}{' '}
                                 {item.type === "recording" && <Button onClick={() => APIService.SendImportToOpenSpaceCommand(item.currentVersion.url, item.type)} variant="primary">Import Recording</Button>}{' '}
                                 {item.type === "video" && <Button variant="primary" href={item.currentVersion.url}>Link</Button>}{' '}
-                                {item.author.username === user.username && <Button variant="secondary">Edit</Button>}{' '}
+                                {item.author.username === user.username && <Button onClick={() => editItem(item)} variant="secondary">Edit</Button>}{' '}
+                                {/* {alert(showEditItem) && alert(item.name) && <EditItem item={item} editModal={showEditItem} />} */}
                                 {item.author.username === user.username && <Button onClick={() => deleteItem(item)} variant="danger">Delete</Button>}{' '}
                             </Card.Body>
                         </Card>

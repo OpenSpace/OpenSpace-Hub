@@ -6,19 +6,45 @@ import Button from 'react-bootstrap/Button';
 import React from 'react';
 import APIService from './APIService';
 import { useEffect, useState } from 'react';
+import { Form } from 'react-bootstrap';
 
-function Configs({user}) {
+function Configs({ user }) {
     const [items, setItems] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
-        APIService.GetItemsByType("config")
-            .then(resp => {
-                setItems(resp);
-            })
-            .catch(error => console.log(error))
-    }, [])
+        const delayDebounceFn = setTimeout(() => {
+            loadItems();
+        }, 300);
 
-    const deleteItem = async(item) => {
+        return () => clearTimeout(delayDebounceFn);
+    }, [currentPage, searchTerm]);
+
+    const loadItems = async () => {
+        try {
+            const resp = await APIService.GetItems({
+                type: "config",
+                search: searchTerm,
+                page: currentPage
+            });
+            setItems(resp.items);
+            setTotalPages(Math.ceil(resp.total / resp.limit));
+        } catch (error) {
+            console.log(`Error loading items: `, error);
+        }
+    };
+
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    }
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    }
+
+    const deleteItem = async (item) => {
         await APIService.DeleteItem(item._id)
             .then(resp => {
                 if (resp.error) {
@@ -38,7 +64,16 @@ function Configs({user}) {
             <div className="text-center fw-bold fs-4">
                 <u>Configs</u>
             </div>
-            <div className="pt-3 px-4"></div>
+            <div className="pt-3 px-4">
+                <Form.Group className="mb-3">
+                    <Form.Control
+                        type="text"
+                        placeholder="Search..."
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                    />
+                </Form.Group>
+            </div>
             <Row xs={1} md={3} className="g-4">
                 {items.map(item => (
                     <Col key={item.id}>
@@ -88,6 +123,23 @@ function Configs({user}) {
                     </Col>
                 ))}
             </Row>
+            <div className="d-flex justify-content-center mt-4">
+                <Button
+                    variant="primary"
+                    disabled={currentPage === 1}
+                    onClick={() => handlePageChange(currentPage - 1)}
+                >
+                    Previous
+                </Button>
+                <Button
+                    variant="primary"
+                    className='mx-2'
+                    disabled={currentPage >= totalPages}
+                    onClick={() => handlePageChange(currentPage + 1)}
+                >
+                    Next
+                </Button>
+            </div>
         </div>
     )
 }

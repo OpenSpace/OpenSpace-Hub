@@ -7,7 +7,7 @@ import APIService from './APIService';
 
 
 const UploadItem = () => {
-    const [showModal, setShowModal] = useState(false);
+    const [showModal, setShowModal] = useState();
 
     const handleClose = () => setShowModal(false);
     const handleShowModal = () => setShowModal(true);
@@ -142,12 +142,12 @@ const UploadItem = () => {
                                     {itemType}
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
-                                    <Dropdown.Item eventKey="asset">Asset</Dropdown.Item>
-                                    <Dropdown.Item eventKey="profile">Profile</Dropdown.Item>
-                                    <Dropdown.Item eventKey="recording">Recording</Dropdown.Item>
-                                    <Dropdown.Item eventKey="webpanel">Web Panel</Dropdown.Item>
-                                    <Dropdown.Item eventKey="video">Video</Dropdown.Item>
-                                    <Dropdown.Item eventKey="config">Config</Dropdown.Item>
+                                    <Dropdown.Item eventKey="Asset">Asset</Dropdown.Item>
+                                    <Dropdown.Item eventKey="Profile">Profile</Dropdown.Item>
+                                    <Dropdown.Item eventKey="Recording">Recording</Dropdown.Item>
+                                    <Dropdown.Item eventKey="Webpanel">Webpanel</Dropdown.Item>
+                                    <Dropdown.Item eventKey="Video">Video</Dropdown.Item>
+                                    <Dropdown.Item eventKey="Config">Config</Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
                         </div>
@@ -156,7 +156,7 @@ const UploadItem = () => {
                             <input type="text" value={license} onChange={handleLicenseChange} />
                         </div>
 
-                        {(itemType === 'config' || itemType === 'video') ? null :
+                        {(itemType.toLowerCase() === 'config' || itemType === 'video') ? null :
                             (
                                 <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                                     <h5>Upload item-image <p style={{ fontSize: "15px" }}></p></h5>
@@ -165,32 +165,32 @@ const UploadItem = () => {
                             )
                         }
 
-                        {itemType === 'asset' ? (
+                        {itemType.toLowerCase() === 'asset' ? (
                             <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                                 <h5>Upload a file <p style={{ fontSize: "15px" }}>(accepted formats: .zip, .asset)</p></h5>
                                 <input id='fileInput' type="file" accept=".zip, .asset" onChange={handleFileChange} />
                             </div>
-                        ) : itemType === 'profile' ? (
+                        ) : itemType.toLowerCase() === 'profile' ? (
                             <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                                 <h5>Upload a file <p style={{ fontSize: "15px" }}>(accepted formats: .profile)</p></h5>
                                 <input id='fileInput' type="file" accept=".profile" onChange={handleFileChange} />
                             </div>
-                        ) : itemType === 'recording' ? (
+                        ) : itemType.toLowerCase() === 'recording' ? (
                             <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                                 <h5>Upload a file <p style={{ fontSize: "15px" }}>(accepted formats: .osrec, .osrectxt)</p></h5>
                                 <input id='fileInput' type="file" accept=".osrec, .osrectxt" onChange={handleFileChange} />
                             </div>
-                        ) : itemType === 'webpanel' ? (
+                        ) : itemType.toLowerCase() === 'webpanel' ? (
                             <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                                 <h5>Upload a file <p style={{ fontSize: "15px" }}>(accepted formats: .zip)</p></h5>
                                 <input id='fileInput' type="file" accept=".zip" onChange={handleFileChange} />
                             </div>
-                        ) : itemType === 'video' ? (
+                        ) : itemType.toLowerCase() === 'video' ? (
                             <>
                                 <h5> Video Link </h5>
                                 <input type="text" value={video} onChange={handleVideoChange} />
                             </>
-                        ) : itemType === 'config' ? (
+                        ) : itemType.toLowerCase() === 'config' ? (
                             <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                                 <h5>Upload a file <p style={{ fontSize: "15px" }}>(accepted formats: .json)</p></h5>
                                 <input id='fileInput' type="file" accept=".json" onChange={handleFileChange} />

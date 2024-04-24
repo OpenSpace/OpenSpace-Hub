@@ -46,51 +46,102 @@ router.get('/health', (req, res) => {
 
 /**
  * @swagger
- * /api/getAllItems:
+ * /api/items:
  *  get:
- *      summary: Get all items
- *      description: Retrieve all itmes from the database.
+ *      summary: Get items.
+ *      description: Retrieve the items from the database.
+ *      parameters:
+ *          - in : query
+ *            name : page
+ *            required : false
+ *            description: Page number
+ *          - in : query
+ *            name : limit
+ *            required : false
+ *            description: Number of items per page
+ *          - in : query
+ *            name : search
+ *            required : false
+ *            description: Search string
+ *          - in : query
+ *            name : sort
+ *            required : false
+ *            description: Sort by field
+ *          - in : query
+ *            name : itemType
+ *            required : false
+ *            description: Type of the item
  *      responses:
  *          200:
  *              description: Successful response with data.
  *          500:
  *              description: Internal server error.
+ *          404:
+ *              description: Item not found
+ *          401:
+ *              description: Unauthorized request
  */
-router.get('/getAllItems', async (req, res) => {
+router.get('/items', async (req, res) => {
     try {
-        const data = await Model.find();
-        res.status(200).json(data);
+        const page = parseInt(req.query.page) - 1 || 0;
+        const limit = parseInt(req.query.limit) || 5;
+        const search = req.query.search || '';
+        let sort = req.query.sort || 'name';
+        let type = req.query.type || '';
+        const itemOptions = ['asset', 'profile', 'recording', 'webpanel', 'video', 'config'];
+
+        type === 'all'
+            ? (type = [...itemOptions])
+            : (type = req.query.type.split(","));
+
+        req.query.sort ? (sort = req.query.sort.split(",")) : (sort = [sort]);
+
+        let sortBy = {};
+        if (sort[1]) {
+            sortBy[sort[0]] = sort[1] === 'asc' ? 1 : -1;
+        } else {
+            sortBy[sort[0]] = 1;
+        }
+
+        const items = await Model.find({
+            $and: [
+                {
+                    $or: [
+                        { name: { $regex: search, $options: 'i' } },
+                        { description: { $regex: search, $options: 'i' } },
+                        { 'author.name': { $regex: search, $options: 'i' } },
+                        { license: { $regex: search, $options: 'i' } },
+                    ]
+                },
+                { type: { $in: type } },
+            ],
+        })
+            .sort(sortBy)
+            .skip(page * limit)
+            .limit(limit);
+
+        const total = await Model.find({
+            $and: [
+                { name: { $regex: search, $options: 'i' } },
+                { type: { $in: type } },
+            ],
+        }).countDocuments();
+
+        const response = {
+            error: false,
+            message: 'Items fetched successfully',
+            total,
+            page: page + 1,
+            limit: limit,
+            types: itemOptions,
+            items: items,
+        };
+        res.status(200).json(response);
     } catch (error) {
         console.log(error)
         res.status(500).json({ message: error.message });
     }
 })
-
-/**
- * @swagger
- * /api//getItemsByType/{type}:
- *  get:
- *      summary: Get items by type.
- *      description: Retrieve the items using type from the database.
- *      parameters:
- *          - in : path
- *            name : itemType
- *            required : true
- *            description: Type of the item to get
- *      responses:
- *          200:
- *              description: Successful response with data.
- *          500:
- *              description: Internal server error.
- */
-router.get('/getItemsByType/:type', async (req, res) => {
-    try {
-        const data = await Model.find({ type: req.params.type });
-        res.status(200).json(data);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-}) 
 
 /**
  * @swagger
@@ -220,7 +271,7 @@ router.post('/addItem', async (req, res) => {
  *          500:
  *              description: Internal server error.
  */
-router.post('/upload', upload.fields([{name: 'image', maxCount:1}, {name: 'file', maxCount:1}]), async (req, res) => {
+router.post('/upload', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'file', maxCount: 1 }]), async (req, res) => {
     try {
         const jwtToken = req.headers['authorization'].split(' ')[1];
         const user = await authUtility.getUserInfo(jwtToken);
@@ -230,7 +281,7 @@ router.post('/upload', upload.fields([{name: 'image', maxCount:1}, {name: 'file'
             const message = "Uploaded successfully on server";
             return res.status(200).json({ message: message, data: data });
         }
-        
+
         if (!req.files || (!req.files['image'] && !req.body.itemType === 'config') || !req.files['file']) {
             return res.status(400).json({ message: 'Both image and hub-item file are required' });
         }

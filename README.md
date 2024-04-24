@@ -11,8 +11,8 @@ To-Do:
 - [x] Swagger Integration
 - [x] HubItems Schema Creation
 - [x] Users Schema Creation
-- [ ] Paging of GetItems
-- [ ] filtering of GetItems
+- [x] Paging of GetItems
+- [x] filtering of GetItems
 - [ ] Updating of HubItem
 - [x] Delete HubItem
 - [x] File Uploads
@@ -30,7 +30,7 @@ To-Do:
   - [ ] Github Auth Integration
   - [ ] Social Media Logout
   - [ ] Forgot Password
-  - [ ] Search Functionality
+  - [x] Search Functionality
   - [x] Upload page Frontend
   - [x] Upload page Backend
 - [x] Add Item Types - Profile
