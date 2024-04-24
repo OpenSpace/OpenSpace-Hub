@@ -7,11 +7,10 @@ import WebPanels from './components/WebPanels';
 import Configs from './components/Configs';
 import Videos from './components/Videos';
 import Footer from './components/Footer';
-import Login from './components/Login';
+import SignIn from './components/SignIn';
 import './App.css';
 import React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Signup from './components/Signup';
 import Logout from './components/Logout';
 import UserItems from './components/UserItems';
 import UserProfile from './components/UserProfile';
@@ -60,8 +59,7 @@ function App() {
           <Route path="items" element={<Items user={user}/>} />
           <Route path="useritems" element={<UserItems user={user}/>} />
           <Route path="userprofile" element={<UserProfile user={user}/>} />
-          <Route path="login" element={<Login />} />
-          <Route path="signup" element={<Signup />} />
+          <Route path="signin" element={<SignIn />} />
           <Route path="logout" element={<Logout />} />
           <Route path="*" element={<Footer />} />
         </Route>

@@ -8,13 +8,7 @@ import linkedin from 'react-linkedin-login-oauth2/assets/linkedin.png';
 import axios from "axios";
 import APIService from './APIService';
 
-const Login = () => {
-    const [inputEmail, setInputEmail] = useState("");
-    const [inputPassword, setInputPassword] = useState("");
-
-    const [showLoginError, setShowLoginError] = useState(false);
-    const [loading, setLoading] = useState(false);
-
+const SignIn = () => {
     useEffect(
         () => {
             const token = localStorage.getItem('token');
@@ -88,25 +82,7 @@ const Login = () => {
         },
     });
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        setLoading(true);
-        setShowLoginError(false);
-        await delay(500);
-        APIService.Login(inputEmail, inputPassword)
-            .then(resp => {
-                if (resp.error) {
-                    throw (resp.error);
-                }
-                localStorage.setItem('token', resp.token);
-                console.log("Authentication Successful")
-                redirectToHome();
-            })
-            .catch(error => {
-                alert("Error: " + error);
-            });
-        setLoading(false);
-    };
+
 
     const redirectToHome = () => {
         window.location.href = "/";
@@ -117,12 +93,9 @@ const Login = () => {
     }
 
     return (
-        <div
-            className="sign-in__wrapper"
-        //   style={{ backgroundImage: `url(${BackgroundImage})` }}
-        >
+        <div className="sign-in__wrapper">
             <div className="sign-in__backdrop"></div>
-            <Form className="shadow p-4 bg-white rounded" onSubmit={handleSubmit}>
+            <Form className="shadow p-4 bg-white rounded">
                 <img
                     className="img-thumbnail mx-auto d-block mb-2"
                     src="openspace-horizontal-color-on-black.png"
@@ -130,62 +103,6 @@ const Login = () => {
                     style={{ width: '120px', height: 'auto' }}
                 />
                 <div className="h4 mb-2 text-center">Sign In</div>
-                {showLoginError ? (
-                    <Alert
-                        className="mb-2"
-                        variant="danger"
-                        onClose={() => setShowLoginError(false)}
-                        dismissible
-                    >
-                        Incorrect username or password.
-                    </Alert>
-                ) : (
-                    <div />
-                )}
-                <Form.Group className="mb-2" controlId="email">
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control
-                        type="email"
-                        value={inputEmail}
-                        placeholder="Email"
-                        onChange={(e) => setInputEmail(e.target.value)}
-                        required
-                    />
-                </Form.Group>
-                <Form.Group className="mb-2" controlId="password">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control
-                        type="password"
-                        value={inputPassword}
-                        placeholder="Password"
-                        onChange={(e) => setInputPassword(e.target.value)}
-                        required
-                    />
-                    {/* <div className="d-grid justify-content-end">
-                        <Button
-                            className="text-muted px-1"
-                            variant="link"
-                            onClick={handlePassword}
-                        >
-                            Forgot password?
-                        </Button>
-                    </div> */}
-                </Form.Group>
-                {!loading ? (
-                    <Button className="w-100" variant="primary" type="submit">
-                        Log In
-                    </Button>
-                ) : (
-                    <Button className="w-100" variant="primary" type="submit" disabled>
-                        Logging In...
-                    </Button>
-                )}
-                {/* <div className="text-center mt-2">
-                    Don't have an account?{" "}
-                    <Button variant="link" href="/signup">
-                        Sign Up
-                    </Button>
-                </div> */}
                 <div className="d-grid gap-2 mt-2">
                     <Button variant="outline-primary" size="lg" onClick={googleLogin}>Sign in with Google 🚀 </Button>
                 </div>
@@ -211,4 +128,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default SignIn;

@@ -44,7 +44,7 @@ To-Do:
 - [ ] Secure port
 - [x] Dockerfile and docker-compose file
 - [x] Default Item Image 
-- [ ] disable simple signup
+- [x] disable simple signup
 - [ ] delete user profile
 - [ ] download counts
 - [ ] sort by
