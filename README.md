@@ -13,7 +13,7 @@ To-Do:
 - [x] Users Schema Creation
 - [x] Paging of GetItems
 - [x] filtering of GetItems
-- [ ] Updating of HubItem
+- [ ] Updating of HubItem - [License can't be changed]
 - [x] Delete HubItem
 - [x] File Uploads
 - [x] Testing APIs with existing application
@@ -44,6 +44,21 @@ To-Do:
 - [ ] Secure port
 - [x] Dockerfile and docker-compose file
 - [x] Default Item Image 
+- [ ] disable simple signup
+- [ ] delete user profile
+- [ ] download counts
+- [ ] sort by
+- [ ] slack button
+- [ ] package 
+- [ ] no exe inside the zip
+- [ ] sanitizing user/search input
+- [ ] Warning text: you are responsible for whatever is in it - On Upload page, Item can be modified by administrator if required, accept terms and con
+- [ ] adminstrator table - uploading false, signup false (In case of fire, site can remain active and nothing)
+- [ ] Tags
+- [ ] Which version (dropdown) it works with - ask user in the upload page
+- [ ] Openspace team can edit 
+- [ ] License dropdown
+- [ ] checkbox for 13 years old
 
 
 Local deployment
