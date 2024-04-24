@@ -74,7 +74,8 @@ exports.createNewUser = async (name, email, domain, pictureUrl, password) => {
             thumbnail: pictureUrl ? pictureUrl : null,
             domain: domain,
             created: getFormattedDate(new Date()),
-            modified: getFormattedDate(new Date())
+            modified: getFormattedDate(new Date()),
+            role: 'user',
         });
         await newUser.save();
         return newUser;
@@ -132,7 +133,8 @@ exports.getUserResponse = async(user, jwtToken) => {
             domain: user.domain,
             link: user.link,
             institution: user.institution,
-            favorites: user.favorites
+            favorites: user.favorites,
+            role: user.role,
         }
     } catch (error) {
         console.log(error);

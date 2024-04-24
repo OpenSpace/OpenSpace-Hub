@@ -29,7 +29,6 @@ To-Do:
   - [ ] Linkedin Auth Integration
   - [ ] Github Auth Integration
   - [ ] Social Media Logout
-  - [ ] Forgot Password
   - [x] Search Functionality
   - [x] Upload page Frontend
   - [x] Upload page Backend
@@ -45,20 +44,20 @@ To-Do:
 - [x] Dockerfile and docker-compose file
 - [x] Default Item Image 
 - [x] disable simple signup
-- [ ] delete user profile
+- [x] delete user profile
 - [ ] download counts
 - [ ] sort by
 - [ ] slack button
 - [ ] package 
-- [ ] no exe inside the zip
+- [x] no exe inside the zip
 - [ ] sanitizing user/search input
 - [ ] Warning text: you are responsible for whatever is in it - On Upload page, Item can be modified by administrator if required, accept terms and con
 - [ ] adminstrator table - uploading false, signup false (In case of fire, site can remain active and nothing)
 - [ ] Tags
 - [ ] Which version (dropdown) it works with - ask user in the upload page
-- [ ] Openspace team can edit 
+- [x] Openspace team (admin) can edit 
 - [ ] License dropdown
-- [ ] checkbox for 13 years old
+- [x] checkbox for 13 years old
 
 
 Local deployment

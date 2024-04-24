@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('./../models/User');
+const Model = require('../models/Model');
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const authUtility = require('./../utils/authUtility')
@@ -48,6 +49,46 @@ router.post('/register', async (req, res) => {
         res.status(201).json(userResponse);
     } catch (error) {
         console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+/**
+ * @swagger
+ * /auth/deleteUser/{username}:
+ *  delete:
+ *      summary: Deletes a user
+ *      description: Delete a user
+ *      consumes:
+ *          - application/json
+ *      parameters:
+ *          - in: path
+ *            name: username
+ *            description: The username to delete.
+ *            schema:
+ *              type: string
+ *            required:
+ *              - username
+ *      responses:
+ *          200:
+ *              description: User deleted successfully.
+ *          401:
+ *              description: Unauthorized request.
+ *          500:
+ *              description: Internal server error.
+ */
+router.delete('/deleteUser/:username', async (req, res) => {
+    try {
+        const jwtToken = req.headers['authorization'].split(' ')[1];
+        const user = await authUtility.getUserInfo(jwtToken);
+        if(!user || user.username !== req.params.username) {
+            return res.status(401).json({ error: 'Unauthorized request' });
+        }
+        await Model.deleteMany({ "author.username": user.username });
+        await User.deleteOne({ username: user.username });
+        res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.log(error)
         res.status(500).json({ error: error.message });
     }
 });

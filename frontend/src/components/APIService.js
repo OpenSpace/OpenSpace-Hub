@@ -33,6 +33,17 @@ export default class APIService {
         return await resp.json();
     }
 
+    static async DeleteUser(username) {
+        const resp = await fetch(`/auth/deleteUser/${username}`, {
+            'method': 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        return await resp.json();
+    }
+
     static async VerifyToken(token) {
         const resp = await fetch(`/auth/verify-token`, {
             'method': 'POST',

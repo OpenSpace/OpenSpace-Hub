@@ -42,6 +42,10 @@ function ItemList({ user, type }) {
         setCurrentPage(page);
     }
 
+    const isAdminUser = () => {
+        return (user.role === 'admin');
+    }
+
     const deleteItem = async (item) => {
         await APIService.DeleteItem(item._id)
             .then(resp => {
@@ -113,8 +117,8 @@ function ItemList({ user, type }) {
                                 {item.type === "profile" && <Button onClick={() => APIService.SendImportToOpenSpaceCommand(item.currentVersion.url, item.type)} variant="primary">Import Profile</Button>}{' '}
                                 {item.type === "recording" && <Button onClick={() => APIService.SendImportToOpenSpaceCommand(item.currentVersion.url, item.type)} variant="primary">Import Recording</Button>}{' '}
                                 {item.type === "video" && <Button variant="primary" href={item.currentVersion.url}>Link</Button>}{' '}
-                                {item.author.username === user.username && <Button variant="secondary">Edit</Button>}{' '}
-                                {item.author.username === user.username && <Button onClick={() => deleteItem(item)} variant="danger">Delete</Button>}{' '}
+                                {(item.author.username === user.username || isAdminUser()) && <Button variant="secondary">Edit</Button>}{' '}
+                                {(item.author.username === user.username || isAdminUser()) && <Button onClick={() => deleteItem(item)} variant="danger">Delete</Button>}{' '}
                             </Card.Body>
                         </Card>
                     </Col>

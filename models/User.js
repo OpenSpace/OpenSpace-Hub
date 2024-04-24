@@ -37,6 +37,11 @@ const userSchema = new mongoose.Schema({
         default: "OpenSpace",
         required: true
     },
+    role: {
+        type: String,
+        default: "user",
+        required: true
+    },
     created: {
         type: String,
         required: true

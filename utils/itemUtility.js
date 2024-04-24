@@ -3,7 +3,7 @@ const unzipper = require('unzipper');
 const sharp = require('sharp')
 const path = require('path');
 const utility = require('./utility');
-const Model = require('./../models/model');
+const Model = require('../models/Model');
 
 exports.validateInputFields = (body) => {
     if (!body.title || !body.title.trim() ||
@@ -138,6 +138,11 @@ exports.uploadAssetFileToServer = async (file, dir) => {
                     });
             });
             const files = await fs.promises.readdir(`public/upload/unzipped/${originalItemname}`);
+            const containsExeFile = files.some(file => file.endsWith('.exe'));
+            if (containsExeFile) {
+                unlinkUploadedDir(`public/upload/unzipped/${originalItemname}`);
+                throw new Error('Zip file contains .exe file');
+            }
             const assetFiles = files.filter(file => file.endsWith('.asset') && (file === `${originalItemname}.asset`));
             if (assetFiles.length <= 0) {
                 unlinkUploadedDir(`public/upload/unzipped/${originalItemname}`);
@@ -237,6 +242,11 @@ exports.uploadWebPanelFileToServer = async (file, dir) => {
                     });
             });
             const files = await fs.promises.readdir(`public/upload/unzipped/${originalItemname}`);
+            const containsExeFile = files.some(file => file.endsWith('.exe'));
+            if (containsExeFile) {
+                unlinkUploadedDir(`public/upload/unzipped/${originalItemname}`);
+                throw new Error('Zip file contains .exe file');
+            }
             const assetFiles = files.filter(file => (file.endsWith('.html') || file.endsWith('.htm')) && (file === `index.html` || file === `index.htm`));
             if (assetFiles.length <= 0) {
                 unlinkUploadedDir(`public/upload/unzipped/${originalItemname}`);

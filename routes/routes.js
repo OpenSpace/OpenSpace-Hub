@@ -1,5 +1,5 @@
 const express = require('express');
-const Model = require('./../models/model');
+const Model = require('../models/Model');
 const utility = require('./../utils/utility')
 const multer = require('multer');
 const path = require('path');

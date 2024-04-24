@@ -33,6 +33,25 @@ const UserProfile = ({ user }) => {
             });
     };
 
+    const deleteUserProfile = async () => {
+        // ask for yes or no confirmation
+        let text = "Do you want to delete your profile? All your hub items and user data will be lost.";
+        if (window.confirm(text) == true) {
+            await APIService.DeleteUser(user.username)
+            .then(resp => {
+                if (resp.error) {
+                    throw (resp.error);
+                }
+                alert("Profile deleted successfully");
+                localStorage.clear();
+                window.location.href = "/login";
+            })
+            .catch(error => {
+                alert("Error: " + error);
+            });
+        }
+    }
+
     return (
         <div className="sign-in__wrapper">
             <div className="sign-in__backdrop"></div>
@@ -81,6 +100,9 @@ const UserProfile = ({ user }) => {
                 </Form.Group>
                 <Button className="w-100" variant="primary" type="submit">
                     Edit Profile
+                </Button> &nbsp;
+                <Button className="w-100" variant="danger" onClick={deleteUserProfile}>
+                    Delete Profile
                 </Button>
 
             </Form>
