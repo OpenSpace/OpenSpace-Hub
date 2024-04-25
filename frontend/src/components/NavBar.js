@@ -42,7 +42,7 @@ const NavBar = ({ user, showLogin }) => {
                         </Nav>
                         {showLogin ? (
                             <Nav>
-                                <Nav.Link href="signin" className="underline-on-active">Sign In</Nav.Link>
+                                <Nav.Link href="signin" className="underline-on-active">Sign In / Sign Up</Nav.Link>
                                 {/* <Nav.Link eventKey={2} href="signup" className="underline-on-active">Sign Up</Nav.Link> */}
                             </Nav>
                         ) : (

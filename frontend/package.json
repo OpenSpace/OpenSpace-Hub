@@ -17,12 +17,14 @@
     "react-linkedin-login-oauth2": "^2.0.1",
     "react-router-dom": "^6.22.1",
     "react-scripts": "5.0.1",
+    "watch": "^1.0.2",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.16.0"
   },
   "scripts": {
+    "watch": "watch 'npm run build' ./src",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
