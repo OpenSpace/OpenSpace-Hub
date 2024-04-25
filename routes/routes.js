@@ -1,5 +1,6 @@
 const express = require('express');
 const Model = require('../models/Model');
+const Config = require('../models/Config');
 const utility = require('./../utils/utility')
 const multer = require('multer');
 const path = require('path');
@@ -283,7 +284,7 @@ router.post('/upload', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'f
         }
 
         if (!req.files || (!req.files['image'] && !req.body.itemType === 'config') || !req.files['file']) {
-            return res.status(400).json({ message: 'Both image and hub-item file are required' });
+            return res.status(400).json({ error: 'Both image and hub-item file are required' });
         }
 
         itemUtility.validateInputFields(req.body);
@@ -314,7 +315,7 @@ router.post('/upload', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'f
         res.status(200).json({ message: message, data: data });
     } catch (error) {
         console.log(`Error: ${error.message}`);
-        res.status(400).json({ message: error.message });
+        res.status(400).json({ error: error.message });
     }
 })
 
@@ -351,6 +352,49 @@ router.delete('/deleteItem/:id', async (req, res) => {
         }
         res.status(200).json({ message: 'Item deleted successfully' });
     } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+})
+
+/**
+ * @swagger
+ * /api/config:
+ *  get:
+ *      summary: Get configs.
+ *      description: Retrieve the configs from the database.
+ *      responses:
+ *          200:
+ *              description: Successful response with data.
+ *          500:
+ *              description: Internal server error.
+ */
+router.get('/config', async (req, res) => {
+    try {
+        const config = await Config.findOne();
+        const response = {
+            error: false,
+            message: 'Configs fetched successfully',
+            config,
+        };
+        res.status(200).json(response);
+    } catch (error) {
         res.status(500).json({ message: error.message });
     }
 })
+
+
+router.post('/config', async (req, res) => {
+    const data = new Config();
+    try {
+        const resp = await Config.findOne();
+        if (resp) {
+            return res.status(400).json({ message: 'Config already exists' });
+        }
+        const dataToSave = await data.save();
+        res.status(200).json(dataToSave)
+    }
+    catch (error) {
+        res.status(400).json({ message: error.message })
+    }
+});
+

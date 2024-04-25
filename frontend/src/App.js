@@ -21,6 +21,7 @@ import { useEffect, useState } from 'react';
 function App() {
   const [showLogin, setShowLogin] = useState(true);
   const [user, setUser] = useState({});
+  const [config, setConfig] = useState();
 
   const redirectToLogin = () => {
     window.location.href = "/login";
@@ -43,25 +44,36 @@ function App() {
           redirectToLogin();
         });
     }
+
+    await APIService.GetConfig()
+      .then((res) => {
+        if (res.error) {
+          throw new Error(res.error);
+        }
+        setConfig(res);
+      })
+      .catch((err) => {
+        console.log("Error: " + err);
+      });
   }, []);
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<NavBar user={user} showLogin={showLogin}/>}>
-          <Route index element={<Items user={user}/>} />
-          <Route path="assets" element={<Assets user={user}/>} />
-          <Route path="profiles" element={<Profiles user={user}/>} />
-          <Route path="recordings" element={<Recordings user={user}/>} />
-          <Route path="webpanels" element={<WebPanels user={user}/>} />
-          <Route path="configs" element={<Configs user={user}/>} />
-          <Route path="videos" element={<Videos user={user}/>} />
-          <Route path="items" element={<Items user={user}/>} />
-          <Route path="useritems" element={<UserItems user={user}/>} />
-          <Route path="userprofile" element={<UserProfile user={user}/>} />
-          <Route path="signin" element={<SignIn />} />
-          <Route path="logout" element={<Logout />} />
-          <Route path="*" element={<Footer />} />
+        <Route path="/" element={<NavBar user={user} showLogin={showLogin} config={config}/>}>
+          <Route index element={<Items user={user} config={config} />} />
+          <Route path="assets" element={<Assets user={user} config={config} />} />
+          <Route path="profiles" element={<Profiles user={user} config={config} />} />
+          <Route path="recordings" element={<Recordings user={user} config={config} />} />
+          <Route path="webpanels" element={<WebPanels user={user} config={config} />} />
+          <Route path="configs" element={<Configs user={user} config={config} />} />
+          <Route path="videos" element={<Videos user={user} config={config} />} />
+          <Route path="items" element={<Items user={user} config={config} />} />
+          <Route path="useritems" element={<UserItems user={user} config={config} />} />
+          <Route path="userprofile" element={<UserProfile user={user} config={config} />} />
+          <Route path="signin" element={<SignIn config={config}/>} />
+          <Route path="logout" element={<Logout config={config} />} />
+          <Route path="*" element={<Footer config={config} />} />
         </Route>
       </Routes>
     </BrowserRouter>

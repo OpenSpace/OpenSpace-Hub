@@ -8,7 +8,7 @@ import linkedin from 'react-linkedin-login-oauth2/assets/linkedin.png';
 import axios from "axios";
 import APIService from './APIService';
 
-const SignIn = () => {
+const SignIn = ({ config }) => {
     const [ageVerified, setAgeVerified] = useState(false);
     useEffect(
         () => {
@@ -104,34 +104,41 @@ const SignIn = () => {
                     style={{ width: '120px', height: 'auto' }}
                 />
                 <div className="h4 mb-2 text-center">Sign In</div>
-                <Form.Group className="mb-2" controlId="formBasicCheckbox">
-                    <Form.Check
-                        type="checkbox"
-                        label="I confirm I am 13 years of age or older"
-                        onChange={(e) => setAgeVerified(e.target.checked)}
-                    />
-                </Form.Group>
+                {config && config.config.signin ? (
+                    <>
+                        <Form.Group className="mb-2" controlId="formBasicCheckbox">
+                            <Form.Check
+                                type="checkbox"
+                                label="I confirm I am 13 years of age or older"
+                                onChange={(e) => setAgeVerified(e.target.checked)}
+                            />
+                        </Form.Group>
+                        <div className="d-grid gap-2 mt-2">
+                            <Button variant="outline-primary" size="lg" onClick={googleLogin} disabled={!ageVerified}>Sign in with Google 🚀 </Button>
+                        </div>
 
-                    <div className="d-grid gap-2 mt-2">
-                        <Button variant="outline-primary" size="lg" onClick={googleLogin} disabled={!ageVerified}>Sign in with Google 🚀 </Button>
-                    </div>
+                        <FacebookLogin
+                            appId={process.env.REACT_APP_FACEBOOK_APP_ID}
+                            autoLoad={false}
+                            fields="name, email, picture"
+                            scope="public_profile,email"
+                            callback={responseFacebook}
+                            render={(renderProps) => (
+                                <div className="d-grid gap-2 mt-2">
+                                    <Button variant="outline-primary" size="lg" onClick={renderProps.onClick} disabled={!ageVerified}>Sign in with Facebook 🚀 </Button>
+                                </div>
+                            )}
+                        />
 
-                    <FacebookLogin
-                        appId={process.env.REACT_APP_FACEBOOK_APP_ID}
-                        autoLoad={false}
-                        fields="name, email, picture"
-                        scope="public_profile,email"
-                        callback={responseFacebook}
-                        render={(renderProps) => (
-                            <div className="d-grid gap-2 mt-2">
-                                <Button variant="outline-primary" size="lg" onClick={renderProps.onClick} disabled={!ageVerified}>Sign in with Facebook 🚀 </Button>
-                            </div>
-                        )}
-                    />
-
-                    <div className="d-grid gap-2 mt-2">
-                        <Button variant="outline-primary" size="lg" onClick={linkedInLogin} disabled={!ageVerified}>Sign in with LinkedIn 🚀 </Button>
-                    </div>
+                        <div className="d-grid gap-2 mt-2">
+                            <Button variant="outline-primary" size="lg" onClick={linkedInLogin} disabled={!ageVerified}>Sign in with LinkedIn 🚀 </Button>
+                        </div>
+                    </>
+                ) : (
+                    <Alert variant="danger">
+                        Sign in is disabled by the administrator
+                    </Alert>
+                )}
             </Form>
         </div>
     );

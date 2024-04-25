@@ -21,6 +21,16 @@ export default class APIService {
         return await resp.json();
     }
 
+    static async GetConfig() {
+        const resp = await fetch(`/api/config`, {
+            'method': 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return await resp.json();
+    }
+
     static async Login(email, password) {
         const resp = await fetch(`/auth/login`, {
             'method': 'POST',
@@ -29,7 +39,6 @@ export default class APIService {
             },
             body: JSON.stringify({email, password})
         });
-        console.log(resp);
         return await resp.json();
     }
 
@@ -63,7 +72,6 @@ export default class APIService {
             },
             body: JSON.stringify({name, email, password, cnfPassword})
         });
-        console.log(resp);
         return await resp.json();
     }
 
@@ -75,7 +83,6 @@ export default class APIService {
             },
             body: JSON.stringify({name, accessToken, email, domain, pictureUrl})
         });
-        console.log(resp);
         return await resp.json();
     }
 

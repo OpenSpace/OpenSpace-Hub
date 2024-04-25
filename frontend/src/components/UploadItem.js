@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import Modal from 'react-bootstrap/Modal';
@@ -6,13 +6,13 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import APIService from './APIService';
 
 
-const UploadItem = () => {
+const UploadItem = ({ config }) => {
     const [showModal, setShowModal] = useState();
 
     const handleClose = () => setShowModal(false);
     const handleShowModal = () => setShowModal(true);
 
-    const [itemType, setItemType] = useState('Asset');
+    const [itemType, setItemType] = useState('');
 
     const handleItemTypeSelect = (e) => {
         setItemType(e);
@@ -50,6 +50,28 @@ const UploadItem = () => {
         setVideo(e.target.value);
     }
 
+    const [openspaceVersion, setOpenspaceVersion] = useState('');
+    const handleOpenSpaceVersionSelect = (e) => {
+        setOpenspaceVersion(e);
+    }
+
+    const [itemTypes, setItemTypes] = useState([]);
+    const [openspaceVersions, setOpenspaceVersions] = useState([]);
+    const [licenseTypes, setLicenseTypes] = useState([]);
+    useEffect(() => {
+        setItemTypes(config.config.itemTypes);
+        setItemType(config.config.itemTypes[0]);
+        setOpenspaceVersions(config.config.versions);
+        setOpenspaceVersion(config.config.versions[0]);
+        setLicenseTypes(config.config.licenses);
+        setLicense(config.config.licenses[0]);
+    }, [config]);
+
+    const [acceptTerms, setAcceptTerms] = useState(false); // State to track whether terms are accepted
+    const handleAcceptTerms = () => {
+        setAcceptTerms(!acceptTerms); // Toggle the value when checkbox is clicked
+    }
+
     //To-Do: Remove this method. Already handled in HTML input tag.
     const isValidateFileType = (file) => {
         const fileName = file.name;
@@ -63,8 +85,12 @@ const UploadItem = () => {
 
     const handleUpload = async (event) => {
         event.preventDefault();
+        if (!acceptTerms) {
+            alert('Please accept the terms and conditions.');
+            return;
+        }
 
-        if (video != ''){
+        if (video != '') {
             const formData = new FormData();
             formData.append('video', video);
             formData.append('title', title);
@@ -72,8 +98,11 @@ const UploadItem = () => {
             formData.append('license', license);
             formData.append('description', description);
             await APIService.UploadItem(formData)
-                .then(data => {
-                    alert(data.message);
+                .then(resp => {
+                    if (resp.error) {
+                        throw new Error(resp.error);
+                    }
+                    alert(resp.message);
                     handleClose();
                     redirectToHome();
                 })
@@ -83,7 +112,7 @@ const UploadItem = () => {
                 });
             return;
         }
-        else{
+        else {
             if (!file || title.trim() === '' || itemType.trim() === '' || license.trim() === '' || description.trim() === '' || (!image && (itemType !== 'config' && itemType !== 'video'))) {
                 alert('Please fill in all fields.');
                 return;
@@ -98,8 +127,11 @@ const UploadItem = () => {
                 formData.append('license', license);
                 formData.append('description', description);
                 await APIService.UploadItem(formData)
-                    .then(data => {
-                        alert(data.message);
+                    .then(resp => {
+                        if (resp.error) {
+                            throw new Error(resp.error);
+                        }
+                        alert(resp.message);
                         handleClose();
                         redirectToHome();
                     })
@@ -116,8 +148,8 @@ const UploadItem = () => {
     }
 
     const redirectToHome = () => {
-        window.location.href = "/";
-    };
+        window.location.href = '/';
+    }
 
     return (
         <>
@@ -139,27 +171,46 @@ const UploadItem = () => {
                             <Dropdown onSelect={handleItemTypeSelect} >
                                 <h5>Item Type</h5>
                                 <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                    {itemType}
+                                    {itemType.toUpperCase()}
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
-                                    <Dropdown.Item eventKey="Asset">Asset</Dropdown.Item>
-                                    <Dropdown.Item eventKey="Profile">Profile</Dropdown.Item>
-                                    <Dropdown.Item eventKey="Recording">Recording</Dropdown.Item>
-                                    <Dropdown.Item eventKey="Webpanel">Webpanel</Dropdown.Item>
-                                    <Dropdown.Item eventKey="Video">Video</Dropdown.Item>
-                                    <Dropdown.Item eventKey="Config">Config</Dropdown.Item>
+                                    {itemTypes.map((type) => (
+                                        <Dropdown.Item key={type} eventKey={type}>{type.toUpperCase()}</Dropdown.Item>
+                                    ))}
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        </div>
+                        <div style={{ marginBottom: '20px', marginTop: '20px' }}>
+                            <Dropdown onSelect={handleOpenSpaceVersionSelect} >
+                                <h5>OpenSpace Version <p style={{ fontSize: "15px" }}>(Make sure it runs on the selected version)</p></h5>
+                                <Dropdown.Toggle variant="success" id="dropdown-basic">
+                                    {openspaceVersion}
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    {openspaceVersions.map((version) => (
+                                        <Dropdown.Item key={version} eventKey={version}>{version}</Dropdown.Item>
+                                    ))}
                                 </Dropdown.Menu>
                             </Dropdown>
                         </div>
                         <div style={{ marginBottom: '20px' }}>
-                            <h5> License </h5>
-                            <input type="text" value={license} onChange={handleLicenseChange} />
+                            <Dropdown onSelect={handleOpenSpaceVersionSelect} >
+                                <h5>License <p style={{ fontSize: "15px" }}></p></h5>
+                                <Dropdown.Toggle variant="success" id="dropdown-basic">
+                                    {license}
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    {licenseTypes.map((license) => (
+                                        <Dropdown.Item key={license} eventKey={license}>{license}</Dropdown.Item>
+                                    ))}
+                                </Dropdown.Menu>
+                            </Dropdown>
                         </div>
 
                         {(itemType.toLowerCase() === 'config' || itemType === 'video') ? null :
                             (
                                 <div style={{ marginBottom: '20px', marginTop: '20px' }}>
-                                    <h5>Upload item-image <p style={{ fontSize: "15px" }}></p></h5>
+                                    <h5>Upload item-image <p style={{ fontSize: "15px" }}>(accepted formats: .jpg, .jpeg, .png)</p></h5>
                                     <input id='imageInput' type="file" accept=".jpg, .jpeg, .png" onChange={handleImageChange} />
                                 </div>
                             )
@@ -201,12 +252,11 @@ const UploadItem = () => {
                                 <input id='fileInput' type="file" accept=".zip, .asset" onChange={handleFileChange} />
                             </div>
                         )}
-
-                        {/* <div style={{ marginBottom: '20px', marginTop: '20px' }}>
-                            <h5>Upload a file <p style={{ fontSize: "15px" }}>(accepted formats: .zip, .asset)</p></h5>
-                            <input id='fileInput' type="file" accept=".zip, .asset" onChange={handleFileChange} />
-                        </div> */}
                     </form>
+                    <div style={{ marginBottom: '20px', marginTop: '20px'}}>
+                        <input type="checkbox" checked={acceptTerms} onChange={handleAcceptTerms} />
+                        <label htmlFor="acceptTerms">I accept the terms and conditions</label>
+                    </div>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>

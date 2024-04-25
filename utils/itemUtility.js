@@ -400,7 +400,6 @@ exports.uploadAsset = async (req, user) => {
             created: utility.getFormattedDate(new Date()),
             modified: utility.getFormattedDate(new Date()),
         })
-        console.log(newItem);
         const item = await newItem.save();
         return item;
     }
@@ -457,8 +456,6 @@ exports.uploadProfile = async (req, user) => {
         existingItem.currentVersion = currentVersion;
         existingItem.image = path.relative('public', `${dir}/${resizedFile.originalname}`);
         existingItem.modified = utility.getFormattedDate(new Date());
-        console.log(author);
-        console.log(existingItem.author);
         const item = await existingItem.save();
         return item;
     } else {

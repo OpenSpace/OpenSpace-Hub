@@ -4,14 +4,11 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import { Outlet } from 'react-router-dom';
 import Footer from './Footer';
-import { useEffect, useState } from 'react';
 import UploadItem from './UploadItem';
 import Function from './Functions';
-import APIService from './APIService';
-import UserProfile from './UserItems';
 
 
-const NavBar = ({ user, showLogin }) => {
+const NavBar = ({ user, showLogin, config }) => {
     return (
         <>
             <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
@@ -47,7 +44,7 @@ const NavBar = ({ user, showLogin }) => {
                             </Nav>
                         ) : (
                             <Nav>
-                                <UploadItem />
+                                {config && config.config.upload? (<UploadItem config={config}/>): null}
                                 <NavDropdown title={user.name} id="collapsible-nav-dropdown">
                                     <NavDropdown.Item href="useritems" className="underline-on-active">View Items</NavDropdown.Item>
                                     <NavDropdown.Item href="userprofile" className="underline-on-active">Profile</NavDropdown.Item>
