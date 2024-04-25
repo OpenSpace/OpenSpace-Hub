@@ -89,7 +89,7 @@ router.get('/items', async (req, res) => {
         const search = req.query.search || '';
         let sort = req.query.sort || 'name';
         let type = req.query.type || '';
-        const itemOptions = ['asset', 'profile', 'recording', 'webpanel', 'video', 'config'];
+        const itemOptions = ['asset', 'profile', 'recording', 'webpanel', 'video', 'config', 'package'];
 
         type === 'all'
             ? (type = [...itemOptions])
@@ -307,6 +307,9 @@ router.post('/upload', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'f
                 break;
             case 'config':
                 data = await itemUtility.uploadConfig(req, user);
+                break;
+            case 'package':
+                data = await itemUtility.uploadPackage(req, user);
                 break;
             default:
                 throw new Error('Invalid item type');

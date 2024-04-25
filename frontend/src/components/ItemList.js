@@ -64,7 +64,14 @@ function ItemList({ user, type }) {
     return (
         <div className="pt-3 px-4">
             <div className="text-center fw-bold fs-4">
-                <u>{type === "assets" ? "Assets" : "Hub Items"}</u>
+                <u>{type === "asset" ? "Assets" : 
+                    type === "profile" ? "Profiles" : 
+                    type === "webpanel" ? "Web Panels" : 
+                    type === "config" ? "Configs" : 
+                    type === "video" ? "Videos" : 
+                    type === "recording" ? "Recordings" : 
+                    type === "package" ? "Packages" :
+                    "Hub Items"}</u>
             </div>
             <div className="pt-3 px-4">
                 <Form.Group className="mb-3">
@@ -119,6 +126,9 @@ function ItemList({ user, type }) {
                                 {item.type === "video" && <Button variant="primary" href={item.currentVersion.url}>Link</Button>}{' '}
                                 {(item.author.username === user.username || isAdminUser()) && <Button variant="secondary">Edit</Button>}{' '}
                                 {(item.author.username === user.username || isAdminUser()) && <Button onClick={() => deleteItem(item)} variant="danger">Delete</Button>}{' '}
+                                <Button onClick={() => window.open("https://join.slack.com/t/openspacesupport/shared_invite/zt-24uhn3wvo-gCGHgjg2m9tHzKUEb_FyMQ", "_blank")} variant="dark">Join on Slack</Button>
+
+
                             </Card.Body>
                         </Card>
                     </Col>

@@ -72,17 +72,6 @@ const UploadItem = ({ config }) => {
         setAcceptTerms(!acceptTerms); // Toggle the value when checkbox is clicked
     }
 
-    //To-Do: Remove this method. Already handled in HTML input tag.
-    const isValidateFileType = (file) => {
-        const fileName = file.name;
-        const fileExtension = fileName.split('.').pop();
-        if (fileExtension !== 'zip' && fileExtension !== 'asset') {
-            document.getElementById('fileInput').value = '';
-            return true;
-        }
-        return true;
-    }
-
     const handleUpload = async (event) => {
         event.preventDefault();
         if (!acceptTerms) {
@@ -117,7 +106,7 @@ const UploadItem = ({ config }) => {
                 alert('Please fill in all fields.');
                 return;
             }
-            if (file && isValidateFileType(file)) {
+            if (file) {
                 const formData = new FormData();
                 formData.append('file', file);
                 formData.append('image', image);
@@ -245,6 +234,11 @@ const UploadItem = ({ config }) => {
                             <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                                 <h5>Upload a file <p style={{ fontSize: "15px" }}>(accepted formats: .json)</p></h5>
                                 <input id='fileInput' type="file" accept=".json" onChange={handleFileChange} />
+                            </div>
+                        ) : itemType.toLowerCase() === 'package' ? (
+                            <div style={{ marginBottom: '20px', marginTop: '20px' }}>
+                                <h5>Upload a file <p style={{ fontSize: "15px" }}>(accepted formats: .zip, .asset)</p></h5>
+                                <input id='fileInput' type="file" accept=".zip, .asset" onChange={handleFileChange} />
                             </div>
                         ) : (
                             <div style={{ marginBottom: '20px', marginTop: '20px' }}>

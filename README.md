@@ -47,8 +47,8 @@ To-Do:
 - [x] delete user profile
 - [ ] download counts
 - [ ] sort by
-- [ ] slack button
-- [ ] package 
+- [x] slack button
+- [x] package 
 - [x] no exe inside the zip
 - [ ] sanitizing user/search input
 - [ ] Warning text: you are responsible for whatever is in it - On Upload page, Item can be modified by administrator if required, accept terms and con

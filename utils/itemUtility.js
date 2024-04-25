@@ -33,6 +33,16 @@ exports.isAssetFileType = (file) => {
     }
 }
 
+exports.isPackageFileType = (file) => {
+    const fileName = file.originalname;
+    validateFileName(file);
+    const fileExtension = fileName.split('.').pop();
+    if (fileExtension !== 'zip') {
+        unlinkUploadedfile(file);
+        throw new Error('Invalid file type. Please upload a .zip file.');
+    }
+}
+
 exports.isProfileFileType = (file) => {
     const fileName = file.originalname;
     validateFileName(file);
@@ -161,6 +171,50 @@ exports.uploadAssetFileToServer = async (file, dir) => {
         } else {
             console.log('Invalid file type');
             throw new Error('Invalid file type. Please upload a .zip or .asset file.');
+        }
+    } catch (err) {
+        //delete uploaded file and directory
+        fs.rm(dir, { recursive: true }, (err) => {
+            if (err) {
+                console.log(err);
+            }
+        });
+        unlinkUploadedfile(file);
+        return Promise.reject(err);
+    }
+}
+
+exports.uploadPackageFileToServer = async (file, dir) => {
+    try {
+        if (file.mimetype === 'application/zip') {
+            originalItemname = file.originalname.split('.')[0];
+            await new Promise((resolve, reject) => {
+                fs.createReadStream(file.path)
+                    .pipe(unzipper.Extract({ path: `public/upload/unzipped/` }))
+                    .on('close', () => {
+                        resolve();
+                    })
+                    .on('error', (err) => {
+                        console.log(err);
+                        reject(new Error('Error extracting zip file'));
+                    });
+            });
+            const files = await fs.promises.readdir(`public/upload/unzipped/${originalItemname}`);
+            const containsExeFile = files.some(file => file.endsWith('.exe'));
+            if (containsExeFile) {
+                unlinkUploadedDir(`public/upload/unzipped/${originalItemname}`);
+                throw new Error('Zip file contains .exe file');
+            }
+            fs.renameSync(file.path, `${dir}/${file.originalname}`);
+            unlinkUploadedDir(`public/upload/unzipped/${originalItemname}`);
+            return Promise.resolve();
+        } else if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
+            // change file name
+            fs.renameSync(file.path, `${dir}/${file.originalname}`);
+            return Promise.resolve();
+        } else {
+            console.log('Invalid file type');
+            throw new Error('Invalid file type. Please upload a .zip file.');
         }
     } catch (err) {
         //delete uploaded file and directory
@@ -327,7 +381,7 @@ function getCurrentVersionNum(dir) {
 }
 
 exports.createUserDirectory = (dir, itemType) => {
-    const itemTypes = ['asset', 'profile', 'recording', 'webpanel', 'config'];
+    const itemTypes = ['asset', 'profile', 'recording', 'webpanel', 'config', 'package'];
     if (itemTypes.includes(itemType)) {
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
@@ -372,6 +426,76 @@ exports.uploadAsset = async (req, user) => {
     const currentVersion = {
         version: `${version}`,
         url: path.relative('public', `${dir}/${assetFile.originalname}`)
+    }
+
+    const existingItem = await Model.findOne({ name: req.body.title, type: req.body.itemType });
+    if (existingItem) {
+        const archive = {
+            version: existingItem.currentVersion.version,
+            url: existingItem.currentVersion.url
+        }
+        existingItem.archives.push(archive);
+        existingItem.author = author;
+        existingItem.description = req.body.description;
+        existingItem.currentVersion = currentVersion;
+        existingItem.image = path.relative('public', `${dir}/${resizedFile.originalname}`);
+        existingItem.modified = utility.getFormattedDate(new Date());
+        const item = await existingItem.save();
+        return item;
+    } else {
+        const newItem = new Model({
+            name: req.body.title,
+            type: req.body.itemType,
+            description: req.body.description,
+            author: author,
+            license: req.body.license,
+            currentVersion: currentVersion,
+            image: path.relative('public', `${dir}/${resizedFile.originalname}`),
+            created: utility.getFormattedDate(new Date()),
+            modified: utility.getFormattedDate(new Date()),
+        })
+        const item = await newItem.save();
+        return item;
+    }
+}
+
+exports.uploadPackage = async (req, user) => {
+    const files = req.files;
+    if (!files['image'] || !files['file']) {
+        throw new Error('Both image and package files are required');
+    }
+
+    const itemTitle = req.body.title.replace(/ /g, '_');
+    const itemType = req.body.itemType;
+    console.log(req.body)
+    let dir = `public/upload/users/${user.username}/${itemType}/${itemTitle}`;
+    let version = getCurrentVersionNum(dir);
+    dir = `${dir}${version}`;
+    let uploadDirectory = this.createUserDirectory(dir, itemType);
+
+    const imageFile = files['image'][0];
+    const packageFile = files['file'][0];
+    this.validateInputFields(req.body);
+
+    // package file upload
+    this.isPackageFileType(packageFile);
+    this.isValidFileSize(packageFile);
+    await this.uploadPackageFileToServer(packageFile, uploadDirectory);
+
+    // image file upload
+    this.validateImageFileType(imageFile);
+    this.validateImageFileSize(imageFile);
+    let resizedFile = await this.resizeImage(imageFile);
+    let imageFileName = resizedFile.originalname.split('.');
+    imageFileName[0] = itemTitle;
+    resizedFile.originalname = imageFileName.join('.');
+    await this.uploadPackageFileToServer(resizedFile, uploadDirectory);
+
+    const author = createAuthor(user);
+
+    const currentVersion = {
+        version: `${version}`,
+        url: path.relative('public', `${dir}/${packageFile.originalname}`)
     }
 
     const existingItem = await Model.findOne({ name: req.body.title, type: req.body.itemType });

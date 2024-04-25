@@ -20,7 +20,7 @@ const configSchema = new mongoose.Schema({
     itemTypes: {
         type: Array,
         required: true,
-        default: ['asset', 'profile', 'recording', 'webpanel', 'video', 'config']
+        default: ['asset', 'profile', 'recording', 'webpanel', 'video', 'config', 'package']
     },
     licenses: {
         type: Array,

@@ -5,6 +5,7 @@ import Profiles from './components/Profiles';
 import Recordings from './components/Recordings';
 import WebPanels from './components/WebPanels';
 import Configs from './components/Configs';
+import Packages from './components/Packages';
 import Videos from './components/Videos';
 import Footer from './components/Footer';
 import SignIn from './components/SignIn';
@@ -67,6 +68,7 @@ function App() {
           <Route path="recordings" element={<Recordings user={user} config={config} />} />
           <Route path="webpanels" element={<WebPanels user={user} config={config} />} />
           <Route path="configs" element={<Configs user={user} config={config} />} />
+          <Route path="packages" element={<Packages user={user} config={config} />} />
           <Route path="videos" element={<Videos user={user} config={config} />} />
           <Route path="items" element={<Items user={user} config={config} />} />
           <Route path="useritems" element={<UserItems user={user} config={config} />} />

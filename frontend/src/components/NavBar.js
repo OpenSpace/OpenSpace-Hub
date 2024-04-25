@@ -31,6 +31,7 @@ const NavBar = ({ user, showLogin, config }) => {
                             <Nav.Link href="profiles" className="underline-on-active">Profiles</Nav.Link>
                             <Nav.Link href="webpanels" className="underline-on-active">WebPanels</Nav.Link>
                             <Nav.Link href="configs" className="underline-on-active">Configs</Nav.Link>
+                            <Nav.Link href="packages" className="underline-on-active">Packages</Nav.Link>
                             <NavDropdown title="Media" id="collapsible-nav-dropdown">
                                 <NavDropdown.Item href="recordings" className="underline-on-active">Recordings</NavDropdown.Item>
                                 <NavDropdown.Item href="videos" className="underline-on-active">Videos</NavDropdown.Item>
