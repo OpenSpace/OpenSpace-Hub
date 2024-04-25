@@ -6,11 +6,11 @@ const Logout = () => {
     const logOut = () => {
         googleLogout();
         localStorage.clear();
-        redirectToLogin();
+        redirectToHome();
     };
 
-    const redirectToLogin = () => {
-        window.location.href = "/login";
+    const redirectToHome = () => {
+        window.location.href = "/";
     };
 
     useEffect(() => {

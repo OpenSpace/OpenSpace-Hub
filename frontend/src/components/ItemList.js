@@ -98,8 +98,8 @@ function ItemList({ user, type }) {
                                 </Card.Text>
                                 {item.currentVersion &&
                                     <Card.Text>
-                                        <b>Current Version: </b>
-                                        <Card.Link href={item.currentVersion.url}>{item.currentVersion.version}</Card.Link>
+                                        <b>Current Version: {item.currentVersion.version} </b>
+                                        <Card.Link href={item.currentVersion.url}>Download</Card.Link>
                                     </Card.Text>
                                 }
                                 {item.archives && item.archives.length > 0 &&

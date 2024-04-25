@@ -313,7 +313,7 @@ function unlinkUploadedDir(dir) {
 }
 
 function getCurrentVersionNum(dir) {
-    let version = 0;
+    let version = 1;
     if (fs.existsSync(dir)) {
         let versions = fs.readdirSync(dir);
         versions.forEach(file => {
@@ -346,7 +346,7 @@ exports.uploadAsset = async (req, user) => {
     const itemType = req.body.itemType;
     let dir = `public/upload/users/${user.username}/${itemType}/${itemTitle}`;
     let version = getCurrentVersionNum(dir);
-    dir = `${dir}/V_${version}`;
+    dir = `${dir}${version}`;
     let uploadDirectory = this.createUserDirectory(dir, itemType);
 
     const imageFile = files['image'][0];
@@ -370,7 +370,7 @@ exports.uploadAsset = async (req, user) => {
     const author = createAuthor(user);
 
     const currentVersion = {
-        version: `V_${version}`,
+        version: `${version}`,
         url: path.relative('public', `${dir}/${assetFile.originalname}`)
     }
 
@@ -417,7 +417,7 @@ exports.uploadProfile = async (req, user) => {
     const itemType = req.body.itemType;
     let dir = `public/upload/users/${user.username}/${itemType}/${itemTitle}`;
     let version = getCurrentVersionNum(dir);
-    dir = `${dir}/V_${version}`;
+    dir = `${dir}/${version}`;
     let uploadDirectory = this.createUserDirectory(dir, itemType);
 
     const imageFile = files['image'][0];
@@ -441,7 +441,7 @@ exports.uploadProfile = async (req, user) => {
     const author = createAuthor(user);
 
     const currentVersion = {
-        version: `V_${version}`,
+        version: `${version}`,
         url: path.relative('public', `${dir}/${profileFile.originalname}`)
     }
 
@@ -488,7 +488,7 @@ exports.uploadRecording = async (req, user) => {
     const itemType = req.body.itemType;
     let dir = `public/upload/users/${user.username}/${itemType}/${itemTitle}`;
     let version = getCurrentVersionNum(dir);
-    dir = `${dir}/V_${version}`;
+    dir = `${dir}/${version}`;
     let uploadDirectory = this.createUserDirectory(dir, itemType);
 
     const imageFile = files['image'][0];
@@ -512,7 +512,7 @@ exports.uploadRecording = async (req, user) => {
     const author = createAuthor(user);
 
     const currentVersion = {
-        version: `V_${version}`,
+        version: `${version}`,
         url: path.relative('public', `${dir}/${recordingFile.originalname}`)
     }
 
@@ -557,7 +557,7 @@ exports.uploadWebPanel = async (req, user) => {
     const itemType = req.body.itemType;
     let dir = `public/upload/users/${user.username}/${itemType}/${itemTitle}`;
     let version = getCurrentVersionNum(dir);
-    dir = `${dir}/V_${version}`;
+    dir = `${dir}/${version}`;
     let uploadDirectory = this.createUserDirectory(dir, itemType);
 
     const imageFile = files['image'][0];
@@ -581,7 +581,7 @@ exports.uploadWebPanel = async (req, user) => {
     const author = createAuthor(user);
 
     const currentVersion = {
-        version: `V_${version}`,
+        version: `${version}`,
         url: path.relative('public', `${dir}/${webPanelFile.originalname}`)
     }
 
@@ -626,7 +626,7 @@ exports.uploadVideo = async (req, user) => {
     const author = createAuthor(user);
 
     const currentVersion = {
-        version: `V_0`,
+        version: `1`,
         url: req.body.video
     }
 
@@ -639,7 +639,7 @@ exports.uploadVideo = async (req, user) => {
         existingItem.archives.push(archive);
         existingItem.author = author;
         existingItem.description = req.body.description;
-        currentVersion.version = `V_${parseInt(existingItem.currentVersion.version.split('_')[1]) + 1}`;
+        currentVersion.version = `${parseInt(existingItem.currentVersion.version.split('_')[1]) + 1}`;
         existingItem.currentVersion = currentVersion;
         existingItem.modified = utility.getFormattedDate(new Date());
         const item = await existingItem.save();
@@ -671,7 +671,7 @@ exports.uploadConfig = async (req, user) => {
     const itemType = req.body.itemType;
     let dir = `public/upload/users/${user.username}/${itemType}/${itemTitle}`;
     let version = getCurrentVersionNum(dir);
-    dir = `${dir}/V_${version}`;
+    dir = `${dir}/${version}`;
     let uploadDirectory = this.createUserDirectory(dir, itemType);
 
     const configFile = files['file'][0];
@@ -685,7 +685,7 @@ exports.uploadConfig = async (req, user) => {
     const author = createAuthor(user);
 
     const currentVersion = {
-        version: `V_${version}`,
+        version: `${version}`,
         url: path.relative('public', `${dir}/${configFile.originalname}`)
     }
 
