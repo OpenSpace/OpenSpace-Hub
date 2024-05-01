@@ -110,6 +110,17 @@ export default class APIService {
         return await resp.json();
     }
 
+    static async UpdateItem(id, formData) {
+        const resp = await fetch(`/api/updateItem/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: formData
+        });
+        return await resp.json();
+    }
+
     static async DeleteItem(id) {
         const resp = await fetch(`/api/deleteItem/${id}`, {
             method: 'DELETE',

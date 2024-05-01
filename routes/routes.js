@@ -324,6 +324,45 @@ router.post('/upload', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'f
 
 /**
  * @swagger
+ * /api/updateItem/{id}:
+ *  put:
+ *      summary: Update item by id.
+ *      description: Update the item using id from the database.
+ *      parameters:
+ *          - in : path
+ *            name : itemId
+ *            required : true
+ *            description: ID of the item to update
+ *      responses:
+ *          200:
+ *              description: Successful response with data.
+ *          404:
+ *              description: Item not found
+ *          500:
+ *              description: Internal server error.
+ */
+router.put('/updateItem/:id', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'file', maxCount: 1 }]), async (req, res) => {
+    try {
+        const token = req.headers['authorization'].split(' ')[1];
+        if (!token || token === 'null') {
+            console.log('Unauthorized request');
+            return res.status(401).json({ error: 'Unauthorized request' });
+        }
+        jwt.verify(token, process.env.SECRET_KEY);
+        const item = await Model.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
+        if (!item) {
+            return res.status(404).json({ message: 'Item not found' });
+        }
+        console.log("item: ", item)
+        const message = "Uploaded successfully on server";
+        res.status(200).json({ message: message, item: item });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+})
+
+/**
+ * @swagger
  * /api/deleteItem/{id}:
  *  delete:
  *      summary: Delete item by id.

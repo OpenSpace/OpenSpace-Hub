@@ -38,29 +38,32 @@ To-Do:
 - [x] Add Item Types - Video
 - [x] Add Item Types - Config
 - [x] User page
-- [ ] Profile Dependencies
 - [ ] Jenkinsfile
 - [ ] Secure port
 - [x] Dockerfile and docker-compose file
 - [x] Default Item Image 
 - [x] disable simple signup
 - [x] delete user profile
-- [ ] download counts
-- [ ] sort by
 - [x] slack button
 - [x] package 
 - [x] no exe inside the zip
 - [ ] sanitizing user/search input
 - [ ] Warning text: you are responsible for whatever is in it - On Upload page, Item can be modified by administrator if required, accept terms and con
 - [x] adminstrator table - uploading false, signup false (In case of fire, site can remain active and nothing)
-- [ ] Tags
 - [x] Which version (dropdown) it works with - ask user in the upload page
 - [x] Openspace team (admin) can edit 
 - [x] License dropdown
 - [x] checkbox for 13 years old
 - [ ] the filename for the photo
 - [ ] alerts
+- [ ] No upload allowed for the existing item name
 
+------ Later
+- [ ] Tags
+- [ ] Profile Dependencies
+- [ ] download counts
+- [ ] sort by
+- [ ] verify the item name
 
 Local deployment
 ====================================

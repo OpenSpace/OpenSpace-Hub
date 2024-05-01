@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
+import { Form } from 'react-bootstrap';
 import APIService from './APIService';
 
 
@@ -42,7 +43,7 @@ const UploadItem = ({ config }) => {
 
     const [license, setLicense] = useState('');
     const handleLicenseChange = (e) => {
-        setLicense(e.target.value);
+        setLicense(e);
     }
 
     const [video, setVideo] = useState('');
@@ -155,7 +156,7 @@ const UploadItem = ({ config }) => {
                         <h5>Title</h5>
                         <input type="text" value={title} onChange={handleTitleChange} />
                         <h5 style={{ marginTop: '20px' }} >Description</h5>
-                        <input type="text" value={description} onChange={handleDescription} />
+                        <textarea rows={3} value={description} onChange={handleDescription} />
                         <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                             <Dropdown onSelect={handleItemTypeSelect} >
                                 <h5>Item Type</h5>
@@ -183,7 +184,7 @@ const UploadItem = ({ config }) => {
                             </Dropdown>
                         </div>
                         <div style={{ marginBottom: '20px' }}>
-                            <Dropdown onSelect={handleOpenSpaceVersionSelect} >
+                            <Dropdown onSelect={handleLicenseChange} >
                                 <h5>License <p style={{ fontSize: "15px" }}></p></h5>
                                 <Dropdown.Toggle variant="success" id="dropdown-basic">
                                     {license}
@@ -196,7 +197,7 @@ const UploadItem = ({ config }) => {
                             </Dropdown>
                         </div>
 
-                        {(itemType.toLowerCase() === 'config' || itemType === 'video') ? null :
+                        {(itemType.toLowerCase() === 'config' || itemType.toLowerCase() === 'video') ? null :
                             (
                                 <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                                     <h5>Upload item-image <p style={{ fontSize: "15px" }}>(accepted formats: .jpg, .jpeg, .png)</p></h5>
@@ -247,7 +248,7 @@ const UploadItem = ({ config }) => {
                             </div>
                         )}
                     </form>
-                    <div style={{ marginBottom: '20px', marginTop: '20px'}}>
+                    <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                         <input type="checkbox" checked={acceptTerms} onChange={handleAcceptTerms} />
                         <label htmlFor="acceptTerms">I accept the terms and conditions</label>
                     </div>
