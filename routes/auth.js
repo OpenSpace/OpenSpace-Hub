@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const Config = require('./../models/Config');
 const User = require('./../models/User');
 const Model = require('../models/Model');
 const bcrypt = require('bcrypt')
@@ -34,6 +35,11 @@ const authUtility = require('./../utils/authUtility')
  */
 router.post('/register', async (req, res) => {
     try {
+        let config = await Config.findOne();
+        if (!config.signin) {
+            throw new Error('Signup disabled');
+        }
+
         const { name, email, password, cnfPassword } = req.body;
         authUtility.validatePassword(password, cnfPassword);
         let user = await User.findOne({ email });
@@ -120,6 +126,11 @@ router.delete('/deleteUser/:username', async (req, res) => {
  */
 router.post('/social-media-login', async (req, res) => {
     try {
+        let config = await Config.findOne();
+        if (!config.signin) {
+            throw new Error('Login disabled');
+        }
+
         const { name, accessToken, email, domain, pictureUrl } = req.body;
         let isVerified = await authUtility.verifySocialMediaToken(domain, accessToken);
         if (!isVerified) {
@@ -171,6 +182,10 @@ router.post('/social-media-login', async (req, res) => {
  */
 router.post('/login', async (req, res) => {
     try {
+        let config = await Config.findOne();
+        if (!config.signin) {
+            throw new Error('Login disabled');
+        }
         const { email, password } = req.body;
         const user = await User.findOne({ email });
         if (!user) {
