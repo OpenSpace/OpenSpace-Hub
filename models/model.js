@@ -40,6 +40,10 @@ const itemSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    openspaceVersion: {
+        type: String,
+        required: true
+    },
     currentVersion: {
         type: versionSchema,
         required: true

@@ -35,10 +35,10 @@ const UploadItem = ({ config }) => {
         setImage(e.target.files[0]);
     }
 
-    const [title, setTitle] = useState('');
+    const [name, setName] = useState('');
 
-    const handleTitleChange = (e) => {
-        setTitle(e.target.value);
+    const handleNameChange = (e) => {
+        setName(e.target.value);
     }
 
     const [license, setLicense] = useState('');
@@ -83,7 +83,7 @@ const UploadItem = ({ config }) => {
         if (video != '') {
             const formData = new FormData();
             formData.append('video', video);
-            formData.append('title', title);
+            formData.append('name', name);
             formData.append('itemType', itemType.toLowerCase());
             formData.append('license', license);
             formData.append('description', description);
@@ -103,7 +103,7 @@ const UploadItem = ({ config }) => {
             return;
         }
         else {
-            if (!file || title.trim() === '' || itemType.trim() === '' || license.trim() === '' || description.trim() === '' || (!image && (itemType !== 'config' && itemType !== 'video'))) {
+            if (!file || name.trim() === '' || itemType.trim() === '' || license.trim() === '' || description.trim() === '' || (!image && (itemType !== 'config' && itemType !== 'video'))) {
                 alert('Please fill in all fields.');
                 return;
             }
@@ -112,9 +112,10 @@ const UploadItem = ({ config }) => {
                 formData.append('file', file);
                 formData.append('image', image);
                 formData.append('fileName', file.name);
-                formData.append('title', title);
+                formData.append('name', name);
                 formData.append('itemType', itemType.toLowerCase());
                 formData.append('license', license);
+                formData.append('openspaceVersion', openspaceVersion);
                 formData.append('description', description);
                 await APIService.UploadItem(formData)
                     .then(resp => {
@@ -123,7 +124,7 @@ const UploadItem = ({ config }) => {
                         }
                         alert(resp.message);
                         handleClose();
-                        redirectToHome();
+                        // redirectToHome();
                     })
                     .catch(err => {
                         alert("Error uploading item. " + err.message);
@@ -153,8 +154,8 @@ const UploadItem = ({ config }) => {
                 </Modal.Header>
                 <Modal.Body>
                     <form style={{ display: 'flex', flexDirection: 'column' }}>
-                        <h5>Title</h5>
-                        <input type="text" value={title} onChange={handleTitleChange} />
+                        <h5>Name</h5>
+                        <input type="text" value={name} onChange={handleNameChange} />
                         <h5 style={{ marginTop: '20px' }} >Description</h5>
                         <textarea rows={3} value={description} onChange={handleDescription} />
                         <div style={{ marginBottom: '20px', marginTop: '20px' }}>

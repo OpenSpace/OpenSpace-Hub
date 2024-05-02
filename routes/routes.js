@@ -121,6 +121,8 @@ router.get('/items', async (req, res) => {
             .skip(page * limit)
             .limit(limit);
 
+        console.log('items: ', items)
+
         const total = await Model.find({
             $and: [
                 { name: { $regex: search, $options: 'i' } },
@@ -235,6 +237,8 @@ router.post('/addItem', async (req, res) => {
         description: req.body.description,
         author: req.body.author,
         currentVersion: req.body.currentVersion,
+        license: req.body.license,
+        openspaceVersion: req.body.openspaceVersion,
         image: req.body.image,
         archives: req.body.archives,
         created: utility.getFormattedDate(new Date()),
@@ -343,17 +347,51 @@ router.post('/upload', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'f
  */
 router.put('/updateItem/:id', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'file', maxCount: 1 }]), async (req, res) => {
     try {
-        const token = req.headers['authorization'].split(' ')[1];
-        if (!token || token === 'null') {
+        const jwtToken = req.headers['authorization'].split(' ')[1];
+        const user = await authUtility.getUserInfo(jwtToken);
+        if (!jwtToken || jwtToken === 'null') {
             console.log('Unauthorized request');
             return res.status(401).json({ error: 'Unauthorized request' });
         }
-        jwt.verify(token, process.env.SECRET_KEY);
-        const item = await Model.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
+        jwt.verify(jwtToken, process.env.SECRET_KEY);
+        
+        let item = await Model.findById(req.params.id);
+        if (req.files && req.files['file']) {
+            switch (req.body.itemType) {
+                case 'asset':
+                    item = await itemUtility.updateAsset(req, user);
+                    break;
+                case 'profile':
+                    item = await itemUtility.updateProfile(req, user);
+                    break;
+                case 'recording':
+                    item = await itemUtility.updateRecording(req, user);
+                    break;
+                case 'webpanel':
+                    item = await itemUtility.updateWebPanel(req, user);
+                    break;
+                case 'video':
+                    item = await itemUtility.updateVideo(req, user);
+                    break;
+                case 'config':
+                    item = await itemUtility.updateConfig(req, user);
+                    break;
+                case 'package':
+                    item = await itemUtility.updatePackage(req, user);
+                    break;
+                default:
+                    throw new Error('Invalid item type');
+            }
+        }
+
+        if (req.files && req.files['image']) {
+            item = await itemUtility.updateImage(req, user);
+        }
+
+        item = await Model.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
         if (!item) {
             return res.status(404).json({ message: 'Item not found' });
         }
-        console.log("item: ", item)
         const message = "Uploaded successfully on server";
         res.status(200).json({ message: message, item: item });
     } catch (error) {

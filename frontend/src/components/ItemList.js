@@ -19,8 +19,8 @@ function ItemList({ user, type, config }) {
 
     const handleClose = () => setShowModal(false);
 
-    const [title, setTitle] = useState('');
-    const handleTitleChange = (e) => {
+    const [name, setName] = useState('');
+    const handleNameChange = (e) => {
         setSelectedItem({ ...selectedItem, name: e.target.value });
     }
     const [description, setDescription] = useState('');
@@ -68,19 +68,17 @@ function ItemList({ user, type, config }) {
         setSearchTerm(e.target.value);
     }
 
-    const [image, setImage] = useState(null);
     const handleImageChange = (e) => {
-        setImage(e.target.files[0]);
+        setSelectedItem({ ...selectedItem, image: e.target.files[0] });
     }
 
-    const [file, setFile] = useState(null);
     const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
+        setSelectedItem({ ...selectedItem, file: e.target.files[0] });
     }
 
     const [video, setVideo] = useState('');
     const handleVideoChange = (e) => {
-        setVideo(e.target.value);
+        setSelectedItem({ ...selectedItem, video: e.target.value });
     }
 
     const handlePageChange = (page) => {
@@ -108,7 +106,7 @@ function ItemList({ user, type, config }) {
 
     const editItem = (item) => {
         setSelectedItem(item);
-        setTitle(item.name);
+        setName(item.name);
         setDescription(item.description);
         setOpenspaceVersion(item.openspaceVersion);
         setShowModal(true);
@@ -127,27 +125,30 @@ function ItemList({ user, type, config }) {
         }
         else {
             const formData = new FormData();
-            if (file) {
+            if (selectedItem && selectedItem.file) {
                 formData.append('file', selectedItem.file);
                 formData.append('fileName', selectedItem.file.name);
             }
-            if (image) {
+            if (selectedItem && selectedItem.image) {
+                console.log(selectedItem.image);
                 formData.append('image', selectedItem.image);
             }
-            if (video) {
+            if (selectedItem && selectedItem.video) {
                 formData.append('video', selectedItem.video);
             }
             formData.append('itemType', selectedItem.type);
             formData.append('openspaceVersion', selectedItem.openspaceVersion);
             formData.append('name', selectedItem.name);
+            console.log(selectedItem.name);
             formData.append('description', selectedItem.description);
             await APIService.UpdateItem(selectedItem._id, formData)
                 .then(resp => {
                     if (resp.error) {
                         throw new Error(resp.error);
                     }
+                    console.log(resp);
                     alert(resp.message);
-                    setItems(items.map(i => i._id === selectedItem._id ? resp.data : i));
+                    setItems(items.map(i => i._id === selectedItem._id ? resp.item : i));
                     handleClose();
                 })
                 .catch(err => {
@@ -181,8 +182,8 @@ function ItemList({ user, type, config }) {
                 </Modal.Header>
                 <Modal.Body>
                     <form style={{ display: 'flex', flexDirection: 'column' }}>
-                        <h5>Title</h5>
-                        <input type="text" defaultValue={selectedItem?.name} onChange={handleTitleChange} />
+                        <h5>Name</h5>
+                        <input type="text" defaultValue={selectedItem?.name} onChange={handleNameChange} />
                         <h5 style={{ marginTop: '20px' }} >Description</h5>
                         <textarea rows={3} defaultValue={selectedItem?.description} onChange={handleDescription} />
                         <div style={{ marginBottom: '20px', marginTop: '20px' }}>
@@ -298,6 +299,10 @@ function ItemList({ user, type, config }) {
                                 <Card.Text>
                                     <b>License: </b>
                                     {item.license}
+                                </Card.Text>
+                                <Card.Text>
+                                    <b>OpenSpace Version: </b>
+                                    {item.openspaceVersion}
                                 </Card.Text>
                                 {item.currentVersion &&
                                     <Card.Text>

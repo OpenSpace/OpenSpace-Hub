@@ -6,7 +6,7 @@ const utility = require('./utility');
 const Model = require('../models/Model');
 
 exports.validateInputFields = (body) => {
-    if (!body.title || !body.title.trim() ||
+    if (!body.name || !body.name.trim() ||
         !body.itemType || !body.itemType.trim() ||
         !body.license || !body.license.trim() ||
         !body.description || !body.description.trim()
@@ -370,13 +370,16 @@ function getCurrentVersionNum(dir) {
     let version = 1;
     if (fs.existsSync(dir)) {
         let versions = fs.readdirSync(dir);
+        console.log("versions: " , versions);
         versions.forEach(file => {
-            let fileVersion = parseInt(file.split('_')[1]);
-            if (fileVersion >= version) {
-                version = fileVersion + 1;
+            console.log("file: ", file);
+            file = parseInt(file);
+            if (file >= version) {
+                version = file + 1;
             }
         });
     }
+    console.log("final version: ", version);
     return version;
 }
 
@@ -395,12 +398,11 @@ exports.uploadAsset = async (req, user) => {
     if (!files['image'] || !files['file']) {
         throw new Error('Both image and asset files are required');
     }
-
-    const itemTitle = req.body.title.replace(/ /g, '_');
+    const itemName = req.body.name.replace(/ /g, '_');
     const itemType = req.body.itemType;
-    let dir = `public/upload/users/${user.username}/${itemType}/${itemTitle}`;
+    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
     let version = getCurrentVersionNum(dir);
-    dir = `${dir}${version}`;
+    dir = `${dir}/${version}`;
     let uploadDirectory = this.createUserDirectory(dir, itemType);
 
     const imageFile = files['image'][0];
@@ -417,7 +419,7 @@ exports.uploadAsset = async (req, user) => {
     this.validateImageFileSize(imageFile);
     let resizedFile = await this.resizeImage(imageFile);
     let imageFileName = resizedFile.originalname.split('.');
-    imageFileName[0] = itemTitle;
+    imageFileName[0] = itemName;
     resizedFile.originalname = imageFileName.join('.');
     await this.uploadAssetFileToServer(resizedFile, uploadDirectory);
 
@@ -428,7 +430,7 @@ exports.uploadAsset = async (req, user) => {
         url: path.relative('public', `${dir}/${assetFile.originalname}`)
     }
 
-    const existingItem = await Model.findOne({ name: req.body.title, type: req.body.itemType });
+    const existingItem = await Model.findOne({ name: req.body.name, type: req.body.itemType });
     if (existingItem) {
         const archive = {
             version: existingItem.currentVersion.version,
@@ -444,11 +446,12 @@ exports.uploadAsset = async (req, user) => {
         return item;
     } else {
         const newItem = new Model({
-            name: req.body.title,
+            name: req.body.name,
             type: req.body.itemType,
             description: req.body.description,
             author: author,
             license: req.body.license,
+            openspaceVersion: req.body.openspaceVersion,
             currentVersion: currentVersion,
             image: path.relative('public', `${dir}/${resizedFile.originalname}`),
             created: utility.getFormattedDate(new Date()),
@@ -459,18 +462,95 @@ exports.uploadAsset = async (req, user) => {
     }
 }
 
+exports.updateImage = async (req, user) => {
+    const files = req.files;
+    if (!files['image']) {
+        throw new Error('Image file is required');
+    }
+
+    const itemName = req.body.name.replace(/ /g, '_');
+    const itemType = req.body.itemType;
+    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
+    let version = getCurrentVersionNum(dir)-1;
+    dir = `${dir}/${version}`;
+    let uploadDirectory = this.createUserDirectory(dir, itemType);
+
+    const imageFile = files['image'][0];
+
+    // image file upload
+    this.validateImageFileType(imageFile);
+    this.validateImageFileSize(imageFile);
+    let resizedFile = await this.resizeImage(imageFile);
+    let imageFileName = resizedFile.originalname.split('.');
+    imageFileName[0] = itemName;
+    resizedFile.originalname = imageFileName.join('.');
+    await this.uploadAssetFileToServer(resizedFile, uploadDirectory);
+
+    const existingItem = await Model.findById(req.params.id);
+    if (existingItem) {
+        existingItem.name = req.body.name;
+        existingItem.description = req.body.description;
+        existingItem.image = path.relative('public', `${dir}/${resizedFile.originalname}`);
+        existingItem.modified = utility.getFormattedDate(new Date());
+        const item = await existingItem.save();
+        return item;
+    } else {
+        throw new Error('Item not found');
+    }
+}
+
+exports.updateAsset = async (req, user) => {
+    const files = req.files;
+    if (!files['file']) {
+        throw new Error('asset file is required');
+    }
+
+    const itemName = req.body.name.replace(/ /g, '_');
+    const itemType = req.body.itemType;
+    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
+    let version = getCurrentVersionNum(dir);
+    dir = `${dir}/${version}`;
+    let uploadDirectory = this.createUserDirectory(dir, itemType);
+
+    const assetFile = files['file'][0];
+
+    // asset file upload
+    this.isAssetFileType(assetFile);
+    this.isValidFileSize(assetFile);
+    await this.uploadAssetFileToServer(assetFile, uploadDirectory);
+
+    const currentVersion = {
+        version: `${version}`,
+        url: path.relative('public', `${dir}/${assetFile.originalname}`)
+    }
+
+    const existingItem = await Model.findById(req.params.id);
+    if (existingItem) {
+        const archive = {
+            version: existingItem.currentVersion.version,
+            url: existingItem.currentVersion.url
+        }
+        existingItem.archives.push(archive);
+        existingItem.description = req.body.description;
+        existingItem.currentVersion = currentVersion;
+        existingItem.modified = utility.getFormattedDate(new Date());
+        const item = await existingItem.save();
+        return item;
+    }
+}
+
 exports.uploadPackage = async (req, user) => {
     const files = req.files;
     if (!files['image'] || !files['file']) {
         throw new Error('Both image and package files are required');
     }
 
-    const itemTitle = req.body.title.replace(/ /g, '_');
+    const itemName = req.body.name.replace(/ /g, '_');
     const itemType = req.body.itemType;
     console.log(req.body)
-    let dir = `public/upload/users/${user.username}/${itemType}/${itemTitle}`;
+    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
     let version = getCurrentVersionNum(dir);
-    dir = `${dir}${version}`;
+    dir = `${dir}/${version}`;
     let uploadDirectory = this.createUserDirectory(dir, itemType);
 
     const imageFile = files['image'][0];
@@ -487,7 +567,7 @@ exports.uploadPackage = async (req, user) => {
     this.validateImageFileSize(imageFile);
     let resizedFile = await this.resizeImage(imageFile);
     let imageFileName = resizedFile.originalname.split('.');
-    imageFileName[0] = itemTitle;
+    imageFileName[0] = itemName;
     resizedFile.originalname = imageFileName.join('.');
     await this.uploadPackageFileToServer(resizedFile, uploadDirectory);
 
@@ -498,7 +578,7 @@ exports.uploadPackage = async (req, user) => {
         url: path.relative('public', `${dir}/${packageFile.originalname}`)
     }
 
-    const existingItem = await Model.findOne({ name: req.body.title, type: req.body.itemType });
+    const existingItem = await Model.findOne({ name: req.body.name, type: req.body.itemType });
     if (existingItem) {
         const archive = {
             version: existingItem.currentVersion.version,
@@ -514,7 +594,7 @@ exports.uploadPackage = async (req, user) => {
         return item;
     } else {
         const newItem = new Model({
-            name: req.body.title,
+            name: req.body.name,
             type: req.body.itemType,
             description: req.body.description,
             author: author,
@@ -529,6 +609,46 @@ exports.uploadPackage = async (req, user) => {
     }
 }
 
+exports.updatePackage = async (req, user) => {
+    const files = req.files;
+    if (!files['file']) {
+        throw new Error('Package file is required');
+    }
+
+    const itemName = req.body.name.replace(/ /g, '_');
+    const itemType = req.body.itemType;
+    console.log(req.body)
+    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
+    let version = getCurrentVersionNum(dir);
+    dir = `${dir}/${version}`;
+    let uploadDirectory = this.createUserDirectory(dir, itemType);
+
+    const packageFile = files['file'][0];
+
+    // package file upload
+    this.isPackageFileType(packageFile);
+    this.isValidFileSize(packageFile);
+    await this.uploadPackageFileToServer(packageFile, uploadDirectory);
+
+    const currentVersion = {
+        version: `${version}`,
+        url: path.relative('public', `${dir}/${packageFile.originalname}`)
+    }
+
+    const existingItem = await Model.findById(req.params.id);
+    if (existingItem) {
+        const archive = {
+            version: existingItem.currentVersion.version,
+            url: existingItem.currentVersion.url
+        }
+        existingItem.archives.push(archive);
+        existingItem.description = req.body.description;
+        existingItem.currentVersion = currentVersion;
+        existingItem.modified = utility.getFormattedDate(new Date());
+        const item = await existingItem.save();
+        return item;
+    }
+}
 
 exports.uploadProfile = async (req, user) => {
     const files = req.files;
@@ -536,9 +656,9 @@ exports.uploadProfile = async (req, user) => {
         throw new Error('Both image and asset files are required');
     }
 
-    const itemTitle = req.body.title.replace(/ /g, '_');
+    const itemName = req.body.name.replace(/ /g, '_');
     const itemType = req.body.itemType;
-    let dir = `public/upload/users/${user.username}/${itemType}/${itemTitle}`;
+    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
     let version = getCurrentVersionNum(dir);
     dir = `${dir}/${version}`;
     let uploadDirectory = this.createUserDirectory(dir, itemType);
@@ -557,7 +677,7 @@ exports.uploadProfile = async (req, user) => {
     this.validateImageFileSize(imageFile);
     let resizedFile = await this.resizeImage(imageFile);
     let imageFileName = resizedFile.originalname.split('.');
-    imageFileName[0] = itemTitle;
+    imageFileName[0] = itemName;
     resizedFile.originalname = imageFileName.join('.');
     await this.uploadProfileFileToServer(resizedFile, uploadDirectory);
 
@@ -568,7 +688,7 @@ exports.uploadProfile = async (req, user) => {
         url: path.relative('public', `${dir}/${profileFile.originalname}`)
     }
 
-    const existingItem = await Model.findOne({ name: req.body.title, type: req.body.itemType });
+    const existingItem = await Model.findOne({ name: req.body.name, type: req.body.itemType });
     if (existingItem) {
         const archive = {
             version: existingItem.currentVersion.version,
@@ -584,11 +704,12 @@ exports.uploadProfile = async (req, user) => {
         return item;
     } else {
         const newItem = new Model({
-            name: req.body.title,
+            name: req.body.name,
             type: req.body.itemType,
             description: req.body.description,
             author: author,
             license: req.body.license,
+            openspaceVersion: req.body.openspaceVersion,
             currentVersion: currentVersion,
             image: path.relative('public', `${dir}/${resizedFile.originalname}`),
             created: utility.getFormattedDate(new Date()),
@@ -599,15 +720,55 @@ exports.uploadProfile = async (req, user) => {
     }
 }
 
+exports.updateProfile = async (req, user) => {
+    const files = req.files;
+    if (!files['file']) {
+        throw new Error('profile file is required');
+    }
+
+    const itemName = req.body.name.replace(/ /g, '_');
+    const itemType = req.body.itemType;
+    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
+    let version = getCurrentVersionNum(dir);
+    dir = `${dir}/${version}`;
+    let uploadDirectory = this.createUserDirectory(dir, itemType);
+
+    const profileFile = files['file'][0];
+
+    // profile file upload
+    this.isProfileFileType(profileFile);
+    this.isValidFileSize(profileFile);
+    await this.uploadProfileFileToServer(profileFile, uploadDirectory);
+
+    const currentVersion = {
+        version: `${version}`,
+        url: path.relative('public', `${dir}/${profileFile.originalname}`)
+    }
+
+    const existingItem = await Model.findById(req.params.id);
+    if (existingItem) {
+        const archive = {
+            version: existingItem.currentVersion.version,
+            url: existingItem.currentVersion.url
+        }
+        existingItem.archives.push(archive);
+        existingItem.description = req.body.description;
+        existingItem.currentVersion = currentVersion;
+        existingItem.modified = utility.getFormattedDate(new Date());
+        const item = await existingItem.save();
+        return item;
+    }
+}
+
 exports.uploadRecording = async (req, user) => {
     const files = req.files;
     if (!files['image'] || !files['file']) {
         throw new Error('Both image and asset files are required');
     }
 
-    const itemTitle = req.body.title.replace(/ /g, '_');
+    const itemName = req.body.name.replace(/ /g, '_');
     const itemType = req.body.itemType;
-    let dir = `public/upload/users/${user.username}/${itemType}/${itemTitle}`;
+    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
     let version = getCurrentVersionNum(dir);
     dir = `${dir}/${version}`;
     let uploadDirectory = this.createUserDirectory(dir, itemType);
@@ -626,7 +787,7 @@ exports.uploadRecording = async (req, user) => {
     this.validateImageFileSize(imageFile);
     let resizedFile = await this.resizeImage(imageFile);
     let imageFileName = resizedFile.originalname.split('.');
-    imageFileName[0] = itemTitle;
+    imageFileName[0] = itemName;
     resizedFile.originalname = imageFileName.join('.');
     await this.uploadRecordingFileToServer(resizedFile, uploadDirectory);
 
@@ -637,7 +798,7 @@ exports.uploadRecording = async (req, user) => {
         url: path.relative('public', `${dir}/${recordingFile.originalname}`)
     }
 
-    const existingItem = await Model.findOne({ name: req.body.title, type: req.body.itemType });
+    const existingItem = await Model.findOne({ name: req.body.name, type: req.body.itemType });
     if (existingItem) {
         const archive = {
             version: existingItem.currentVersion.version,
@@ -653,11 +814,12 @@ exports.uploadRecording = async (req, user) => {
         return item;
     } else {
         const newItem = new Model({
-            name: req.body.title,
+            name: req.body.name,
             type: req.body.itemType,
             description: req.body.description,
             author: author,
             license: req.body.license,
+            openspaceVersion: req.body.openspaceVersion,
             currentVersion: currentVersion,
             image: path.relative('public', `${dir}/${resizedFile.originalname}`),
             created: utility.getFormattedDate(new Date()),
@@ -668,15 +830,55 @@ exports.uploadRecording = async (req, user) => {
     }
 }
 
+exports.updateRecording = async (req, user) => {
+    const files = req.files;
+    if (!files['file']) {
+        throw new Error('recording file is required');
+    }
+
+    const itemName = req.body.name.replace(/ /g, '_');
+    const itemType = req.body.itemType;
+    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
+    let version = getCurrentVersionNum(dir);
+    dir = `${dir}/${version}`;
+    let uploadDirectory = this.createUserDirectory(dir, itemType);
+
+    const recordingFile = files['file'][0];
+
+    // recording file upload
+    this.isrecordingFileType(recordingFile);
+    this.isValidFileSize(recordingFile);
+    await this.uploadRecordingFileToServer(recordingFile, uploadDirectory);
+
+    const currentVersion = {
+        version: `${version}`,
+        url: path.relative('public', `${dir}/${recordingFile.originalname}`)
+    }
+
+    const existingItem = await Model.findById(req.params.id);
+    if (existingItem) {
+        const archive = {
+            version: existingItem.currentVersion.version,
+            url: existingItem.currentVersion.url
+        }
+        existingItem.archives.push(archive);
+        existingItem.description = req.body.description;
+        existingItem.currentVersion = currentVersion;
+        existingItem.modified = utility.getFormattedDate(new Date());
+        const item = await existingItem.save();
+        return item;
+    }
+}
+
 exports.uploadWebPanel = async (req, user) => {
     const files = req.files;
     if (!files['image'] || !files['file']) {
         throw new Error('Both image and webpanel files are required');
     }
 
-    const itemTitle = req.body.title.replace(/ /g, '_');
+    const itemName = req.body.name.replace(/ /g, '_');
     const itemType = req.body.itemType;
-    let dir = `public/upload/users/${user.username}/${itemType}/${itemTitle}`;
+    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
     let version = getCurrentVersionNum(dir);
     dir = `${dir}/${version}`;
     let uploadDirectory = this.createUserDirectory(dir, itemType);
@@ -695,7 +897,7 @@ exports.uploadWebPanel = async (req, user) => {
     this.validateImageFileSize(imageFile);
     let resizedFile = await this.resizeImage(imageFile);
     let imageFileName = resizedFile.originalname.split('.');
-    imageFileName[0] = itemTitle;
+    imageFileName[0] = itemName;
     resizedFile.originalname = imageFileName.join('.');
     await this.uploadWebPanelFileToServer(resizedFile, uploadDirectory);
 
@@ -706,7 +908,7 @@ exports.uploadWebPanel = async (req, user) => {
         url: path.relative('public', `${dir}/${webPanelFile.originalname}`)
     }
 
-    const existingItem = await Model.findOne({ name: req.body.title, type: req.body.itemType });
+    const existingItem = await Model.findOne({ name: req.body.name, type: req.body.itemType });
     if (existingItem) {
         const archive = {
             version: existingItem.currentVersion.version,
@@ -722,17 +924,58 @@ exports.uploadWebPanel = async (req, user) => {
         return item;
     } else {
         const newItem = new Model({
-            name: req.body.title,
+            name: req.body.name,
             type: req.body.itemType,
             description: req.body.description,
             author: author,
             license: req.body.license,
+            openspaceVersion: req.body.openspaceVersion,
             currentVersion: currentVersion,
             image: path.relative('public', `${dir}/${resizedFile.originalname}`),
             created: utility.getFormattedDate(new Date()),
             modified: utility.getFormattedDate(new Date()),
         })
         const item = await newItem.save();
+        return item;
+    }
+}
+
+exports.updateWebPanel = async (req, user) => {
+    const files = req.files;
+    if (!files['file']) {
+        throw new Error('webpanel file is required');
+    }
+
+    const itemName = req.body.name.replace(/ /g, '_');
+    const itemType = req.body.itemType;
+    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
+    let version = getCurrentVersionNum(dir);
+    dir = `${dir}/${version}`;
+    let uploadDirectory = this.createUserDirectory(dir, itemType);
+
+    const webPanelFile = files['file'][0];
+
+    // web panel file upload
+    this.isWebPanelFileType(webPanelFile);
+    this.isValidFileSize(webPanelFile);
+    await this.uploadWebPanelFileToServer(webPanelFile, uploadDirectory);
+
+    const currentVersion = {
+        version: `${version}`,
+        url: path.relative('public', `${dir}/${webPanelFile.originalname}`)
+    }
+
+    const existingItem = await Model.findById(req.params.id);
+    if (existingItem) {
+        const archive = {
+            version: existingItem.currentVersion.version,
+            url: existingItem.currentVersion.url
+        }
+        existingItem.archives.push(archive);
+        existingItem.description = req.body.description;
+        existingItem.currentVersion = currentVersion;
+        existingItem.modified = utility.getFormattedDate(new Date());
+        const item = await existingItem.save();
         return item;
     }
 }
@@ -751,7 +994,7 @@ exports.uploadVideo = async (req, user) => {
         url: req.body.video
     }
 
-    const existingItem = await Model.findOne({ name: req.body.title, type: req.body.itemType });
+    const existingItem = await Model.findOne({ name: req.body.name, type: req.body.itemType });
     if (existingItem) {
         const archive = {
             version: existingItem.currentVersion.version,
@@ -760,18 +1003,19 @@ exports.uploadVideo = async (req, user) => {
         existingItem.archives.push(archive);
         existingItem.author = author;
         existingItem.description = req.body.description;
-        currentVersion.version = `${parseInt(existingItem.currentVersion.version.split('_')[1]) + 1}`;
+        currentVersion.version = `${parseInt(existingItem.currentVersion.version) + 1}`;
         existingItem.currentVersion = currentVersion;
         existingItem.modified = utility.getFormattedDate(new Date());
         const item = await existingItem.save();
         return item;
     } else {
         const newItem = new Model({
-            name: req.body.title,
+            name: req.body.name,
             type: req.body.itemType,
             description: req.body.description,
             author: author,
             license: req.body.license,
+            openspaceVersion: req.body.openspaceVersion,
             image: 'defaults/images/video-icon.jpg',
             currentVersion: currentVersion,
             created: utility.getFormattedDate(new Date()),
@@ -782,15 +1026,41 @@ exports.uploadVideo = async (req, user) => {
     }
 }
 
+exports.updateVideo = async (req, user) => {
+    if (!req.body.video) {
+        throw new Error('Video link is required');
+    }
+
+    const currentVersion = {
+        version: `1`,
+        url: req.body.video
+    }
+
+    const existingItem = await Model.findById(req.params.id);
+    if (existingItem) {
+        const archive = {
+            version: existingItem.currentVersion.version,
+            url: existingItem.currentVersion.url
+        }
+        existingItem.archives.push(archive);
+        existingItem.description = req.body.description;
+        currentVersion.version = `${parseInt(existingItem.currentVersion.version) + 1}`;
+        existingItem.currentVersion = currentVersion;
+        existingItem.modified = utility.getFormattedDate(new Date());
+        const item = await existingItem.save();
+        return item;
+    }
+}
+
 exports.uploadConfig = async (req, user) => {
     const files = req.files;
     if (!files['file']) {
         throw new Error('Config file is required');
     }
 
-    const itemTitle = req.body.title.replace(/ /g, '_');
+    const itemName = req.body.name.replace(/ /g, '_');
     const itemType = req.body.itemType;
-    let dir = `public/upload/users/${user.username}/${itemType}/${itemTitle}`;
+    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
     let version = getCurrentVersionNum(dir);
     dir = `${dir}/${version}`;
     let uploadDirectory = this.createUserDirectory(dir, itemType);
@@ -810,7 +1080,7 @@ exports.uploadConfig = async (req, user) => {
         url: path.relative('public', `${dir}/${configFile.originalname}`)
     }
 
-    const existingItem = await Model.findOne({ name: req.body.title, type: req.body.itemType });
+    const existingItem = await Model.findOne({ name: req.body.name, type: req.body.itemType });
     if (existingItem) {
         const archive = {
             version: existingItem.currentVersion.version,
@@ -818,7 +1088,6 @@ exports.uploadConfig = async (req, user) => {
         }
         existingItem.archives.push(archive);
         existingItem.author = author;
-        license: req.body.license,
         existingItem.description = req.body.description;
         existingItem.currentVersion = currentVersion;
         existingItem.modified = utility.getFormattedDate(new Date());
@@ -826,16 +1095,58 @@ exports.uploadConfig = async (req, user) => {
         return item;
     } else {
         const newItem = new Model({
-            name: req.body.title,
+            name: req.body.name,
             type: req.body.itemType,
             description: req.body.description,
             author: author,
+            license: req.body.license,
+            openspaceVersion: req.body.openspaceVersion,
             image: 'defaults/images/config-icon.jpg',
             currentVersion: currentVersion,
             created: utility.getFormattedDate(new Date()),
             modified: utility.getFormattedDate(new Date()),
         })
         const item = await newItem.save();
+        return item;
+    }
+}
+
+exports.updateConfig = async (req, user) => {
+    const files = req.files;
+    if (!files['file']) {
+        throw new Error('Config file is required');
+    }
+
+    const itemName = req.body.name.replace(/ /g, '_');
+    const itemType = req.body.itemType;
+    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
+    let version = getCurrentVersionNum(dir);
+    dir = `${dir}/${version}`;
+    let uploadDirectory = this.createUserDirectory(dir, itemType);
+
+    const configFile = files['file'][0];
+
+    // web panel file upload
+    this.isConfigFileType(configFile);
+    this.isValidFileSize(configFile);
+    await this.uploadConfigFileToServer(configFile, uploadDirectory);
+
+    const currentVersion = {
+        version: `${version}`,
+        url: path.relative('public', `${dir}/${configFile.originalname}`)
+    }
+
+    const existingItem = await Model.findById(req.params.id);
+    if (existingItem) {
+        const archive = {
+            version: existingItem.currentVersion.version,
+            url: existingItem.currentVersion.url
+        }
+        existingItem.archives.push(archive);
+        existingItem.description = req.body.description;
+        existingItem.currentVersion = currentVersion;
+        existingItem.modified = utility.getFormattedDate(new Date());
+        const item = await existingItem.save();
         return item;
     }
 }
