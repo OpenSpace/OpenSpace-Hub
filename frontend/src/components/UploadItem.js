@@ -124,7 +124,7 @@ const UploadItem = ({ config }) => {
                         }
                         alert(resp.message);
                         handleClose();
-                        // redirectToHome();
+                        redirectToHome();
                     })
                     .catch(err => {
                         alert("Error uploading item. " + err.message);

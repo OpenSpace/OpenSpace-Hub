@@ -1,7 +1,7 @@
 export default class APIService {
 
     static async GetItems({ type = 'all', search = '', page = 1,  sort = 'name,asc', limit = 6}) {
-        const resp = await fetch(`http://localhost:9000/api/items?type=${type}&search=${search}&sort=${sort}&limit=${limit}&page=${page}`, {
+        const resp = await fetch(`/api/items?type=${type}&search=${search}&sort=${sort}&limit=${limit}&page=${page}`, {
             'method': 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -11,7 +11,7 @@ export default class APIService {
     }
 
     static async GetUserItems(username) {
-        const resp = await fetch(`http://localhost:9000/api/getUserItems/${username}`, {
+        const resp = await fetch(`/api/getUserItems/${username}`, {
             'method': 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -22,7 +22,7 @@ export default class APIService {
     }
 
     static async GetConfig() {
-        const resp = await fetch(`http://localhost:9000/api/config`, {
+        const resp = await fetch(`/api/config`, {
             'method': 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -32,7 +32,7 @@ export default class APIService {
     }
 
     static async Login(email, password) {
-        const resp = await fetch(`http://localhost:9000/auth/login`, {
+        const resp = await fetch(`/auth/login`, {
             'method': 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ export default class APIService {
     }
 
     static async DeleteUser(username) {
-        const resp = await fetch(`http://localhost:9000/auth/deleteUser/${username}`, {
+        const resp = await fetch(`/auth/deleteUser/${username}`, {
             'method': 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ export default class APIService {
     }
 
     static async VerifyToken(token) {
-        const resp = await fetch(`http://localhost:9000/auth/verify-token`, {
+        const resp = await fetch(`/auth/verify-token`, {
             'method': 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ export default class APIService {
     }
 
     static async Register(name, email, password, cnfPassword) {
-        const resp = await fetch(`http://localhost:9000/auth/register`, {
+        const resp = await fetch(`/auth/register`, {
             'method': 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -76,7 +76,7 @@ export default class APIService {
     }
 
     static async SocialMediaLogin(name, accessToken, email, domain, pictureUrl) {
-        const resp = await fetch(`http://localhost:9000/auth/social-media-login`, {
+        const resp = await fetch(`/auth/social-media-login`, {
             'method': 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -87,7 +87,7 @@ export default class APIService {
     }
 
     static async UpdateUser(username, name, email, institution) {
-        const resp = await fetch(`http://localhost:9000/auth/updateUser/${username}`, {
+        const resp = await fetch(`/auth/updateUser/${username}`, {
             'method': 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -100,7 +100,7 @@ export default class APIService {
 
     
     static async UploadItem(formData) {
-        const resp = await fetch(`http://localhost:9000/api/upload`, {
+        const resp = await fetch(`/api/upload`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -111,7 +111,7 @@ export default class APIService {
     }
 
     static async UpdateItem(id, formData) {
-        const resp = await fetch(`http://localhost:9000/api/updateItem/${id}`, {
+        const resp = await fetch(`/api/updateItem/${id}`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -122,7 +122,7 @@ export default class APIService {
     }
 
     static async DeleteItem(id) {
-        const resp = await fetch(`http://localhost:9000/api/deleteItem/${id}`, {
+        const resp = await fetch(`/api/deleteItem/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -133,7 +133,7 @@ export default class APIService {
     }
 
     static async GetUser() {
-        const resp = await fetch(`http://localhost:9000/auth/getUser`, {
+        const resp = await fetch(`/auth/getUser`, {
             'method': 'GET',
             headers: {
                 'Content-Type': 'application/json',
