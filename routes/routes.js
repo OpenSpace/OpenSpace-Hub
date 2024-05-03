@@ -292,32 +292,7 @@ router.post('/upload', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'f
         }
 
         itemUtility.validateInputFields(req.body);
-        let data = ""
-        switch (req.body.itemType) {
-            case 'asset':
-                data = await itemUtility.uploadAsset(req, user);
-                break;
-            case 'profile':
-                data = await itemUtility.uploadProfile(req, user);
-                break;
-            case 'recording':
-                data = await itemUtility.uploadRecording(req, user);
-                break;
-            case 'webpanel':
-                data = await itemUtility.uploadWebPanel(req, user);
-                break;
-            case 'video':
-                data = await itemUtility.uploadVideo(req, user);
-                break;
-            case 'config':
-                data = await itemUtility.uploadConfig(req, user);
-                break;
-            case 'package':
-                data = await itemUtility.uploadPackage(req, user);
-                break;
-            default:
-                throw new Error('Invalid item type');
-        }
+        let data = await itemUtility.uploadItem(req, user);
         const message = "Uploaded successfully on server";
         res.status(200).json({ message: message, data: data });
     } catch (error) {
@@ -357,31 +332,7 @@ router.put('/updateItem/:id', upload.fields([{ name: 'image', maxCount: 1 }, { n
         
         let item = await Model.findById(req.params.id);
         if (req.files && req.files['file']) {
-            switch (req.body.itemType) {
-                case 'asset':
-                    item = await itemUtility.updateAsset(req, user);
-                    break;
-                case 'profile':
-                    item = await itemUtility.updateProfile(req, user);
-                    break;
-                case 'recording':
-                    item = await itemUtility.updateRecording(req, user);
-                    break;
-                case 'webpanel':
-                    item = await itemUtility.updateWebPanel(req, user);
-                    break;
-                case 'video':
-                    item = await itemUtility.updateVideo(req, user);
-                    break;
-                case 'config':
-                    item = await itemUtility.updateConfig(req, user);
-                    break;
-                case 'package':
-                    item = await itemUtility.updatePackage(req, user);
-                    break;
-                default:
-                    throw new Error('Invalid item type');
-            }
+            item = await itemUtility.uploadItem(req, user, true);
         }
 
         if (req.files && req.files['image']) {

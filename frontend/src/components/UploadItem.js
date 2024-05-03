@@ -103,7 +103,7 @@ const UploadItem = ({ config }) => {
             return;
         }
         else {
-            if (!file || name.trim() === '' || itemType.trim() === '' || license.trim() === '' || description.trim() === '' || (!image && (itemType !== 'config' && itemType !== 'video'))) {
+            if (!file || name.trim() === '' || itemType.trim() === '' || license.trim() === '' || description.trim() === '') {
                 alert('Please fill in all fields.');
                 return;
             }

@@ -5,13 +5,14 @@ const path = require('path');
 const utility = require('./utility');
 const Model = require('../models/Model');
 
-exports.validateInputFields = (body) => {
+exports.validateInputFields = (body, update = false) => {
     if (!body.name || !body.name.trim() ||
         !body.itemType || !body.itemType.trim() ||
-        !body.license || !body.license.trim() ||
         !body.description || !body.description.trim()
     ) {
         throw new Error('Invalid Input Fields');
+    } else if (!update && (!body.license || !body.license.trim())) {
+        throw new Error('No licence provided');
     }
 }
 
@@ -23,63 +24,58 @@ function createAuthor(user) {
     }
 }
 
-exports.isAssetFileType = (file) => {
+exports.isValidFileType = (type, file) => {
     const fileName = file.originalname;
     validateFileName(file);
     const fileExtension = fileName.split('.').pop();
-    if (fileExtension !== 'zip' && fileExtension !== 'asset') {
-        unlinkUploadedfile(file);
-        throw new Error('Invalid file type. Please upload a .zip or .asset file.');
+    badType = false;
+    messageType = "";
+    switch(type) {
+        case "profile": {
+            if (fileExtension !== 'profile') {
+                badType = true;
+                messageType = ".profile"
+            }
+            break;
+        }
+        case "asset": {
+            if (fileExtension !== 'zip' && fileExtension !== 'asset') {
+                badType = true;
+                messageType = ".zip or .asset"
+            }
+            break;
+        }
+        case "package":
+        case "webpanel": {
+                if (fileExtension !== 'zip') {
+                badType = true;
+                messageType = ".zip"
+            }
+            break;
+        }
+        case "config": {
+            if (fileExtension !== 'json') {
+                badType = true;
+                messageType = ".json"
+            }
+            break;
+        }
+        case "recording": {
+            if (fileExtension !== 'osrec' && fileExtension !== 'osrectxt') {
+                badType = true;
+                messageType = ".osrec or .osrectxt"
+            }
+            break;
+        }
+        default: {
+            //unknown type
+            badType = true;
+            messageType = "unknown"
+        }
     }
-}
-
-exports.isPackageFileType = (file) => {
-    const fileName = file.originalname;
-    validateFileName(file);
-    const fileExtension = fileName.split('.').pop();
-    if (fileExtension !== 'zip') {
+    if (badType) {
         unlinkUploadedfile(file);
-        throw new Error('Invalid file type. Please upload a .zip file.');
-    }
-}
-
-exports.isProfileFileType = (file) => {
-    const fileName = file.originalname;
-    validateFileName(file);
-    const fileExtension = fileName.split('.').pop();
-    if (fileExtension !== 'profile') {
-        unlinkUploadedfile(file);
-        throw new Error('Invalid file type. Please upload a .profile file.');
-    }
-}
-
-exports.isrecordingFileType = (file) => {
-    const fileName = file.originalname;
-    validateFileName(file);
-    const fileExtension = fileName.split('.').pop();
-    if (fileExtension !== 'osrec' && fileExtension !== 'osrectxt') {
-        unlinkUploadedfile(file);
-        throw new Error('Invalid file type. Please upload a .osrec or .osrectxt file.');
-    }
-}
-
-exports.isWebPanelFileType = (file) => {
-    const fileName = file.originalname;
-    validateFileName(file);
-    const fileExtension = fileName.split('.').pop();
-    if (fileExtension !== 'zip') {
-        unlinkUploadedfile(file);
-        throw new Error('Invalid file type. Please upload a .zip');
-    }
-}
-
-exports.isConfigFileType = (file) => {
-    const fileName = file.originalname;
-    validateFileName(file);
-    const fileExtension = fileName.split('.').pop();
-    if (fileExtension !== 'json') {
-        unlinkUploadedfile(file);
-        throw new Error('Invalid file type. Please upload a .json file.');
+        throw new Error('Invalid file type. Please upload a ' + messageType + ' file.');
     }
 }
 
@@ -132,114 +128,68 @@ exports.resizeImage = async (file) => {
     return resizeResult;
 }
 
-exports.uploadAssetFileToServer = async (file, dir) => {
-    try {
-        if (file.mimetype === 'application/zip') {
-            originalItemname = file.originalname.split('.')[0];
-            await new Promise((resolve, reject) => {
-                fs.createReadStream(file.path)
-                    .pipe(unzipper.Extract({ path: `public/upload/unzipped/` }))
-                    .on('close', () => {
-                        resolve();
-                    })
-                    .on('error', (err) => {
-                        console.log(err);
-                        reject(new Error('Error extracting zip file'));
-                    });
-            });
-            const files = await fs.promises.readdir(`public/upload/unzipped/${originalItemname}`);
-            const containsExeFile = files.some(file => file.endsWith('.exe'));
-            if (containsExeFile) {
-                unlinkUploadedDir(`public/upload/unzipped/${originalItemname}`);
-                throw new Error('Zip file contains .exe file');
-            }
-            const assetFiles = files.filter(file => file.endsWith('.asset') && (file === `${originalItemname}.asset`));
-            if (assetFiles.length <= 0) {
-                unlinkUploadedDir(`public/upload/unzipped/${originalItemname}`);
-                throw new Error(`Zip file does not contain ${originalItemname}.asset file`);
-            }
-            fs.renameSync(file.path, `${dir}/${file.originalname}`);
-            unlinkUploadedDir(`public/upload/unzipped/${originalItemname}`);
-            return Promise.resolve();
-        } else if (file.originalname.split('.').pop() === 'asset') {
-            fs.renameSync(file.path, `${dir}/${file.originalname}`);
-            return Promise.resolve();
-        } else if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
-            // change file name
-            fs.renameSync(file.path, `${dir}/${file.originalname}`);
-            return Promise.resolve();
-        } else {
-            console.log('Invalid file type');
-            throw new Error('Invalid file type. Please upload a .zip or .asset file.');
-        }
-    } catch (err) {
-        //delete uploaded file and directory
-        fs.rm(dir, { recursive: true }, (err) => {
-            if (err) {
-                console.log(err);
-            }
+checkZipFile = async(type, file, dir) => {
+    if (file.mimetype === 'application/zip') {
+        originalItemname = file.originalname.split('.')[0];
+        await new Promise((resolve, reject) => {
+            fs.createReadStream(file.path)
+                .pipe(unzipper.Extract({ path: `public/upload/unzipped/${originalItemname}` }))
+                .on('close', () => {
+                    resolve();
+                })
+                .on('error', (err) => {
+                    console.log(err);
+                    reject(new Error('Error extracting zip file'));
+                });
         });
-        unlinkUploadedfile(file);
-        return Promise.reject(err);
+        const files = await fs.promises.readdir(`public/upload/unzipped/${originalItemname}`);
+        const containsExeFile = files.some(file => file.endsWith('.exe'));
+        if (containsExeFile) {
+            unlinkUploadedDir(`public/upload/unzipped/${originalItemname}`);
+            throw new Error('Zip file contains .exe file');
+        }
+        let assetFiles = [];
+        let message = '';
+        switch (type) {
+            case 'asset': {
+                assetFiles = files.filter(file => file.endsWith('.asset') && (file === `${originalItemname}.asset`));
+                message = `${originalItemname}.asset`;
+                break;
+            }
+            case 'package': {
+                assetFiles = ["anything"];
+                break;
+            }
+            case 'webpanel': {
+                assetFiles = files.filter(file => (file.endsWith('.html') || file.endsWith('.htm')) && (file === `index.html` || file === `index.htm`));
+                message = 'index.html'
+                break;
+            }
+        }
+        if (assetFiles.length <= 0) {
+            unlinkUploadedDir(`public/upload/unzipped/${originalItemname}`);
+            throw new Error(`Zip file does not contain ${message} file`);
+        }
+        fs.renameSync(file.path, `${dir}/${file.originalname}`);
+        unlinkUploadedDir(`public/upload/unzipped/${originalItemname}`);
+        return Promise.resolve();
+    } else {
+        throw new Error('Invalid zip file.');
     }
 }
 
-exports.uploadPackageFileToServer = async (file, dir) => {
+exports.uploadItemFileToServer = async (type, file, dir) => {
     try {
-        if (file.mimetype === 'application/zip') {
-            originalItemname = file.originalname.split('.')[0];
-            await new Promise((resolve, reject) => {
-                fs.createReadStream(file.path)
-                    .pipe(unzipper.Extract({ path: `public/upload/unzipped/` }))
-                    .on('close', () => {
-                        resolve();
-                    })
-                    .on('error', (err) => {
-                        console.log(err);
-                        reject(new Error('Error extracting zip file'));
-                    });
-            });
-            const files = await fs.promises.readdir(`public/upload/unzipped/${originalItemname}`);
-            const containsExeFile = files.some(file => file.endsWith('.exe'));
-            if (containsExeFile) {
-                unlinkUploadedDir(`public/upload/unzipped/${originalItemname}`);
-                throw new Error('Zip file contains .exe file');
+        switch (type) {
+            case 'asset':
+            case 'package':
+            case 'webpanel':
+                await checkZipFile(type, file, dir)
+                break;
+            default: {
+                fs.renameSync(file.path, `${dir}/${file.originalname}`);
+                return Promise.resolve();
             }
-            fs.renameSync(file.path, `${dir}/${file.originalname}`);
-            unlinkUploadedDir(`public/upload/unzipped/${originalItemname}`);
-            return Promise.resolve();
-        } else if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
-            // change file name
-            fs.renameSync(file.path, `${dir}/${file.originalname}`);
-            return Promise.resolve();
-        } else {
-            console.log('Invalid file type');
-            throw new Error('Invalid file type. Please upload a .zip file.');
-        }
-    } catch (err) {
-        //delete uploaded file and directory
-        fs.rm(dir, { recursive: true }, (err) => {
-            if (err) {
-                console.log(err);
-            }
-        });
-        unlinkUploadedfile(file);
-        return Promise.reject(err);
-    }
-}
-
-exports.uploadProfileFileToServer = async (file, dir) => {
-    try {
-        if (file.originalname.split('.').pop() === 'profile') {
-            fs.renameSync(file.path, `${dir}/${file.originalname}`);
-            return Promise.resolve();
-        } else if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
-            // change file name
-            fs.renameSync(file.path, `${dir}/${file.originalname}`);
-            return Promise.resolve();
-        } else {
-            console.log('Invalid file type');
-            throw new Error('Invalid file type. Please upload a .profile file.');
         }
     } catch (err) {
         console.log(err);
@@ -254,99 +204,13 @@ exports.uploadProfileFileToServer = async (file, dir) => {
     }
 }
 
-exports.uploadRecordingFileToServer = async (file, dir) => {
-    try {
-        if (file.originalname.split('.').pop() === 'osrec' || file.originalname.split('.').pop() === 'osrectxt') {
-            fs.renameSync(file.path, `${dir}/${file.originalname}`);
-            return Promise.resolve();
-        } else if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
-            // change file name
-            fs.renameSync(file.path, `${dir}/${file.originalname}`);
-            return Promise.resolve();
-        } else {
-            console.log('Invalid file type');
-            throw new Error('Invalid file type. Please upload a .profile file.');
-        }
-    } catch (err) {
-        console.log(err);
-        //delete uploaded file and directory
-        fs.rm(dir, { recursive: true }, (err) => {
-            if (err) {
-                console.log(err);
-            }
-        });
-        unlinkUploadedfile(file);
-        return Promise.reject(err);
-    }
-}
-
-exports.uploadWebPanelFileToServer = async (file, dir) => {
-    try {
-        if (file.mimetype === 'application/zip') {
-            originalItemname = file.originalname.split('.')[0];
-            await new Promise((resolve, reject) => {
-                fs.createReadStream(file.path)
-                    .pipe(unzipper.Extract({ path: `public/upload/unzipped/` }))
-                    .on('close', () => {
-                        resolve();
-                    })
-                    .on('error', (err) => {
-                        console.log(err);
-                        reject(new Error('Error extracting zip file'));
-                    });
-            });
-            const files = await fs.promises.readdir(`public/upload/unzipped/${originalItemname}`);
-            const containsExeFile = files.some(file => file.endsWith('.exe'));
-            if (containsExeFile) {
-                unlinkUploadedDir(`public/upload/unzipped/${originalItemname}`);
-                throw new Error('Zip file contains .exe file');
-            }
-            const assetFiles = files.filter(file => (file.endsWith('.html') || file.endsWith('.htm')) && (file === `index.html` || file === `index.htm`));
-            if (assetFiles.length <= 0) {
-                unlinkUploadedDir(`public/upload/unzipped/${originalItemname}`);
-                throw new Error(`Zip file does not contain index.html file`);
-            }
-            fs.renameSync(file.path, `${dir}/${file.originalname}`);
-            unlinkUploadedDir(`public/upload/unzipped/${originalItemname}`);
-            return Promise.resolve();
-        } else if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
-            // change file name
-            fs.renameSync(file.path, `${dir}/${file.originalname}`);
-            return Promise.resolve();
-        } else {
-            console.log('Invalid file type');
-            throw new Error('Invalid file type. Please upload a .zip');
-        }
-    } catch (err) {
-        //delete uploaded file and directory
-        fs.rm(dir, { recursive: true }, (err) => {
-            if (err) {
-                console.log(err);
-            }
-        });
-        unlinkUploadedfile(file);
-        return Promise.reject(err);
-    }
-}
-
-exports.uploadConfigFileToServer = async (file, dir) => {
-    try {
-        if (file.originalname.split('.').pop() === 'json') {
-            fs.renameSync(file.path, `${dir}/${file.originalname}`);
-            return Promise.resolve();
-        } else {
-            console.log('Invalid file type');
-            throw new Error('Invalid file type. Please upload a .json file.');
-        }
-    } catch (err) {
-        //delete uploaded file and directory
-        fs.rm(dir, { recursive: true }, (err) => {
-            if (err) {
-                console.log(err);
-            }
-        });
-        unlinkUploadedfile(file);
-        return Promise.reject(err);
+exports.uploadImageFileToServer = async (file, dir) => {
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
+        // change file name
+        fs.renameSync(file.path, `${dir}/${file.originalname}`);
+        return Promise.resolve();
+    } else {
+        throw new Error('Invalid file type. Please upload valid jpg, jpeg or png file.');
     }
 }
 
@@ -370,16 +234,13 @@ function getCurrentVersionNum(dir) {
     let version = 1;
     if (fs.existsSync(dir)) {
         let versions = fs.readdirSync(dir);
-        console.log("versions: " , versions);
         versions.forEach(file => {
-            console.log("file: ", file);
             file = parseInt(file);
             if (file >= version) {
                 version = file + 1;
             }
         });
     }
-    console.log("final version: ", version);
     return version;
 }
 
@@ -393,41 +254,48 @@ exports.createUserDirectory = (dir, itemType) => {
     return dir;
 }
 
-exports.uploadAsset = async (req, user) => {
+exports.uploadItem = async (req, user, update = false) => {
     const files = req.files;
-    if (!files['image'] || !files['file']) {
-        throw new Error('Both image and asset files are required');
+    const type = req.body.itemType;
+    if (!files['file'] ) {
+        throw new Error('An item file is required');
     }
+
     const itemName = req.body.name.replace(/ /g, '_');
     const itemType = req.body.itemType;
     let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
     let version = getCurrentVersionNum(dir);
     dir = `${dir}/${version}`;
     let uploadDirectory = this.createUserDirectory(dir, itemType);
+    const itemFile = files['file'][0];
+    this.validateInputFields(req.body, update);
 
-    const imageFile = files['image'][0];
-    const assetFile = files['file'][0];
-    this.validateInputFields(req.body);
-
-    // asset file upload
-    this.isAssetFileType(assetFile);
-    this.isValidFileSize(assetFile);
-    await this.uploadAssetFileToServer(assetFile, uploadDirectory);
-
-    // image file upload
-    this.validateImageFileType(imageFile);
-    this.validateImageFileSize(imageFile);
-    let resizedFile = await this.resizeImage(imageFile);
-    let imageFileName = resizedFile.originalname.split('.');
-    imageFileName[0] = itemName;
-    resizedFile.originalname = imageFileName.join('.');
-    await this.uploadAssetFileToServer(resizedFile, uploadDirectory);
+    // file upload
+    this.isValidFileType(type, itemFile);
+    this.isValidFileSize(itemFile);
+    await this.uploadItemFileToServer(type, itemFile, uploadDirectory);
+    let imagePath = '';
+    if (files['image'] && files['image'][0]) {
+        // image file upload
+        const imageFile = files['image'][0];
+        this.validateImageFileType(imageFile);
+        this.validateImageFileSize(imageFile);
+        let resizedFile = await this.resizeImage(imageFile);
+        let imageFileName = resizedFile.originalname.split('.');
+        imageFileName[0] = itemName;
+        resizedFile.originalname = imageFileName.join('.');
+        await this.uploadImageFileToServer(resizedFile, uploadDirectory);
+        imagePath = path.relative('public', `${dir}/${resizedFile.originalname}`)
+    } else {
+        let defaultImage = `${itemType}-default.jpg`;
+        imagePath = path.relative('public', defaultImage)
+    }
 
     const author = createAuthor(user);
 
     const currentVersion = {
         version: `${version}`,
-        url: path.relative('public', `${dir}/${assetFile.originalname}`)
+        url: path.relative('public', `${dir}/${itemFile.originalname}`)
     }
 
     const existingItem = await Model.findOne({ name: req.body.name, type: req.body.itemType });
@@ -440,7 +308,7 @@ exports.uploadAsset = async (req, user) => {
         existingItem.author = author;
         existingItem.description = req.body.description;
         existingItem.currentVersion = currentVersion;
-        existingItem.image = path.relative('public', `${dir}/${resizedFile.originalname}`);
+        existingItem.image = imagePath;
         existingItem.modified = utility.getFormattedDate(new Date());
         const item = await existingItem.save();
         return item;
@@ -453,7 +321,7 @@ exports.uploadAsset = async (req, user) => {
             license: req.body.license,
             openspaceVersion: req.body.openspaceVersion,
             currentVersion: currentVersion,
-            image: path.relative('public', `${dir}/${resizedFile.originalname}`),
+            image: imagePath,
             created: utility.getFormattedDate(new Date()),
             modified: utility.getFormattedDate(new Date()),
         })
@@ -484,7 +352,7 @@ exports.updateImage = async (req, user) => {
     let imageFileName = resizedFile.originalname.split('.');
     imageFileName[0] = itemName;
     resizedFile.originalname = imageFileName.join('.');
-    await this.uploadAssetFileToServer(resizedFile, uploadDirectory);
+    await this.uploadImageFileToServer(resizedFile, uploadDirectory);
 
     const existingItem = await Model.findById(req.params.id);
     if (existingItem) {
@@ -496,487 +364,6 @@ exports.updateImage = async (req, user) => {
         return item;
     } else {
         throw new Error('Item not found');
-    }
-}
-
-exports.updateAsset = async (req, user) => {
-    const files = req.files;
-    if (!files['file']) {
-        throw new Error('asset file is required');
-    }
-
-    const itemName = req.body.name.replace(/ /g, '_');
-    const itemType = req.body.itemType;
-    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
-    let version = getCurrentVersionNum(dir);
-    dir = `${dir}/${version}`;
-    let uploadDirectory = this.createUserDirectory(dir, itemType);
-
-    const assetFile = files['file'][0];
-
-    // asset file upload
-    this.isAssetFileType(assetFile);
-    this.isValidFileSize(assetFile);
-    await this.uploadAssetFileToServer(assetFile, uploadDirectory);
-
-    const currentVersion = {
-        version: `${version}`,
-        url: path.relative('public', `${dir}/${assetFile.originalname}`)
-    }
-
-    const existingItem = await Model.findById(req.params.id);
-    if (existingItem) {
-        const archive = {
-            version: existingItem.currentVersion.version,
-            url: existingItem.currentVersion.url
-        }
-        existingItem.archives.push(archive);
-        existingItem.description = req.body.description;
-        existingItem.currentVersion = currentVersion;
-        existingItem.modified = utility.getFormattedDate(new Date());
-        const item = await existingItem.save();
-        return item;
-    }
-}
-
-exports.uploadPackage = async (req, user) => {
-    const files = req.files;
-    if (!files['image'] || !files['file']) {
-        throw new Error('Both image and package files are required');
-    }
-
-    const itemName = req.body.name.replace(/ /g, '_');
-    const itemType = req.body.itemType;
-    console.log(req.body)
-    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
-    let version = getCurrentVersionNum(dir);
-    dir = `${dir}/${version}`;
-    let uploadDirectory = this.createUserDirectory(dir, itemType);
-
-    const imageFile = files['image'][0];
-    const packageFile = files['file'][0];
-    this.validateInputFields(req.body);
-
-    // package file upload
-    this.isPackageFileType(packageFile);
-    this.isValidFileSize(packageFile);
-    await this.uploadPackageFileToServer(packageFile, uploadDirectory);
-
-    // image file upload
-    this.validateImageFileType(imageFile);
-    this.validateImageFileSize(imageFile);
-    let resizedFile = await this.resizeImage(imageFile);
-    let imageFileName = resizedFile.originalname.split('.');
-    imageFileName[0] = itemName;
-    resizedFile.originalname = imageFileName.join('.');
-    await this.uploadPackageFileToServer(resizedFile, uploadDirectory);
-
-    const author = createAuthor(user);
-
-    const currentVersion = {
-        version: `${version}`,
-        url: path.relative('public', `${dir}/${packageFile.originalname}`)
-    }
-
-    const existingItem = await Model.findOne({ name: req.body.name, type: req.body.itemType });
-    if (existingItem) {
-        const archive = {
-            version: existingItem.currentVersion.version,
-            url: existingItem.currentVersion.url
-        }
-        existingItem.archives.push(archive);
-        existingItem.author = author;
-        existingItem.description = req.body.description;
-        existingItem.currentVersion = currentVersion;
-        existingItem.image = path.relative('public', `${dir}/${resizedFile.originalname}`);
-        existingItem.modified = utility.getFormattedDate(new Date());
-        const item = await existingItem.save();
-        return item;
-    } else {
-        const newItem = new Model({
-            name: req.body.name,
-            type: req.body.itemType,
-            description: req.body.description,
-            author: author,
-            license: req.body.license,
-            currentVersion: currentVersion,
-            image: path.relative('public', `${dir}/${resizedFile.originalname}`),
-            created: utility.getFormattedDate(new Date()),
-            modified: utility.getFormattedDate(new Date()),
-        })
-        const item = await newItem.save();
-        return item;
-    }
-}
-
-exports.updatePackage = async (req, user) => {
-    const files = req.files;
-    if (!files['file']) {
-        throw new Error('Package file is required');
-    }
-
-    const itemName = req.body.name.replace(/ /g, '_');
-    const itemType = req.body.itemType;
-    console.log(req.body)
-    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
-    let version = getCurrentVersionNum(dir);
-    dir = `${dir}/${version}`;
-    let uploadDirectory = this.createUserDirectory(dir, itemType);
-
-    const packageFile = files['file'][0];
-
-    // package file upload
-    this.isPackageFileType(packageFile);
-    this.isValidFileSize(packageFile);
-    await this.uploadPackageFileToServer(packageFile, uploadDirectory);
-
-    const currentVersion = {
-        version: `${version}`,
-        url: path.relative('public', `${dir}/${packageFile.originalname}`)
-    }
-
-    const existingItem = await Model.findById(req.params.id);
-    if (existingItem) {
-        const archive = {
-            version: existingItem.currentVersion.version,
-            url: existingItem.currentVersion.url
-        }
-        existingItem.archives.push(archive);
-        existingItem.description = req.body.description;
-        existingItem.currentVersion = currentVersion;
-        existingItem.modified = utility.getFormattedDate(new Date());
-        const item = await existingItem.save();
-        return item;
-    }
-}
-
-exports.uploadProfile = async (req, user) => {
-    const files = req.files;
-    if (!files['image'] || !files['file']) {
-        throw new Error('Both image and asset files are required');
-    }
-
-    const itemName = req.body.name.replace(/ /g, '_');
-    const itemType = req.body.itemType;
-    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
-    let version = getCurrentVersionNum(dir);
-    dir = `${dir}/${version}`;
-    let uploadDirectory = this.createUserDirectory(dir, itemType);
-
-    const imageFile = files['image'][0];
-    const profileFile = files['file'][0];
-    this.validateInputFields(req.body);
-
-    // profile file upload
-    this.isProfileFileType(profileFile);
-    this.isValidFileSize(profileFile);
-    await this.uploadProfileFileToServer(profileFile, uploadDirectory);
-
-    // image file upload
-    this.validateImageFileType(imageFile);
-    this.validateImageFileSize(imageFile);
-    let resizedFile = await this.resizeImage(imageFile);
-    let imageFileName = resizedFile.originalname.split('.');
-    imageFileName[0] = itemName;
-    resizedFile.originalname = imageFileName.join('.');
-    await this.uploadProfileFileToServer(resizedFile, uploadDirectory);
-
-    const author = createAuthor(user);
-
-    const currentVersion = {
-        version: `${version}`,
-        url: path.relative('public', `${dir}/${profileFile.originalname}`)
-    }
-
-    const existingItem = await Model.findOne({ name: req.body.name, type: req.body.itemType });
-    if (existingItem) {
-        const archive = {
-            version: existingItem.currentVersion.version,
-            url: existingItem.currentVersion.url
-        }
-        existingItem.archives.push(archive);
-        existingItem.author = author;
-        existingItem.description = req.body.description;
-        existingItem.currentVersion = currentVersion;
-        existingItem.image = path.relative('public', `${dir}/${resizedFile.originalname}`);
-        existingItem.modified = utility.getFormattedDate(new Date());
-        const item = await existingItem.save();
-        return item;
-    } else {
-        const newItem = new Model({
-            name: req.body.name,
-            type: req.body.itemType,
-            description: req.body.description,
-            author: author,
-            license: req.body.license,
-            openspaceVersion: req.body.openspaceVersion,
-            currentVersion: currentVersion,
-            image: path.relative('public', `${dir}/${resizedFile.originalname}`),
-            created: utility.getFormattedDate(new Date()),
-            modified: utility.getFormattedDate(new Date()),
-        })
-        const item = await newItem.save();
-        return item;
-    }
-}
-
-exports.updateProfile = async (req, user) => {
-    const files = req.files;
-    if (!files['file']) {
-        throw new Error('profile file is required');
-    }
-
-    const itemName = req.body.name.replace(/ /g, '_');
-    const itemType = req.body.itemType;
-    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
-    let version = getCurrentVersionNum(dir);
-    dir = `${dir}/${version}`;
-    let uploadDirectory = this.createUserDirectory(dir, itemType);
-
-    const profileFile = files['file'][0];
-
-    // profile file upload
-    this.isProfileFileType(profileFile);
-    this.isValidFileSize(profileFile);
-    await this.uploadProfileFileToServer(profileFile, uploadDirectory);
-
-    const currentVersion = {
-        version: `${version}`,
-        url: path.relative('public', `${dir}/${profileFile.originalname}`)
-    }
-
-    const existingItem = await Model.findById(req.params.id);
-    if (existingItem) {
-        const archive = {
-            version: existingItem.currentVersion.version,
-            url: existingItem.currentVersion.url
-        }
-        existingItem.archives.push(archive);
-        existingItem.description = req.body.description;
-        existingItem.currentVersion = currentVersion;
-        existingItem.modified = utility.getFormattedDate(new Date());
-        const item = await existingItem.save();
-        return item;
-    }
-}
-
-exports.uploadRecording = async (req, user) => {
-    const files = req.files;
-    if (!files['image'] || !files['file']) {
-        throw new Error('Both image and asset files are required');
-    }
-
-    const itemName = req.body.name.replace(/ /g, '_');
-    const itemType = req.body.itemType;
-    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
-    let version = getCurrentVersionNum(dir);
-    dir = `${dir}/${version}`;
-    let uploadDirectory = this.createUserDirectory(dir, itemType);
-
-    const imageFile = files['image'][0];
-    const recordingFile = files['file'][0];
-    this.validateInputFields(req.body);
-
-    // recording file upload
-    this.isrecordingFileType(recordingFile);
-    this.isValidFileSize(recordingFile);
-    await this.uploadRecordingFileToServer(recordingFile, uploadDirectory);
-
-    // image file upload
-    this.validateImageFileType(imageFile);
-    this.validateImageFileSize(imageFile);
-    let resizedFile = await this.resizeImage(imageFile);
-    let imageFileName = resizedFile.originalname.split('.');
-    imageFileName[0] = itemName;
-    resizedFile.originalname = imageFileName.join('.');
-    await this.uploadRecordingFileToServer(resizedFile, uploadDirectory);
-
-    const author = createAuthor(user);
-
-    const currentVersion = {
-        version: `${version}`,
-        url: path.relative('public', `${dir}/${recordingFile.originalname}`)
-    }
-
-    const existingItem = await Model.findOne({ name: req.body.name, type: req.body.itemType });
-    if (existingItem) {
-        const archive = {
-            version: existingItem.currentVersion.version,
-            url: existingItem.currentVersion.url
-        }
-        existingItem.archives.push(archive);
-        existingItem.author = author;
-        existingItem.description = req.body.description;
-        existingItem.currentVersion = currentVersion;
-        existingItem.image = path.relative('public', `${dir}/${resizedFile.originalname}`);
-        existingItem.modified = utility.getFormattedDate(new Date());
-        const item = await existingItem.save();
-        return item;
-    } else {
-        const newItem = new Model({
-            name: req.body.name,
-            type: req.body.itemType,
-            description: req.body.description,
-            author: author,
-            license: req.body.license,
-            openspaceVersion: req.body.openspaceVersion,
-            currentVersion: currentVersion,
-            image: path.relative('public', `${dir}/${resizedFile.originalname}`),
-            created: utility.getFormattedDate(new Date()),
-            modified: utility.getFormattedDate(new Date()),
-        })
-        const item = await newItem.save();
-        return item;
-    }
-}
-
-exports.updateRecording = async (req, user) => {
-    const files = req.files;
-    if (!files['file']) {
-        throw new Error('recording file is required');
-    }
-
-    const itemName = req.body.name.replace(/ /g, '_');
-    const itemType = req.body.itemType;
-    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
-    let version = getCurrentVersionNum(dir);
-    dir = `${dir}/${version}`;
-    let uploadDirectory = this.createUserDirectory(dir, itemType);
-
-    const recordingFile = files['file'][0];
-
-    // recording file upload
-    this.isrecordingFileType(recordingFile);
-    this.isValidFileSize(recordingFile);
-    await this.uploadRecordingFileToServer(recordingFile, uploadDirectory);
-
-    const currentVersion = {
-        version: `${version}`,
-        url: path.relative('public', `${dir}/${recordingFile.originalname}`)
-    }
-
-    const existingItem = await Model.findById(req.params.id);
-    if (existingItem) {
-        const archive = {
-            version: existingItem.currentVersion.version,
-            url: existingItem.currentVersion.url
-        }
-        existingItem.archives.push(archive);
-        existingItem.description = req.body.description;
-        existingItem.currentVersion = currentVersion;
-        existingItem.modified = utility.getFormattedDate(new Date());
-        const item = await existingItem.save();
-        return item;
-    }
-}
-
-exports.uploadWebPanel = async (req, user) => {
-    const files = req.files;
-    if (!files['image'] || !files['file']) {
-        throw new Error('Both image and webpanel files are required');
-    }
-
-    const itemName = req.body.name.replace(/ /g, '_');
-    const itemType = req.body.itemType;
-    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
-    let version = getCurrentVersionNum(dir);
-    dir = `${dir}/${version}`;
-    let uploadDirectory = this.createUserDirectory(dir, itemType);
-
-    const imageFile = files['image'][0];
-    const webPanelFile = files['file'][0];
-    this.validateInputFields(req.body);
-
-    // web panel file upload
-    this.isWebPanelFileType(webPanelFile);
-    this.isValidFileSize(webPanelFile);
-    await this.uploadWebPanelFileToServer(webPanelFile, uploadDirectory);
-
-    // image file upload
-    this.validateImageFileType(imageFile);
-    this.validateImageFileSize(imageFile);
-    let resizedFile = await this.resizeImage(imageFile);
-    let imageFileName = resizedFile.originalname.split('.');
-    imageFileName[0] = itemName;
-    resizedFile.originalname = imageFileName.join('.');
-    await this.uploadWebPanelFileToServer(resizedFile, uploadDirectory);
-
-    const author = createAuthor(user);
-
-    const currentVersion = {
-        version: `${version}`,
-        url: path.relative('public', `${dir}/${webPanelFile.originalname}`)
-    }
-
-    const existingItem = await Model.findOne({ name: req.body.name, type: req.body.itemType });
-    if (existingItem) {
-        const archive = {
-            version: existingItem.currentVersion.version,
-            url: existingItem.currentVersion.url
-        }
-        existingItem.archives.push(archive);
-        existingItem.author = author;
-        existingItem.description = req.body.description;
-        existingItem.currentVersion = currentVersion;
-        existingItem.image = path.relative('public', `${dir}/${resizedFile.originalname}`);
-        existingItem.modified = utility.getFormattedDate(new Date());
-        const item = await existingItem.save();
-        return item;
-    } else {
-        const newItem = new Model({
-            name: req.body.name,
-            type: req.body.itemType,
-            description: req.body.description,
-            author: author,
-            license: req.body.license,
-            openspaceVersion: req.body.openspaceVersion,
-            currentVersion: currentVersion,
-            image: path.relative('public', `${dir}/${resizedFile.originalname}`),
-            created: utility.getFormattedDate(new Date()),
-            modified: utility.getFormattedDate(new Date()),
-        })
-        const item = await newItem.save();
-        return item;
-    }
-}
-
-exports.updateWebPanel = async (req, user) => {
-    const files = req.files;
-    if (!files['file']) {
-        throw new Error('webpanel file is required');
-    }
-
-    const itemName = req.body.name.replace(/ /g, '_');
-    const itemType = req.body.itemType;
-    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
-    let version = getCurrentVersionNum(dir);
-    dir = `${dir}/${version}`;
-    let uploadDirectory = this.createUserDirectory(dir, itemType);
-
-    const webPanelFile = files['file'][0];
-
-    // web panel file upload
-    this.isWebPanelFileType(webPanelFile);
-    this.isValidFileSize(webPanelFile);
-    await this.uploadWebPanelFileToServer(webPanelFile, uploadDirectory);
-
-    const currentVersion = {
-        version: `${version}`,
-        url: path.relative('public', `${dir}/${webPanelFile.originalname}`)
-    }
-
-    const existingItem = await Model.findById(req.params.id);
-    if (existingItem) {
-        const archive = {
-            version: existingItem.currentVersion.version,
-            url: existingItem.currentVersion.url
-        }
-        existingItem.archives.push(archive);
-        existingItem.description = req.body.description;
-        existingItem.currentVersion = currentVersion;
-        existingItem.modified = utility.getFormattedDate(new Date());
-        const item = await existingItem.save();
-        return item;
     }
 }
 
@@ -1045,105 +432,6 @@ exports.updateVideo = async (req, user) => {
         existingItem.archives.push(archive);
         existingItem.description = req.body.description;
         currentVersion.version = `${parseInt(existingItem.currentVersion.version) + 1}`;
-        existingItem.currentVersion = currentVersion;
-        existingItem.modified = utility.getFormattedDate(new Date());
-        const item = await existingItem.save();
-        return item;
-    }
-}
-
-exports.uploadConfig = async (req, user) => {
-    const files = req.files;
-    if (!files['file']) {
-        throw new Error('Config file is required');
-    }
-
-    const itemName = req.body.name.replace(/ /g, '_');
-    const itemType = req.body.itemType;
-    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
-    let version = getCurrentVersionNum(dir);
-    dir = `${dir}/${version}`;
-    let uploadDirectory = this.createUserDirectory(dir, itemType);
-
-    const configFile = files['file'][0];
-    this.validateInputFields(req.body);
-
-    // web panel file upload
-    this.isConfigFileType(configFile);
-    this.isValidFileSize(configFile);
-    await this.uploadConfigFileToServer(configFile, uploadDirectory);
-
-    const author = createAuthor(user);
-
-    const currentVersion = {
-        version: `${version}`,
-        url: path.relative('public', `${dir}/${configFile.originalname}`)
-    }
-
-    const existingItem = await Model.findOne({ name: req.body.name, type: req.body.itemType });
-    if (existingItem) {
-        const archive = {
-            version: existingItem.currentVersion.version,
-            url: existingItem.currentVersion.url
-        }
-        existingItem.archives.push(archive);
-        existingItem.author = author;
-        existingItem.description = req.body.description;
-        existingItem.currentVersion = currentVersion;
-        existingItem.modified = utility.getFormattedDate(new Date());
-        const item = await existingItem.save();
-        return item;
-    } else {
-        const newItem = new Model({
-            name: req.body.name,
-            type: req.body.itemType,
-            description: req.body.description,
-            author: author,
-            license: req.body.license,
-            openspaceVersion: req.body.openspaceVersion,
-            image: 'defaults/images/config-icon.jpg',
-            currentVersion: currentVersion,
-            created: utility.getFormattedDate(new Date()),
-            modified: utility.getFormattedDate(new Date()),
-        })
-        const item = await newItem.save();
-        return item;
-    }
-}
-
-exports.updateConfig = async (req, user) => {
-    const files = req.files;
-    if (!files['file']) {
-        throw new Error('Config file is required');
-    }
-
-    const itemName = req.body.name.replace(/ /g, '_');
-    const itemType = req.body.itemType;
-    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
-    let version = getCurrentVersionNum(dir);
-    dir = `${dir}/${version}`;
-    let uploadDirectory = this.createUserDirectory(dir, itemType);
-
-    const configFile = files['file'][0];
-
-    // web panel file upload
-    this.isConfigFileType(configFile);
-    this.isValidFileSize(configFile);
-    await this.uploadConfigFileToServer(configFile, uploadDirectory);
-
-    const currentVersion = {
-        version: `${version}`,
-        url: path.relative('public', `${dir}/${configFile.originalname}`)
-    }
-
-    const existingItem = await Model.findById(req.params.id);
-    if (existingItem) {
-        const archive = {
-            version: existingItem.currentVersion.version,
-            url: existingItem.currentVersion.url
-        }
-        existingItem.archives.push(archive);
-        existingItem.description = req.body.description;
         existingItem.currentVersion = currentVersion;
         existingItem.modified = utility.getFormattedDate(new Date());
         const item = await existingItem.save();

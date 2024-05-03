@@ -153,13 +153,13 @@ export default class APIService {
         url = window.location + url;
         switch (type) {
             case 'asset':
+                var noextension = fileName.substr(0, fileName.indexOf('.'));
                 var absPath = await openspace.absPath('${TEMPORARY}/' + fileName)
-                var pathString = '${USER_ASSETS}/';
+                var pathString = '${USER_ASSETS}/' + noextension + "/";
                 var scenePath = await openspace.absPath(pathString)
                 await openspace.downloadFile(url, absPath["1"], true);
                 await openspace.unzipFile(absPath["1"], scenePath["1"], true);
-                var noextension = fileName.substr(0, fileName.indexOf('.'));
-                await openspace.asset.add(scenePath["1"] + noextension + "/" + noextension);
+                await openspace.asset.add(scenePath["1"] + noextension);
                 await openspace.setPropertyValueSingle("Modules.CefWebGui.Reload", null)
                 alert("Asset imported successfully");
                 break;
