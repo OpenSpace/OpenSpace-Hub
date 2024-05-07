@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
+import { Form } from 'react-bootstrap';
 import APIService from './APIService';
 
 
@@ -34,15 +35,15 @@ const UploadItem = ({ config }) => {
         setImage(e.target.files[0]);
     }
 
-    const [title, setTitle] = useState('');
+    const [name, setName] = useState('');
 
-    const handleTitleChange = (e) => {
-        setTitle(e.target.value);
+    const handleNameChange = (e) => {
+        setName(e.target.value);
     }
 
     const [license, setLicense] = useState('');
     const handleLicenseChange = (e) => {
-        setLicense(e.target.value);
+        setLicense(e);
     }
 
     const [video, setVideo] = useState('');
@@ -82,7 +83,7 @@ const UploadItem = ({ config }) => {
         if (video != '') {
             const formData = new FormData();
             formData.append('video', video);
-            formData.append('title', title);
+            formData.append('name', name);
             formData.append('itemType', itemType.toLowerCase());
             formData.append('license', license);
             formData.append('description', description);
@@ -102,7 +103,7 @@ const UploadItem = ({ config }) => {
             return;
         }
         else {
-            if (!file || title.trim() === '' || itemType.trim() === '' || license.trim() === '' || description.trim() === '' || (!image && (itemType !== 'config' && itemType !== 'video'))) {
+            if (!file || name.trim() === '' || itemType.trim() === '' || license.trim() === '' || description.trim() === '') {
                 alert('Please fill in all fields.');
                 return;
             }
@@ -111,9 +112,10 @@ const UploadItem = ({ config }) => {
                 formData.append('file', file);
                 formData.append('image', image);
                 formData.append('fileName', file.name);
-                formData.append('title', title);
+                formData.append('name', name);
                 formData.append('itemType', itemType.toLowerCase());
                 formData.append('license', license);
+                formData.append('openspaceVersion', openspaceVersion);
                 formData.append('description', description);
                 await APIService.UploadItem(formData)
                     .then(resp => {
@@ -152,10 +154,10 @@ const UploadItem = ({ config }) => {
                 </Modal.Header>
                 <Modal.Body>
                     <form style={{ display: 'flex', flexDirection: 'column' }}>
-                        <h5>Title</h5>
-                        <input type="text" value={title} onChange={handleTitleChange} />
+                        <h5>Name</h5>
+                        <input type="text" value={name} onChange={handleNameChange} />
                         <h5 style={{ marginTop: '20px' }} >Description</h5>
-                        <input type="text" value={description} onChange={handleDescription} />
+                        <textarea rows={3} value={description} onChange={handleDescription} />
                         <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                             <Dropdown onSelect={handleItemTypeSelect} >
                                 <h5>Item Type</h5>
@@ -183,7 +185,7 @@ const UploadItem = ({ config }) => {
                             </Dropdown>
                         </div>
                         <div style={{ marginBottom: '20px' }}>
-                            <Dropdown onSelect={handleOpenSpaceVersionSelect} >
+                            <Dropdown onSelect={handleLicenseChange} >
                                 <h5>License <p style={{ fontSize: "15px" }}></p></h5>
                                 <Dropdown.Toggle variant="success" id="dropdown-basic">
                                     {license}
@@ -196,7 +198,7 @@ const UploadItem = ({ config }) => {
                             </Dropdown>
                         </div>
 
-                        {(itemType.toLowerCase() === 'config' || itemType === 'video') ? null :
+                        {(itemType.toLowerCase() === 'config' || itemType.toLowerCase() === 'video') ? null :
                             (
                                 <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                                     <h5>Upload item-image <p style={{ fontSize: "15px" }}>(accepted formats: .jpg, .jpeg, .png)</p></h5>
@@ -247,7 +249,7 @@ const UploadItem = ({ config }) => {
                             </div>
                         )}
                     </form>
-                    <div style={{ marginBottom: '20px', marginTop: '20px'}}>
+                    <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                         <input type="checkbox" checked={acceptTerms} onChange={handleAcceptTerms} />
                         <label htmlFor="acceptTerms">I accept the terms and conditions</label>
                     </div>

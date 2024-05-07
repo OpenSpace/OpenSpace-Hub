@@ -137,3 +137,4 @@ dist
 package-lock.json
 frontend/package-lock.json
 frontend/public/upload/
+mongo_data/

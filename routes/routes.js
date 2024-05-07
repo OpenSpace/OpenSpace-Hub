@@ -121,6 +121,8 @@ router.get('/items', async (req, res) => {
             .skip(page * limit)
             .limit(limit);
 
+        console.log('items: ', items)
+
         const total = await Model.find({
             $and: [
                 { name: { $regex: search, $options: 'i' } },
@@ -235,6 +237,8 @@ router.post('/addItem', async (req, res) => {
         description: req.body.description,
         author: req.body.author,
         currentVersion: req.body.currentVersion,
+        license: req.body.license,
+        openspaceVersion: req.body.openspaceVersion,
         image: req.body.image,
         archives: req.body.archives,
         created: utility.getFormattedDate(new Date()),
@@ -288,37 +292,61 @@ router.post('/upload', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'f
         }
 
         itemUtility.validateInputFields(req.body);
-        let data = ""
-        switch (req.body.itemType) {
-            case 'asset':
-                data = await itemUtility.uploadAsset(req, user);
-                break;
-            case 'profile':
-                data = await itemUtility.uploadProfile(req, user);
-                break;
-            case 'recording':
-                data = await itemUtility.uploadRecording(req, user);
-                break;
-            case 'webpanel':
-                data = await itemUtility.uploadWebPanel(req, user);
-                break;
-            case 'video':
-                data = await itemUtility.uploadVideo(req, user);
-                break;
-            case 'config':
-                data = await itemUtility.uploadConfig(req, user);
-                break;
-            case 'package':
-                data = await itemUtility.uploadPackage(req, user);
-                break;
-            default:
-                throw new Error('Invalid item type');
-        }
+        let data = await itemUtility.uploadItem(req, user);
         const message = "Uploaded successfully on server";
         res.status(200).json({ message: message, data: data });
     } catch (error) {
         console.log(`Error: ${error.message}`);
         res.status(400).json({ error: error.message });
+    }
+})
+
+/**
+ * @swagger
+ * /api/updateItem/{id}:
+ *  put:
+ *      summary: Update item by id.
+ *      description: Update the item using id from the database.
+ *      parameters:
+ *          - in : path
+ *            name : itemId
+ *            required : true
+ *            description: ID of the item to update
+ *      responses:
+ *          200:
+ *              description: Successful response with data.
+ *          404:
+ *              description: Item not found
+ *          500:
+ *              description: Internal server error.
+ */
+router.put('/updateItem/:id', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'file', maxCount: 1 }]), async (req, res) => {
+    try {
+        const jwtToken = req.headers['authorization'].split(' ')[1];
+        const user = await authUtility.getUserInfo(jwtToken);
+        if (!jwtToken || jwtToken === 'null') {
+            console.log('Unauthorized request');
+            return res.status(401).json({ error: 'Unauthorized request' });
+        }
+        jwt.verify(jwtToken, process.env.SECRET_KEY);
+        
+        let item = await Model.findById(req.params.id);
+        if (req.files && req.files['file']) {
+            item = await itemUtility.uploadItem(req, user, true);
+        }
+
+        if (req.files && req.files['image']) {
+            item = await itemUtility.updateImage(req, user);
+        }
+
+        item = await Model.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
+        if (!item) {
+            return res.status(404).json({ message: 'Item not found' });
+        }
+        const message = "Uploaded successfully on server";
+        res.status(200).json({ message: message, item: item });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 })
 
