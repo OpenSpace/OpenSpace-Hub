@@ -121,8 +121,6 @@ router.get('/items', async (req, res) => {
             .skip(page * limit)
             .limit(limit);
 
-        console.log('items: ', items)
-
         const total = await Model.find({
             $and: [
                 { name: { $regex: search, $options: 'i' } },
@@ -301,6 +299,20 @@ router.post('/upload', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'f
     }
 })
 
+router.get('/validateItemName/:name', async (req, res) => {
+    try {
+        const jwtToken = req.headers['authorization'].split(' ')[1];
+        const user = await authUtility.getUserInfo(jwtToken);
+        const data = await Model.findOne({ name: req.params.name });
+        if (!data) {
+            return res.status(200).json({ message: 'Item name is available' });
+        }
+        res.status(400).json({ error: 'Item name already exists' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+})
+
 /**
  * @swagger
  * /api/updateItem/{id}:
@@ -337,12 +349,14 @@ router.put('/updateItem/:id', upload.fields([{ name: 'image', maxCount: 1 }, { n
 
         if (req.files && req.files['image']) {
             item = await itemUtility.updateImage(req, user);
+            console.log('Image updated: ', item);
         }
 
         item = await Model.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
         if (!item) {
             return res.status(404).json({ message: 'Item not found' });
         }
+        console.log('item: ', item);
         const message = "Uploaded successfully on server";
         res.status(200).json({ message: message, item: item });
     } catch (error) {

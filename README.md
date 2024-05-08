@@ -13,7 +13,7 @@ To-Do:
 - [x] Users Schema Creation
 - [x] Paging of GetItems
 - [x] filtering of GetItems
-- [ ] Updating of HubItem - [License can't be changed]
+- [x] Updating of HubItem - [License can't be changed]
 - [x] Delete HubItem
 - [x] File Uploads
 - [x] Testing APIs with existing application
@@ -48,7 +48,7 @@ To-Do:
 - [x] package 
 - [x] no exe inside the zip
 - [ ] sanitizing user/search input
-- [ ] Warning text: you are responsible for whatever is in it - On Upload page, Item can be modified by administrator if required, accept terms and con
+- [x] Warning text: you are responsible for whatever is in it - On Upload page, Item can be modified by administrator if required, accept terms and con
 - [x] adminstrator table - uploading false, signup false (In case of fire, site can remain active and nothing)
 - [x] Which version (dropdown) it works with - ask user in the upload page
 - [x] Openspace team (admin) can edit 
@@ -56,7 +56,7 @@ To-Do:
 - [x] checkbox for 13 years old
 - [ ] the filename for the photo
 - [ ] alerts
-- [ ] No upload allowed for the existing item name
+- [x] No upload allowed for the existing item name
 
 ------ Later
 - [ ] Tags
