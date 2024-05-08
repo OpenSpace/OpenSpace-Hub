@@ -26,14 +26,14 @@ function errorHandler(error, req, res, next) {
   });
 }
 
-const uploadDir = path.join(__dirname, 'public', 'upload', 'images');
+const uploadDir = path.join(__dirname, 'uploads', 'images');
 if (!fs.existsSync(uploadDir)){
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 
 // Serve the static files from the React app
 app.use(express.static(path.join(__dirname, 'frontend/build')));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'uploads')));
 
 app.use(express.json());
 app.use(cors());
@@ -54,6 +54,7 @@ app.get('*', (req,res) =>{
 app.listen(PORT, () => {
   console.log(`OpenSpace-Hub listening on port ${PORT}`)
 })
+
 
 
 // app.listen(SECUREPORT, () => {

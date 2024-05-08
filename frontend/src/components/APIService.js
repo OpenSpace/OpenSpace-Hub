@@ -128,6 +128,7 @@ export default class APIService {
             },
             body: formData
         });
+        // console.log(resp);
         return await resp.json();
     }
 

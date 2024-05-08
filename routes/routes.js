@@ -13,7 +13,7 @@ const router = express.Router()
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const destination = file.fieldname === 'file' ? 'public/upload/' : 'public/upload/images/';
+        const destination = file.fieldname === 'file' ? 'uploads/' : 'uploads/images/';
         cb(null, destination)
     },
     filename: function (req, file, cb) {
@@ -349,14 +349,12 @@ router.put('/updateItem/:id', upload.fields([{ name: 'image', maxCount: 1 }, { n
 
         if (req.files && req.files['image']) {
             item = await itemUtility.updateImage(req, user);
-            console.log('Image updated: ', item);
         }
 
         item = await Model.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
         if (!item) {
             return res.status(404).json({ message: 'Item not found' });
         }
-        console.log('item: ', item);
         const message = "Uploaded successfully on server";
         res.status(200).json({ message: message, item: item });
     } catch (error) {
