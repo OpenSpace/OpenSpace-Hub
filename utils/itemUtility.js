@@ -37,7 +37,6 @@ function createAuthor(user) {
 
 exports.isValidFileType = (type, file) => {
     const fileName = file.originalname;
-    validateFileName(file);
     const fileExtension = fileName.split('.').pop();
     badType = false;
     messageType = "";
@@ -90,16 +89,8 @@ exports.isValidFileType = (type, file) => {
     }
 }
 
-validateFileName = (file) => {
-    if (file.originalname.split('.').length > 2) {
-        unlinkUploadedfile(file);
-        throw new Error('Invalid file name. Please remove any special characters from the file name');
-    }
-}
-
 exports.validateImageFileType = (file) => {
     const fileName = file.originalname;
-    validateFileName(file);
     const fileExtension = fileName.split('.').pop();
     const allowedImageTypes = ['jpg', 'jpeg', 'png'];
     if (!(allowedImageTypes.includes(fileExtension))) {
