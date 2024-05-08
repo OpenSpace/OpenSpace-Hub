@@ -5,15 +5,25 @@ const path = require('path');
 const utility = require('./utility');
 const Model = require('../models/Model');
 
-exports.validateInputFields = (body, update = false) => {
-    if (!body.name || !body.name.trim() ||
-        !body.itemType || !body.itemType.trim() ||
-        !body.description || !body.description.trim()
-    ) {
-        throw new Error('Invalid Input Fields');
-    } else if (!update && (!body.license || !body.license.trim())) {
-        throw new Error('No licence provided');
-    }
+exports.validateInputFields = async (body, update = false) => {
+    await new Promise(async (resolve, reject) => {
+        if (!body.name || !body.name.trim() ||
+            !body.itemType || !body.itemType.trim() ||
+            !body.description || !body.description.trim()
+        ) {
+            reject(new Error('Invalid Input Fields'));
+        } else if (!update && (!body.license || !body.license.trim())) {
+            reject(new Error('No licence provided'));
+        } else {
+            const data = await Model.findOne({ name: body.name });
+            if (data) {
+                reject(new Error('Item name already exists'));
+            } else {
+                console.log("input fields validation successful");
+                resolve();
+            }
+        }
+    });
 }
 
 function createAuthor(user) {
@@ -30,7 +40,7 @@ exports.isValidFileType = (type, file) => {
     const fileExtension = fileName.split('.').pop();
     badType = false;
     messageType = "";
-    switch(type) {
+    switch (type) {
         case "profile": {
             if (fileExtension !== 'profile') {
                 badType = true;
@@ -47,7 +57,7 @@ exports.isValidFileType = (type, file) => {
         }
         case "package":
         case "webpanel": {
-                if (fileExtension !== 'zip') {
+            if (fileExtension !== 'zip') {
                 badType = true;
                 messageType = ".zip"
             }
@@ -128,12 +138,12 @@ exports.resizeImage = async (file) => {
     return resizeResult;
 }
 
-checkZipFile = async(type, file, dir) => {
+checkZipFile = async (type, file, dir) => {
     if (file.mimetype === 'application/zip') {
         originalItemname = file.originalname.split('.')[0];
         await new Promise((resolve, reject) => {
             fs.createReadStream(file.path)
-                .pipe(unzipper.Extract({ path: `public/upload/unzipped/${originalItemname}` }))
+                .pipe(unzipper.Extract({ path: `public/upload/unzipped/` }))
                 .on('close', () => {
                     resolve();
                 })
@@ -257,7 +267,7 @@ exports.createUserDirectory = (dir, itemType) => {
 exports.uploadItem = async (req, user, update = false) => {
     const files = req.files;
     const type = req.body.itemType;
-    if (!files['file'] ) {
+    if (!files['file']) {
         throw new Error('An item file is required');
     }
 
@@ -339,7 +349,7 @@ exports.updateImage = async (req, user) => {
     const itemName = req.body.name.replace(/ /g, '_');
     const itemType = req.body.itemType;
     let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
-    let version = getCurrentVersionNum(dir)-1;
+    let version = getCurrentVersionNum(dir) - 1;
     dir = `${dir}/${version}`;
     let uploadDirectory = this.createUserDirectory(dir, itemType);
 

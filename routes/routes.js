@@ -279,7 +279,7 @@ router.post('/upload', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'f
         const jwtToken = req.headers['authorization'].split(' ')[1];
         const user = await authUtility.getUserInfo(jwtToken);
         if (req.body && req.body.video && req.body.video !== '') {
-            itemUtility.validateInputFields(req.body);
+            await itemUtility.validateInputFields(req.body);
             const data = await itemUtility.uploadVideo(req, user);
             const message = "Uploaded successfully on server";
             return res.status(200).json({ message: message, data: data });
@@ -289,7 +289,7 @@ router.post('/upload', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'f
             return res.status(400).json({ error: 'Both image and hub-item file are required' });
         }
 
-        itemUtility.validateInputFields(req.body);
+        await itemUtility.validateInputFields(req.body);
         let data = await itemUtility.uploadItem(req, user);
         const message = "Uploaded successfully on server";
         res.status(200).json({ message: message, data: data });
