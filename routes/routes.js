@@ -7,6 +7,7 @@ const path = require('path');
 const itemUtility = require('../utils/itemUtility');
 const authUtility = require('../utils/authUtility');
 const jwt = require('jsonwebtoken')
+const { body, validationResult } = require('express-validator');
 
 
 const router = express.Router()
@@ -90,6 +91,7 @@ router.get('/items', async (req, res) => {
         let sort = req.query.sort || 'name';
         let type = req.query.type || '';
         const itemOptions = ['asset', 'profile', 'recording', 'webpanel', 'video', 'config', 'package'];
+        const username = req.query.username || '';
 
         type === 'all'
             ? (type = [...itemOptions])
@@ -104,7 +106,7 @@ router.get('/items', async (req, res) => {
             sortBy[sort[0]] = 1;
         }
 
-        const items = await Model.find({
+        let query = {
             $and: [
                 {
                     $or: [
@@ -114,19 +116,28 @@ router.get('/items', async (req, res) => {
                         { license: { $regex: search, $options: 'i' } },
                     ]
                 },
-                { type: { $in: type } },
-            ],
-        })
-            .sort(sortBy)
-            .skip(page * limit)
-            .limit(limit);
+                { type: { $in: type } }
+            ]
+        };
 
-        const total = await Model.find({
+        let queryForToal = {
             $and: [
                 { name: { $regex: search, $options: 'i' } },
                 { type: { $in: type } },
             ],
-        }).countDocuments();
+        };
+
+        if (username !== '') {
+            query.$and.push({ 'author.username': username });
+            queryForToal.$and.push({ 'author.username': username });
+        }
+
+        const items = await Model.find(query)
+            .sort(sortBy)
+            .skip(page * limit)
+            .limit(limit);
+        
+        const total = await Model.find(queryForToal).countDocuments();
 
         const response = {
             error: false,
@@ -229,6 +240,10 @@ router.patch('/update/:id', (req, res) => {
  *              description: Internal server error.
  */
 router.post('/addItem', async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     const data = new Model({
         name: req.body.name,
         type: req.body.type,
@@ -276,6 +291,10 @@ router.post('/addItem', async (req, res) => {
  */
 router.post('/upload', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'file', maxCount: 1 }]), async (req, res) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
         const jwtToken = req.headers['authorization'].split(' ')[1];
         const user = await authUtility.getUserInfo(jwtToken);
         if (req.body && req.body.video && req.body.video !== '') {
@@ -299,6 +318,25 @@ router.post('/upload', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'f
     }
 })
 
+/**
+ * @swagger
+ * /api/validateItemName/{name}:
+ *  get:
+ *      summary: Validate item name.
+ *      description: Validate the item name from the database.
+ *      parameters:
+ *          - in : path
+ *            name : name
+ *            required : true
+ *            description: Name of the item to validate
+ *      responses:
+ *          200:
+ *              description: Successful response with data.
+ *          400:
+ *              description: Item name already exists
+ *          500:
+ *              description: Internal server error.
+ */
 router.get('/validateItemName/:name', async (req, res) => {
     try {
         const jwtToken = req.headers['authorization'].split(' ')[1];
@@ -334,6 +372,10 @@ router.get('/validateItemName/:name', async (req, res) => {
  */
 router.put('/updateItem/:id', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'file', maxCount: 1 }]), async (req, res) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
         const jwtToken = req.headers['authorization'].split(' ')[1];
         const user = await authUtility.getUserInfo(jwtToken);
         if (!jwtToken || jwtToken === 'null') {
@@ -341,7 +383,7 @@ router.put('/updateItem/:id', upload.fields([{ name: 'image', maxCount: 1 }, { n
             return res.status(401).json({ error: 'Unauthorized request' });
         }
         jwt.verify(jwtToken, process.env.SECRET_KEY);
-        
+
         let item = await Model.findById(req.params.id);
         if (req.files && req.files['file']) {
             item = await itemUtility.uploadItem(req, user, true);

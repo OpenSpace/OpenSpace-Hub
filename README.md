@@ -26,9 +26,9 @@ To-Do:
   - [x] Integrate OpenSpace API
   - [x] Import Profile, Asset, Recording module
   - [x] Facebook Auth Integration
-  - [ ] Linkedin Auth Integration
+  - [x] Linkedin Auth Integration
   - [ ] Github Auth Integration
-  - [ ] Social Media Logout
+  - [x] Social Media Logout
   - [x] Search Functionality
   - [x] Upload page Frontend
   - [x] Upload page Backend
@@ -39,7 +39,7 @@ To-Do:
 - [x] Add Item Types - Config
 - [x] User page
 - [ ] Jenkinsfile
-- [ ] Secure port
+- [x] Secure port
 - [x] Dockerfile and docker-compose file
 - [x] Default Item Image 
 - [x] disable simple signup
@@ -47,7 +47,7 @@ To-Do:
 - [x] slack button
 - [x] package 
 - [x] no exe inside the zip
-- [ ] sanitizing user/search input
+- [x] sanitizing user/search input
 - [x] Warning text: you are responsible for whatever is in it - On Upload page, Item can be modified by administrator if required, accept terms and con
 - [x] adminstrator table - uploading false, signup false (In case of fire, site can remain active and nothing)
 - [x] Which version (dropdown) it works with - ask user in the upload page
@@ -63,7 +63,7 @@ To-Do:
 - [ ] Profile Dependencies
 - [ ] download counts
 - [ ] sort by
-- [ ] verify the item name
+- [x] verify the item name
 
 Local deployment
 ====================================

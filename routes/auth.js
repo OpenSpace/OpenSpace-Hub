@@ -6,6 +6,7 @@ const Model = require('../models/Model');
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const authUtility = require('./../utils/authUtility')
+const { validationResult } = require('express-validator');
 
 
 /**
@@ -35,6 +36,10 @@ const authUtility = require('./../utils/authUtility')
  */
 router.post('/register', async (req, res) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
         let config = await Config.findOne();
         if (!config.signin) {
             throw new Error('Signup disabled');
@@ -87,7 +92,7 @@ router.delete('/deleteUser/:username', async (req, res) => {
     try {
         const jwtToken = req.headers['authorization'].split(' ')[1];
         const user = await authUtility.getUserInfo(jwtToken);
-        if(!user || user.username !== req.params.username) {
+        if (!user || user.username !== req.params.username) {
             return res.status(401).json({ error: 'Unauthorized request' });
         }
         await Model.deleteMany({ "author.username": user.username });
@@ -126,6 +131,10 @@ router.delete('/deleteUser/:username', async (req, res) => {
  */
 router.post('/social-media-login', async (req, res) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
         let config = await Config.findOne();
         if (!config.signin) {
             throw new Error('Login disabled');
@@ -182,6 +191,10 @@ router.post('/social-media-login', async (req, res) => {
  */
 router.post('/login', async (req, res) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
         let config = await Config.findOne();
         if (!config.signin) {
             throw new Error('Login disabled');
@@ -204,6 +217,10 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/verify-token', async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     const token = req.headers['authorization'].split(' ')[1];
     if (!token) {
         return res.status(401).json({ error: 'Unauthorized request' });
@@ -211,7 +228,6 @@ router.post('/verify-token', async (req, res) => {
     try {
         jwt.verify(token, process.env.SECRET_KEY);
         //get user info
-        console.log(jwt.decode(token, process.env.SECRET_KEY));
         res.status(200).json({ message: 'Valid Token' });
     } catch (error) {
         console.log(error);
@@ -278,9 +294,13 @@ router.get('/getUser', async (req, res) => {
  */
 router.put('/updateUser/:username', async (req, res) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
         const jwtToken = req.headers['authorization'].split(' ')[1];
         const user = await authUtility.getUserInfo(jwtToken);
-        if(!user || user.username !== req.params.username) {
+        if (!user || user.username !== req.params.username) {
             return res.status(401).json({ error: 'Unauthorized request' });
         }
         const { name, email, institution } = req.body;
