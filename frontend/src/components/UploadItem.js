@@ -36,10 +36,30 @@ const UploadItem = ({ config }) => {
     }
 
     const [name, setName] = useState('');
+    const [nameError, setNameError] = useState('');
 
     const handleNameChange = (e) => {
         setName(e.target.value);
+        setNameError('');
     }
+
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            validateItemName();
+        }, 300);
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [name]);
+
+    const validateItemName = async () => {
+        const resp = await APIService.ValidateItemName(name);
+        if (resp.error) {
+            setName('');
+            setNameError(resp.error);
+            throw new Error(resp.error);
+        }
+        setName(name);
+    };
 
     const [license, setLicense] = useState('');
     const handleLicenseChange = (e) => {
@@ -87,6 +107,7 @@ const UploadItem = ({ config }) => {
             formData.append('itemType', itemType.toLowerCase());
             formData.append('license', license);
             formData.append('description', description);
+            formData.append('openspaceVersion', openspaceVersion);
             await APIService.UploadItem(formData)
                 .then(resp => {
                     if (resp.error) {
@@ -153,11 +174,18 @@ const UploadItem = ({ config }) => {
                     <Modal.Title>Upload an Item</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    {/* Warning text */}
+                    <p style={{ color: 'red', fontWeight: 'bold', fontSize: '18px' }}>
+                        Warning: You are responsible for whatever is in it. Item can be modified by administrator if required.
+                    </p>
                     <form style={{ display: 'flex', flexDirection: 'column' }}>
                         <h5>Name</h5>
                         <input type="text" value={name} onChange={handleNameChange} />
+                        {nameError && <p style={{ color: 'red' }}>{nameError}</p>}
+
                         <h5 style={{ marginTop: '20px' }} >Description</h5>
                         <textarea rows={3} value={description} onChange={handleDescription} />
+
                         <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                             <Dropdown onSelect={handleItemTypeSelect} >
                                 <h5>Item Type</h5>

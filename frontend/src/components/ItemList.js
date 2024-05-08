@@ -8,7 +8,7 @@ import { Form } from 'react-bootstrap';
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
 
-function ItemList({ user, type, config }) {
+function ItemList({ user, type, config, filterByUsername = false }) {
     const [items, setItems] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
@@ -52,10 +52,19 @@ function ItemList({ user, type, config }) {
 
     const loadItems = async () => {
         try {
+            let username = '';
+            // console.log("filterByUsername: ", filterByUsername);
+            if (filterByUsername) {
+                username = user.username;
+            }
+            // console.log("username: ", user);
+            // alert(user.username)
+            // alert(type)
             const resp = await APIService.GetItems({
                 type,
                 search: searchTerm,
-                page: currentPage
+                page: currentPage,
+                username: username
             });
             setItems(resp.items);
             setTotalPages(Math.ceil(resp.total / resp.limit));
@@ -130,7 +139,6 @@ function ItemList({ user, type, config }) {
                 formData.append('fileName', selectedItem.file.name);
             }
             if (selectedItem && selectedItem.image) {
-                console.log(selectedItem.image);
                 formData.append('image', selectedItem.image);
             }
             if (selectedItem && selectedItem.video) {
@@ -139,14 +147,12 @@ function ItemList({ user, type, config }) {
             formData.append('itemType', selectedItem.type);
             formData.append('openspaceVersion', selectedItem.openspaceVersion);
             formData.append('name', selectedItem.name);
-            console.log(selectedItem.name);
             formData.append('description', selectedItem.description);
             await APIService.UpdateItem(selectedItem._id, formData)
                 .then(resp => {
                     if (resp.error) {
                         throw new Error(resp.error);
                     }
-                    console.log(resp);
                     alert(resp.message);
                     setItems(items.map(i => i._id === selectedItem._id ? resp.item : i));
                     handleClose();
@@ -155,7 +161,6 @@ function ItemList({ user, type, config }) {
                     alert("Error uploading item. " + err.message);
                     console.log(err);
                 });
-            console.log(formData);
             return;
         }
     }
@@ -190,9 +195,7 @@ function ItemList({ user, type, config }) {
                             <Dropdown onSelect={handleOpenSpaceVersionSelect} >
                                 <h5>OpenSpace Version <p style={{ fontSize: "15px" }}>(Make sure it runs on the selected version)</p></h5>
                                 <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                    {/* {selectedItem? (selectedItem.openspaceVersion != '' ? openspaceVersion : 'Select version'): 'Select version'} */}
                                     {selectedItem? (selectedItem.openspaceVersion ? openspaceVersion : 'Select version'): null}
-                                    {selectedItem ? console.log(selectedItem.openspaceVersion) : null}
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
                                     {openspaceVersions.map((version) => (

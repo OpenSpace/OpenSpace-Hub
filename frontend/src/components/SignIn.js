@@ -73,8 +73,8 @@ const SignIn = ({ config }) => {
 
     // linkedin login
     const { linkedInLogin } = useLinkedIn({
-        clientId: '78j5hyrf2wrp4z',
-        redirectUri: `${window.location.origin}`, // for Next.js, you can use `${typeof window === 'object' && window.location.origin}/linkedin`
+        clientId: process.env.REACT_APP_LINKEDIN_CLIENT_ID,
+        redirectUri: `${window.location.origin}`,
         onSuccess: (code) => {
             console.log(code);
         },
@@ -83,6 +83,68 @@ const SignIn = ({ config }) => {
         },
     });
 
+    // useEffect(() => {
+    //     const handleGitHubCallback = async () => {
+    //         const queryString = window.location.search;
+    //         const urlParams = new URLSearchParams(queryString);
+    //         const code = urlParams.get('code');
+
+    //         if (code) {
+    //             try {
+    //                 // Exchange the code for an access token
+    //                 const GITHUB_CLIENT_ID = process.env.REACT_APP_GITHUB_CLIENT_ID;
+    //                 const GITHUB_CLIENT_SECRET = process.env.REACT_APP_GITHUB_CLIENT_SECRET;
+    //                 const formData = new FormData();
+    //                 formData.append("client_id", GITHUB_CLIENT_ID);
+    //                 formData.append("client_secret", GITHUB_CLIENT_SECRET);
+    //                 formData.append("code", code);
+    //                 const data = await fetch('https://github.com/login/oauth/access_token', {
+    //                     method: 'POST',
+    //                     body: formData,
+    //                     headers: {
+    //                         'Access-Control-Allow-Origin': '*',
+    //                         'Access-Control-Allow-Headers': 'X-Requested-With'
+
+    //                     }
+    //                 }).then((response) => response.json());
+
+    //                 const accessToken = data.access_token;
+
+    //                 // Fetch the user's GitHub profile
+    //                 const userProfile = await fetch('https://api.github.com/user', {
+    //                     headers: {
+    //                         'Authorization': `Bearer ${accessToken}`,
+    //                         'User-Agent': 'Your-App-Name'
+    //                     }
+    //                 });
+
+    //                 // Handle the user profile data (e.g., store it in your database and log the user in)
+    //                 console.log(`Welcome, ${userProfile.data.name}!`);
+    //                 // Redirect to home or perform other actions upon successful login
+    //             } catch (error) {
+    //                 console.error(error);
+    //             }
+    //         }
+    //     };
+
+    //     handleGitHubCallback();
+    // }, []);
+
+    // useEffect(() => {
+    //     const queryString = window.location.search;
+    //     const urlParams = new URLSearchParams(queryString);
+    //     const code = urlParams.get('code');
+    //     console.log(code);
+    // }, []);
+
+
+    // const githubLogin = () => {
+    //     const GITHUB_CLIENT_ID = process.env.REACT_APP_GITHUB_CLIENT_ID;
+    //     const GITHUB_CLIENT_SECRET = process.env.REACT_APP_GITHUB_CLIENT_SECRET;
+    //     const GITHUB_CALLBACK_URL = process.env.REACT_APP_GITHUB_REDIRECT_URI;
+    //     const githubOAuthURL = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=user`;
+    //     window.location.href = githubOAuthURL;
+    // };
 
 
     const redirectToHome = () => {
@@ -133,6 +195,10 @@ const SignIn = ({ config }) => {
                         <div className="d-grid gap-2 mt-2">
                             <Button variant="outline-primary" size="lg" onClick={linkedInLogin} disabled={!ageVerified}>Sign in with LinkedIn 🚀 </Button>
                         </div>
+
+                        {/* <div className="d-grid gap-2 mt-2">
+                            <Button variant="outline-primary" size="lg" onClick={githubLogin} disabled={!ageVerified}>Sign in with Github 🚀 </Button>
+                        </div> */}
                     </>
                 ) : (
                     <Alert variant="danger">

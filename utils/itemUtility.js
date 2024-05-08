@@ -5,15 +5,26 @@ const path = require('path');
 const utility = require('./utility');
 const Model = require('../models/Model');
 
-exports.validateInputFields = (body, update = false) => {
-    if (!body.name || !body.name.trim() ||
-        !body.itemType || !body.itemType.trim() ||
-        !body.description || !body.description.trim()
-    ) {
-        throw new Error('Invalid Input Fields');
-    } else if (!update && (!body.license || !body.license.trim())) {
-        throw new Error('No licence provided');
-    }
+exports.validateInputFields = async (body, update = false) => {
+    await new Promise(async (resolve, reject) => {
+        if (!body.name || !body.name.trim() ||
+            !body.itemType || !body.itemType.trim() ||
+            !body.description || !body.description.trim()
+        ) {
+            reject(new Error('Invalid Input Fields'));
+        } else if (!update && (!body.license || !body.license.trim())) {
+            reject(new Error('No licence provided'));
+        } else if(!update) {
+            const data = await Model.findOne({ name: body.name });
+            if (data) {
+                reject(new Error('Item name already exists'));
+            } else {
+                resolve();
+            }
+        } else {
+            resolve();
+        }
+    });
 }
 
 function createAuthor(user) {
@@ -26,11 +37,10 @@ function createAuthor(user) {
 
 exports.isValidFileType = (type, file) => {
     const fileName = file.originalname;
-    validateFileName(file);
     const fileExtension = fileName.split('.').pop();
     badType = false;
     messageType = "";
-    switch(type) {
+    switch (type) {
         case "profile": {
             if (fileExtension !== 'profile') {
                 badType = true;
@@ -47,7 +57,7 @@ exports.isValidFileType = (type, file) => {
         }
         case "package":
         case "webpanel": {
-                if (fileExtension !== 'zip') {
+            if (fileExtension !== 'zip') {
                 badType = true;
                 messageType = ".zip"
             }
@@ -79,16 +89,8 @@ exports.isValidFileType = (type, file) => {
     }
 }
 
-validateFileName = (file) => {
-    if (file.originalname.split('.').length > 2) {
-        unlinkUploadedfile(file);
-        throw new Error('Invalid file name. Please remove any special characters from the file name');
-    }
-}
-
 exports.validateImageFileType = (file) => {
     const fileName = file.originalname;
-    validateFileName(file);
     const fileExtension = fileName.split('.').pop();
     const allowedImageTypes = ['jpg', 'jpeg', 'png'];
     if (!(allowedImageTypes.includes(fileExtension))) {
@@ -128,12 +130,12 @@ exports.resizeImage = async (file) => {
     return resizeResult;
 }
 
-checkZipFile = async(type, file, dir) => {
+checkZipFile = async (type, file, dir) => {
     if (file.mimetype === 'application/zip') {
         originalItemname = file.originalname.split('.')[0];
         await new Promise((resolve, reject) => {
             fs.createReadStream(file.path)
-                .pipe(unzipper.Extract({ path: `public/upload/unzipped/${originalItemname}` }))
+                .pipe(unzipper.Extract({ path: `uploads/unzipped/` }))
                 .on('close', () => {
                     resolve();
                 })
@@ -142,10 +144,10 @@ checkZipFile = async(type, file, dir) => {
                     reject(new Error('Error extracting zip file'));
                 });
         });
-        const files = await fs.promises.readdir(`public/upload/unzipped/${originalItemname}`);
+        const files = await fs.promises.readdir(`uploads/unzipped/${originalItemname}`);
         const containsExeFile = files.some(file => file.endsWith('.exe'));
         if (containsExeFile) {
-            unlinkUploadedDir(`public/upload/unzipped/${originalItemname}`);
+            unlinkUploadedDir(`uploads/unzipped/${originalItemname}`);
             throw new Error('Zip file contains .exe file');
         }
         let assetFiles = [];
@@ -167,11 +169,11 @@ checkZipFile = async(type, file, dir) => {
             }
         }
         if (assetFiles.length <= 0) {
-            unlinkUploadedDir(`public/upload/unzipped/${originalItemname}`);
+            unlinkUploadedDir(`uploads/unzipped/${originalItemname}`);
             throw new Error(`Zip file does not contain ${message} file`);
         }
         fs.renameSync(file.path, `${dir}/${file.originalname}`);
-        unlinkUploadedDir(`public/upload/unzipped/${originalItemname}`);
+        unlinkUploadedDir(`uploads/unzipped/${originalItemname}`);
         return Promise.resolve();
     } else {
         throw new Error('Invalid zip file.');
@@ -206,7 +208,6 @@ exports.uploadItemFileToServer = async (type, file, dir) => {
 
 exports.uploadImageFileToServer = async (file, dir) => {
     if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
-        // change file name
         fs.renameSync(file.path, `${dir}/${file.originalname}`);
         return Promise.resolve();
     } else {
@@ -257,18 +258,18 @@ exports.createUserDirectory = (dir, itemType) => {
 exports.uploadItem = async (req, user, update = false) => {
     const files = req.files;
     const type = req.body.itemType;
-    if (!files['file'] ) {
+    if (!files['file']) {
         throw new Error('An item file is required');
     }
 
     const itemName = req.body.name.replace(/ /g, '_');
     const itemType = req.body.itemType;
-    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
+    let dir = `uploads/users/${user.username}/${itemType}/${itemName}`;
     let version = getCurrentVersionNum(dir);
     dir = `${dir}/${version}`;
     let uploadDirectory = this.createUserDirectory(dir, itemType);
     const itemFile = files['file'][0];
-    this.validateInputFields(req.body, update);
+    await this.validateInputFields(req.body, update);
 
     // file upload
     this.isValidFileType(type, itemFile);
@@ -282,20 +283,20 @@ exports.uploadItem = async (req, user, update = false) => {
         this.validateImageFileSize(imageFile);
         let resizedFile = await this.resizeImage(imageFile);
         let imageFileName = resizedFile.originalname.split('.');
-        imageFileName[0] = itemName;
+        imageFileName[0] = itemName + "_" + Math.floor(Math.random() * 1000);
         resizedFile.originalname = imageFileName.join('.');
         await this.uploadImageFileToServer(resizedFile, uploadDirectory);
-        imagePath = path.relative('public', `${dir}/${resizedFile.originalname}`)
+        imagePath = path.relative('uploads', `${dir}/${resizedFile.originalname}`)
     } else {
         let defaultImage = `${itemType}-default.jpg`;
-        imagePath = path.relative('public', defaultImage)
+        imagePath = path.relative('uploads', defaultImage)
     }
 
     const author = createAuthor(user);
 
     const currentVersion = {
         version: `${version}`,
-        url: path.relative('public', `${dir}/${itemFile.originalname}`)
+        url: path.relative('uploads', `${dir}/${itemFile.originalname}`)
     }
 
     const existingItem = await Model.findOne({ name: req.body.name, type: req.body.itemType });
@@ -338,8 +339,8 @@ exports.updateImage = async (req, user) => {
 
     const itemName = req.body.name.replace(/ /g, '_');
     const itemType = req.body.itemType;
-    let dir = `public/upload/users/${user.username}/${itemType}/${itemName}`;
-    let version = getCurrentVersionNum(dir)-1;
+    let dir = `uploads/users/${user.username}/${itemType}/${itemName}`;
+    let version = getCurrentVersionNum(dir) - 1;
     dir = `${dir}/${version}`;
     let uploadDirectory = this.createUserDirectory(dir, itemType);
 
@@ -350,7 +351,7 @@ exports.updateImage = async (req, user) => {
     this.validateImageFileSize(imageFile);
     let resizedFile = await this.resizeImage(imageFile);
     let imageFileName = resizedFile.originalname.split('.');
-    imageFileName[0] = itemName;
+    imageFileName[0] = itemName + "_" + Math.floor(Math.random() * 1000);
     resizedFile.originalname = imageFileName.join('.');
     await this.uploadImageFileToServer(resizedFile, uploadDirectory);
 
@@ -358,7 +359,7 @@ exports.updateImage = async (req, user) => {
     if (existingItem) {
         existingItem.name = req.body.name;
         existingItem.description = req.body.description;
-        existingItem.image = path.relative('public', `${dir}/${resizedFile.originalname}`);
+        existingItem.image = path.relative('uploads', `${dir}/${resizedFile.originalname}`);
         existingItem.modified = utility.getFormattedDate(new Date());
         const item = await existingItem.save();
         return item;
@@ -372,7 +373,7 @@ exports.uploadVideo = async (req, user) => {
         throw new Error('Video link is required');
     }
 
-    this.validateInputFields(req.body);
+    await this.validateInputFields(req.body);
 
     const author = createAuthor(user);
 
@@ -380,6 +381,9 @@ exports.uploadVideo = async (req, user) => {
         version: `1`,
         url: req.body.video
     }
+
+    let defaultImage = `video-default.jpg`;
+    let imagePath = path.relative('uploads', defaultImage)
 
     const existingItem = await Model.findOne({ name: req.body.name, type: req.body.itemType });
     if (existingItem) {
@@ -403,7 +407,7 @@ exports.uploadVideo = async (req, user) => {
             author: author,
             license: req.body.license,
             openspaceVersion: req.body.openspaceVersion,
-            image: 'defaults/images/video-icon.jpg',
+            image: imagePath,
             currentVersion: currentVersion,
             created: utility.getFormattedDate(new Date()),
             modified: utility.getFormattedDate(new Date()),

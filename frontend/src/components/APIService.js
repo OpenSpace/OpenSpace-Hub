@@ -1,7 +1,7 @@
 export default class APIService {
 
-    static async GetItems({ type = 'all', search = '', page = 1,  sort = 'name,asc', limit = 6}) {
-        const resp = await fetch(`/api/items?type=${type}&search=${search}&sort=${sort}&limit=${limit}&page=${page}`, {
+    static async GetItems({ type = 'all', search = '', page = 1,  sort = 'name,asc', limit = 6, username = ''}) {
+        const resp = await fetch(`/api/items?type=${type}&search=${search}&sort=${sort}&limit=${limit}&page=${page}&username=${username}`, {
             'method': 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -110,6 +110,16 @@ export default class APIService {
         return await resp.json();
     }
 
+    static async ValidateItemName(name) {
+        const resp = await fetch(`/api/validateItemName/${name}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        return await resp.json();
+    }
+
     static async UpdateItem(id, formData) {
         const resp = await fetch(`/api/updateItem/${id}`, {
             method: 'PUT',
@@ -118,6 +128,7 @@ export default class APIService {
             },
             body: formData
         });
+        // console.log(resp);
         return await resp.json();
     }
 
