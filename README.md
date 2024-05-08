@@ -54,7 +54,7 @@ To-Do:
 - [x] Openspace team (admin) can edit 
 - [x] License dropdown
 - [x] checkbox for 13 years old
-- [ ] the filename for the photo
+- [x] the filename for the photo
 - [ ] alerts
 - [x] No upload allowed for the existing item name
 

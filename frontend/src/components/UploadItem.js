@@ -107,6 +107,7 @@ const UploadItem = ({ config }) => {
             formData.append('itemType', itemType.toLowerCase());
             formData.append('license', license);
             formData.append('description', description);
+            formData.append('openspaceVersion', openspaceVersion);
             await APIService.UploadItem(formData)
                 .then(resp => {
                     if (resp.error) {

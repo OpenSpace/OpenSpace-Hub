@@ -382,6 +382,9 @@ exports.uploadVideo = async (req, user) => {
         url: req.body.video
     }
 
+    let defaultImage = `video-default.jpg`;
+    let imagePath = path.relative('uploads', defaultImage)
+
     const existingItem = await Model.findOne({ name: req.body.name, type: req.body.itemType });
     if (existingItem) {
         const archive = {
@@ -404,7 +407,7 @@ exports.uploadVideo = async (req, user) => {
             author: author,
             license: req.body.license,
             openspaceVersion: req.body.openspaceVersion,
-            image: 'defaults/images/video-icon.jpg',
+            image: imagePath,
             currentVersion: currentVersion,
             created: utility.getFormattedDate(new Date()),
             modified: utility.getFormattedDate(new Date()),

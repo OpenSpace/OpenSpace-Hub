@@ -33,6 +33,7 @@ if (!fs.existsSync(uploadDir)){
 
 // Serve the static files from the React app
 app.use(express.static(path.join(__dirname, 'frontend/build')));
+app.use(express.static(path.join(__dirname, 'frontend/public')));
 app.use(express.static(path.join(__dirname, 'uploads')));
 
 app.use(express.json());
