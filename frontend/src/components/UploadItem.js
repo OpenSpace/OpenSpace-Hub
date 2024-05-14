@@ -267,8 +267,8 @@ const UploadItem = ({ config }) => {
                             </div>
                         ) : itemType.toLowerCase() === 'package' ? (
                             <div style={{ marginBottom: '20px', marginTop: '20px' }}>
-                                <h5>Upload a file <p style={{ fontSize: "15px" }}>(accepted formats: .zip, .asset)</p></h5>
-                                <input id='fileInput' type="file" accept=".zip, .asset" onChange={handleFileChange} />
+                                <h5>Upload a file <p style={{ fontSize: "15px" }}>(accepted formats: .zip)</p></h5>
+                                <input id='fileInput' type="file" accept=".zip" onChange={handleFileChange} />
                             </div>
                         ) : (
                             <div style={{ marginBottom: '20px', marginTop: '20px' }}>

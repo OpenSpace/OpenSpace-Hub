@@ -251,6 +251,9 @@ router.get('/getUser', async (req, res) => {
     try {
         const jwtToken = req.headers['authorization'].split(' ')[1];
         const user = await authUtility.getUserInfo(jwtToken);
+        if (!user) {
+            return res.status(401).json({ error: 'Unauthorized request' });
+        }
         const resp = await authUtility.getUserResponse(user, jwtToken);
         res.status(200).json(resp);
     } catch (error) {

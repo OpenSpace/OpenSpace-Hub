@@ -131,6 +131,11 @@ exports.resizeImage = async (file) => {
 }
 
 checkZipFile = async (type, file, dir) => {
+    console.log(file);
+    if (type === 'asset' && file.originalname.split('.').pop() === 'asset') {
+        fs.renameSync(file.path, `${dir}/${file.originalname}`);
+        return Promise.resolve();
+    }
     if (file.mimetype === 'application/zip') {
         originalItemname = file.originalname.split('.')[0];
         await new Promise((resolve, reject) => {
