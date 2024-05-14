@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const axios = require('axios');
 const User = require('../models/User');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { getFormattedDate } = require('./utility');
 
 exports.generateRandomString = (length) => {

@@ -53,13 +53,9 @@ function ItemList({ user, type, config, filterByUsername = false }) {
     const loadItems = async () => {
         try {
             let username = '';
-            // console.log("filterByUsername: ", filterByUsername);
             if (filterByUsername) {
                 username = user.username;
             }
-            // console.log("username: ", user);
-            // alert(user.username)
-            // alert(type)
             const resp = await APIService.GetItems({
                 type,
                 search: searchTerm,

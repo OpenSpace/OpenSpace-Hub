@@ -91,3 +91,6 @@ Start the base containers
 ```
 docker-compose up
 ``` 
+
+Note:
+If you are running on a non-standard architecture (such as ARM), then you need to use bcryptjs instead of bcrypt.

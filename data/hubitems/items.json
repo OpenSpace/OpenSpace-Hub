@@ -1,7 +1,4 @@
 [{
-  "_id": {
-    "$oid": "65cd31c275d7df75f970c977"
-  },
   "name": "Extragalactic",
   "type": "asset",
   "description": "Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys.",
@@ -30,9 +27,6 @@
   "created": "2024-02-19"
 },
 {
-  "_id": {
-    "$oid": "65d3cc90a2b7ac3502099498"
-  },
   "name": "Extragalactic",
   "type": "asset",
   "description": "Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys.",
@@ -61,9 +55,6 @@
   "created": "2024-02-19"
 },
 {
-  "_id": {
-    "$oid": "65d3cc9aa2b7ac3502099499"
-  },
   "name": "Extragalactic",
   "type": "asset",
   "description": "Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys.",
@@ -92,9 +83,6 @@
   "created": "2024-02-19"
 },
 {
-  "_id": {
-    "$oid": "65d3cc9ca2b7ac350209949a"
-  },
   "name": "Extragalactic",
   "type": "asset",
   "description": "Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys.",
@@ -123,9 +111,6 @@
   "created": "2024-02-19"
 },
 {
-  "_id": {
-    "$oid": "65d3cc9da2b7ac350209949b"
-  },
   "name": "Extragalactic",
   "type": "asset",
   "description": "Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys. Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys. Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys. Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys. Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys. Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys. Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys.",
@@ -154,9 +139,6 @@
   "created": "2024-02-19"
 },
 {
-  "_id": {
-    "$oid": "65d3cc9fa2b7ac350209949c"
-  },
   "name": "Extragalactic",
   "type": "asset",
   "description": "Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys.",
@@ -185,9 +167,6 @@
   "created": "2024-02-19"
 },
 {
-  "_id": {
-    "$oid": "65d3cca1a2b7ac350209949d"
-  },
   "name": "Extragalactic",
   "type": "asset",
   "description": "Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys.",
@@ -216,9 +195,6 @@
   "created": "2024-02-19"
 },
 {
-  "_id": {
-    "$oid": "65d3cf5ea2b7ac350209949f"
-  },
   "name": "Empty profile",
   "type": "profiles",
   "description": "An almost empty scene, that is very close to the minimal scene and still render something",
@@ -246,9 +222,6 @@
   "created": "2021-01-01"
 },
 {
-  "_id": {
-    "$oid": "65d3d091a2b7ac35020994a1"
-  },
   "name": "Orbiting the Earth",
   "type": "recordings",
   "description": "Just a single rotation around the Earth",
@@ -265,9 +238,6 @@
   "modified": "2021-01-01"
 },
 {
-  "_id": {
-    "$oid": "65d3d360a2b7ac35020994a6"
-  },
   "name": "Insight landing sequence",
   "type": "videos",
   "description": "Shows the sequence of the landing of Insight",
