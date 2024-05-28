@@ -88,7 +88,7 @@ router.get('/items', async (req, res) => {
         const page = parseInt(req.query.page) - 1 || 0;
         const limit = parseInt(req.query.limit) || 5;
         const search = req.query.search || '';
-        let sort = req.query.sort || 'name';
+        let sort = req.query.sort || 'modified';
         let type = req.query.type || '';
         const itemOptions = ['asset', 'profile', 'recording', 'webpanel', 'video', 'config', 'package'];
         const username = req.query.username || '';
@@ -114,6 +114,7 @@ router.get('/items', async (req, res) => {
                         { description: { $regex: search, $options: 'i' } },
                         { 'author.name': { $regex: search, $options: 'i' } },
                         { license: { $regex: search, $options: 'i' } },
+                        { type: { $regex: search, $options: 'i' } },
                     ]
                 },
                 { type: { $in: type } }

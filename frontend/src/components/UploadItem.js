@@ -3,9 +3,8 @@ import { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { Form } from 'react-bootstrap';
 import APIService from './APIService';
-
+import AlertMessages from './AlertMessages';
 
 const UploadItem = ({ config }) => {
     const [showModal, setShowModal] = useState();
@@ -37,6 +36,12 @@ const UploadItem = ({ config }) => {
 
     const [name, setName] = useState('');
     const [nameError, setNameError] = useState('');
+
+    const [showError, setShowError] = useState(false);
+    const [error, setError] = useState('');
+
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [success, setSuccess] = useState('');
 
     const handleNameChange = (e) => {
         setName(e.target.value);
@@ -88,15 +93,16 @@ const UploadItem = ({ config }) => {
         setLicense(config.config.licenses[0]);
     }, [config]);
 
-    const [acceptTerms, setAcceptTerms] = useState(false); // State to track whether terms are accepted
+    const [acceptTerms, setAcceptTerms] = useState(false);
     const handleAcceptTerms = () => {
-        setAcceptTerms(!acceptTerms); // Toggle the value when checkbox is clicked
+        setAcceptTerms(!acceptTerms);
     }
 
     const handleUpload = async (event) => {
         event.preventDefault();
         if (!acceptTerms) {
-            alert('Please accept the terms and conditions.');
+            setShowError(true);
+            setError('Please accept the terms and conditions.');
             return;
         }
 
@@ -113,19 +119,23 @@ const UploadItem = ({ config }) => {
                     if (resp.error) {
                         throw new Error(resp.error);
                     }
-                    alert(resp.message);
-                    handleClose();
-                    redirectToHome();
+                    setShowSuccess(true);
+                    setSuccess(resp.message);
+                    // alert(resp.message);
+                    // handleClose();
+                    // redirectToHome();
                 })
                 .catch(err => {
-                    alert("Error uploading item. ", err.message);
+                    setShowError(true);
+                    setError("Error uploading item. ", err.message);
                     console.log(err);
                 });
             return;
         }
         else {
             if (!file || name.trim() === '' || itemType.trim() === '' || license.trim() === '' || description.trim() === '') {
-                alert('Please fill in all fields.');
+                setShowError(true);
+                setError('Please fill in all fields.');
                 return;
             }
             if (file) {
@@ -143,24 +153,27 @@ const UploadItem = ({ config }) => {
                         if (resp.error) {
                             throw new Error(resp.error);
                         }
-                        alert(resp.message);
+                        setShowSuccess(true);
+                        setSuccess(resp.message);
                         handleClose();
-                        redirectToHome();
+                        // refreshHome();
                     })
                     .catch(err => {
-                        alert("Error uploading item. " + err.message);
+                        setShowError(true);
+                        setError("Error uploading item. " + err.message);
                         console.log(err);
                     });
                 return;
             } else {
-                alert('Please select a valid file to upload.');
+                setShowError(true);
+                setError('Please select a valid file to upload.');
                 return;
             }
         }
     }
 
     const redirectToHome = () => {
-        window.location.href = '/';
+        //window.location.href = '/';
     }
 
     return (
@@ -174,10 +187,15 @@ const UploadItem = ({ config }) => {
                     <Modal.Title>Upload an Item</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {/* Warning text */}
                     <p style={{ color: 'red', fontWeight: 'bold', fontSize: '18px' }}>
                         Warning: You are responsible for whatever is in it. Item can be modified by administrator if required.
                     </p>
+                    {showError && <p style={{ color: 'red', fontWeight: 'bold', fontSize: '18px' }}>
+                        Error: {error}.
+                    </p>}
+                    {showSuccess && <p style={{ color: 'green', fontWeight: 'bold', fontSize: '18px' }}>
+                        Success: {success}.
+                    </p>}
                     <form style={{ display: 'flex', flexDirection: 'column' }}>
                         <h5>Name</h5>
                         <input type="text" value={name} onChange={handleNameChange} />

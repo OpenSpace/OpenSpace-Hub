@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import openspaceApi from 'openspace-api-js';
-
+import AlertMessages from './AlertMessages';
 
 const Functions = () => {
     const [isConnected, setIsConnected] = useState(false);

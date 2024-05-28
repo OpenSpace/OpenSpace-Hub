@@ -6,9 +6,10 @@ import { Outlet } from 'react-router-dom';
 import Footer from './Footer';
 import UploadItem from './UploadItem';
 import Function from './Functions';
+import AlertMessages from './AlertMessages';
 
 
-const NavBar = ({ user, showLogin, config }) => {
+const NavBar = ({ user, showLogin, config, redAlertMessage, greenAlertMessage, clearRedAlertMessage, clearGreenAlertMessage }) => {
     return (
         <>
             <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
@@ -45,7 +46,7 @@ const NavBar = ({ user, showLogin, config }) => {
                             </Nav>
                         ) : (
                             <Nav>
-                                {config && config.config.upload? (<UploadItem config={config}/>): null}
+                                {config && config.config.upload ? (<UploadItem config={config} />) : null}
                                 <NavDropdown title={user.name} id="collapsible-nav-dropdown">
                                     <NavDropdown.Item href="useritems" className="underline-on-active">View Items</NavDropdown.Item>
                                     <NavDropdown.Item href="userprofile" className="underline-on-active">Profile</NavDropdown.Item>
@@ -56,6 +57,12 @@ const NavBar = ({ user, showLogin, config }) => {
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
+            <AlertMessages
+                redAlertMessage={redAlertMessage}
+                greenAlertMessage={greenAlertMessage}
+                clearRedAlertMessage={clearRedAlertMessage}
+                clearGreenAlertMessage={clearGreenAlertMessage}
+            />
             <Outlet />
             <Footer />
         </>

@@ -7,8 +7,9 @@ import APIService from './APIService';
 import { Form } from 'react-bootstrap';
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
+import AlertMessages from './AlertMessages';
 
-function ItemList({ user, type, config, filterByUsername = false }) {
+function ItemList({ user, type, config, filterByUsername = false, setRedAlertMessage, setGreenAlertMessage }) {
     const [items, setItems] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
@@ -16,8 +17,15 @@ function ItemList({ user, type, config, filterByUsername = false }) {
 
     const [showModal, setShowModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
+    const [tnCError, setTnCError] = useState('');
+    // const [redAlertMessage, setRedAlertMessage] = useState('');
+    // const [greenAlertMessage, setGreenAlertMessage] = useState('');
 
-    const handleClose = () => setShowModal(false);
+    const handleClose = () => {
+        setShowModal(false);
+        setSelectedItem(null);
+        setTnCError('');
+    }
 
     const [name, setName] = useState('');
     const handleNameChange = (e) => {
@@ -66,6 +74,7 @@ function ItemList({ user, type, config, filterByUsername = false }) {
             setTotalPages(Math.ceil(resp.total / resp.limit));
         } catch (error) {
             console.log(`Error loading items: `, error);
+            setRedAlertMessage(`Error loading items: ${error.message}`);
         }
     };
 
@@ -95,18 +104,43 @@ function ItemList({ user, type, config, filterByUsername = false }) {
     }
 
     const deleteItem = async (item) => {
-        await APIService.DeleteItem(item._id)
-            .then(resp => {
-                if (resp.error) {
-                    throw new Error(resp.error);
-                }
-                setItems(items.filter(i => i._id !== item._id));
-                alert("Item deleted successfully");
-            })
-            .catch(error => {
+        const confirmation = window.confirm("Are you sure you want to delete this item?");
+        if (!confirmation) {
+            return;
+        }
+
+        try {
+            const resp = await APIService.DeleteItem(item._id);
+            if (resp.error) {
+                throw new Error(resp.error);
+            }
+            setItems(items.filter(i => i._id !== item._id));
+            setGreenAlertMessage("Item deleted successfully");
+        } catch (error) {
+            console.log(error);
+            setRedAlertMessage("Error deleting item: " + error.message);
+        }
+    }
+
+    const sendImportToOpenSpace = (url, type) => {
+        return async () => {
+            var openspace = window.openspace;
+            if (!openspace) {
+                setRedAlertMessage("Connect to OpenSpace first!!");
+                return;
+            }
+            try {
+                const resp = await APIService.SendImportToOpenSpaceCommand(url, type);
+                // if (resp.error) {
+                //     throw new Error(resp.error);
+                // }
+                setGreenAlertMessage("Item imported successfully");
+
+            } catch (error) {
                 console.log(error);
-                alert("Error deleting item. ", error.message);
-            })
+                setRedAlertMessage("Error importing item: " + error.message);
+            }
+        }
     }
 
     const editItem = (item) => {
@@ -117,15 +151,15 @@ function ItemList({ user, type, config, filterByUsername = false }) {
         setShowModal(true);
     };
 
-    const [acceptTerms, setAcceptTerms] = useState(false); // State to track whether terms are accepted
+    const [acceptTerms, setAcceptTerms] = useState(false);
     const handleAcceptTerms = () => {
-        setAcceptTerms(!acceptTerms); // Toggle the value when checkbox is clicked
+        setAcceptTerms(!acceptTerms);
     }
 
     const handleModalSave = async (event) => {
         event.preventDefault();
         if (!acceptTerms) {
-            alert('Please accept the terms and conditions.');
+            setTnCError('Please accept the terms and conditions.');
             return;
         }
         else {
@@ -149,12 +183,12 @@ function ItemList({ user, type, config, filterByUsername = false }) {
                     if (resp.error) {
                         throw new Error(resp.error);
                     }
-                    alert(resp.message);
+                    setGreenAlertMessage("Item updated successfully");
                     setItems(items.map(i => i._id === selectedItem._id ? resp.item : i));
                     handleClose();
                 })
                 .catch(err => {
-                    alert("Error uploading item. " + err.message);
+                    setRedAlertMessage("Error updating item. " + err.message);
                     console.log(err);
                 });
             return;
@@ -163,6 +197,8 @@ function ItemList({ user, type, config, filterByUsername = false }) {
 
     const handleModalCancel = () => {
         setShowModal(false);
+        setSelectedItem(null);
+        setTnCError('');
     };
 
     return (
@@ -177,6 +213,24 @@ function ItemList({ user, type, config, filterByUsername = false }) {
                                         type === "package" ? "Packages" :
                                             "Hub Items"}</u>
             </div>
+            {/* <AlertMessages 
+                redAlertMessage={redAlertMessage} 
+                greenAlertMessage={greenAlertMessage}
+                clearRedAlertMessage={() => setRedAlertMessage('')}
+                clearGreenAlertMessage={() => setGreenAlertMessage('')}
+            /> */}
+            {/* <div className="mt-3">
+                {redAlertMessage && (
+                    <Alert variant="danger">
+                        {redAlertMessage}
+                    </Alert>
+                )}
+                {greenAlertMessage && (
+                    <Alert variant="success">
+                        {greenAlertMessage}
+                    </Alert>
+                )}
+            </div> */}
             <Modal show={showModal} onHide={handleModalCancel}>
                 <Modal.Header closeButton>
                     <Modal.Title>Edit Item</Modal.Title>
@@ -191,7 +245,7 @@ function ItemList({ user, type, config, filterByUsername = false }) {
                             <Dropdown onSelect={handleOpenSpaceVersionSelect} >
                                 <h5>OpenSpace Version <p style={{ fontSize: "15px" }}>(Make sure it runs on the selected version)</p></h5>
                                 <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                    {selectedItem? (selectedItem.openspaceVersion ? openspaceVersion : 'Select version'): null}
+                                    {selectedItem ? (selectedItem.openspaceVersion ? openspaceVersion : 'Select version') : null}
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
                                     {openspaceVersions.map((version) => (
@@ -254,6 +308,7 @@ function ItemList({ user, type, config, filterByUsername = false }) {
                     <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                         <input type="checkbox" checked={acceptTerms} onChange={handleAcceptTerms} />
                         <label htmlFor="acceptTerms">I accept the terms and conditions</label>
+                        {tnCError && <p style={{ color: 'red' }}>{tnCError}</p>}
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
@@ -324,7 +379,7 @@ function ItemList({ user, type, config, filterByUsername = false }) {
                                 {item.type === "video" ?
                                     <Button variant="primary" href={item.currentVersion.url}>Link</Button>
                                     :
-                                    <Button onClick={() => APIService.SendImportToOpenSpaceCommand(item.currentVersion.url, item.type)} variant="primary">Import</Button>
+                                    <Button onClick={sendImportToOpenSpace(item.currentVersion.url, item.type)} variant="primary">Import</Button>
                                 }{' '}
                                 {(item.author.username === user.username || isAdminUser()) && <Button onClick={() => editItem(item)} variant="secondary">Edit</Button>}{' '}
                                 {(item.author.username === user.username || isAdminUser()) && <Button onClick={() => deleteItem(item)} variant="danger">Delete</Button>}{' '}

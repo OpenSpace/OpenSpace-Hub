@@ -288,7 +288,7 @@ exports.uploadItem = async (req, user, update = false) => {
         this.validateImageFileSize(imageFile);
         let resizedFile = await this.resizeImage(imageFile);
         let imageFileName = resizedFile.originalname.split('.');
-        imageFileName[0] = itemName + "_" + Math.floor(Math.random() * 1000);
+        imageFileName[0] = itemName + "_" + parseInt(Math.floor(Math.random() * 1000));
         resizedFile.originalname = imageFileName.join('.');
         await this.uploadImageFileToServer(resizedFile, uploadDirectory);
         imagePath = path.relative('uploads', `${dir}/${resizedFile.originalname}`)
@@ -356,7 +356,7 @@ exports.updateImage = async (req, user) => {
     this.validateImageFileSize(imageFile);
     let resizedFile = await this.resizeImage(imageFile);
     let imageFileName = resizedFile.originalname.split('.');
-    imageFileName[0] = itemName + "_" + Math.floor(Math.random() * 1000);
+    imageFileName[0] = itemName + "_" + parseInt(Math.floor(Math.random() * 1000));
     resizedFile.originalname = imageFileName.join('.');
     await this.uploadImageFileToServer(resizedFile, uploadDirectory);
 

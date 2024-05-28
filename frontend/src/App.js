@@ -23,6 +23,8 @@ function App() {
   const [showLogin, setShowLogin] = useState(true);
   const [user, setUser] = useState({});
   const [config, setConfig] = useState();
+  const [redAlertMessage, setRedAlertMessage] = useState('');
+  const [greenAlertMessage, setGreenAlertMessage] = useState('');
 
   const redirectToLogin = () => {
     window.location.href = "/login";
@@ -58,23 +60,36 @@ function App() {
       });
   }, []);
 
+  console.log("App.js: redAlert: ", redAlertMessage);
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<NavBar user={user} showLogin={showLogin} config={config}/>}>
-          <Route index element={<Items user={user} config={config} />} />
-          <Route path="assets" element={<Assets user={user} config={config} />} />
-          <Route path="profiles" element={<Profiles user={user} config={config} />} />
-          <Route path="recordings" element={<Recordings user={user} config={config} />} />
-          <Route path="webpanels" element={<WebPanels user={user} config={config} />} />
-          <Route path="configs" element={<Configs user={user} config={config} />} />
-          <Route path="packages" element={<Packages user={user} config={config} />} />
-          <Route path="videos" element={<Videos user={user} config={config} />} />
-          <Route path="items" element={<Items user={user} config={config} />} />
-          <Route path="useritems" element={<UserItems user={user} config={config} />} />
-          <Route path="userprofile" element={<UserProfile user={user} config={config} />} />
-          <Route path="signin" element={<SignIn config={config}/>} />
-          <Route path="logout" element={<Logout config={config} />} />
+        <Route
+          path="/"
+          element={<NavBar
+            user={user}
+            showLogin={showLogin}
+            config={config}
+            redAlertMessage={redAlertMessage}
+            greenAlertMessage={greenAlertMessage}
+            clearRedAlertMessage={() => setRedAlertMessage('')}
+            clearGreenAlertMessage={() => setGreenAlertMessage('')}
+          />}
+        >
+          <Route index element={<Items user={user} config={config} setRedAlertMessage={setRedAlertMessage} setGreenAlertMessage={setGreenAlertMessage}/>} />
+          <Route path="assets" element={<Assets user={user} config={config} setRedAlertMessage={setRedAlertMessage} setGreenAlertMessage={setGreenAlertMessage}/>} />
+          <Route path="profiles" element={<Profiles user={user} config={config} setRedAlertMessage={setRedAlertMessage} setGreenAlertMessage={setGreenAlertMessage}/>} />
+          <Route path="recordings" element={<Recordings user={user} config={config} setRedAlertMessage={setRedAlertMessage} setGreenAlertMessage={setGreenAlertMessage}/>} />
+          <Route path="webpanels" element={<WebPanels user={user} config={config} setRedAlertMessage={setRedAlertMessage} setGreenAlertMessage={setGreenAlertMessage}/>} />
+          <Route path="configs" element={<Configs user={user} config={config} setRedAlertMessage={setRedAlertMessage} setGreenAlertMessage={setGreenAlertMessage}/>} />
+          <Route path="packages" element={<Packages user={user} config={config} setRedAlertMessage={setRedAlertMessage} setGreenAlertMessage={setGreenAlertMessage}/>} />
+          <Route path="videos" element={<Videos user={user} config={config} setRedAlertMessage={setRedAlertMessage} setGreenAlertMessage={setGreenAlertMessage}/>} />
+          <Route path="items" element={<Items user={user} config={config} setRedAlertMessage={setRedAlertMessage} setGreenAlertMessage={setGreenAlertMessage}/>} />
+          <Route path="useritems" element={<UserItems user={user} config={config} setRedAlertMessage={setRedAlertMessage} setGreenAlertMessage={setGreenAlertMessage} />} />
+          <Route path="userprofile" element={<UserProfile user={user} config={config} setRedAlertMessage={setRedAlertMessage} setGreenAlertMessage={setGreenAlertMessage} />} />
+          <Route path="signin" element={<SignIn config={config} setRedAlertMessage={setRedAlertMessage} setGreenAlertMessage={setGreenAlertMessage} />} />
+          <Route path="logout" element={<Logout config={config} setRedAlertMessage={setRedAlertMessage} setGreenAlertMessage={setGreenAlertMessage} />} />
           <Route path="*" element={<Footer config={config} />} />
         </Route>
       </Routes>

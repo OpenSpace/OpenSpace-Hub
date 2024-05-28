@@ -1,6 +1,6 @@
 export default class APIService {
 
-    static async GetItems({ type = 'all', search = '', page = 1,  sort = 'name,asc', limit = 6, username = ''}) {
+    static async GetItems({ type = 'all', search = '', page = 1,  sort = 'modified,desc', limit = 6, username = ''}) {
         const resp = await fetch(`/api/items?type=${type}&search=${search}&sort=${sort}&limit=${limit}&page=${page}&username=${username}`, {
             'method': 'GET',
             headers: {
@@ -157,7 +157,7 @@ export default class APIService {
     static SendImportToOpenSpaceCommand = async (url, type) => {
         var openspace = window.openspace;
         if (!openspace) {
-            alert("Connect to OpenSpace first!!");
+            console.log("Connect to OpenSpace first!!");
             return;
         }
         var fileName = url.substr(url.lastIndexOf('/') + 1);
@@ -172,17 +172,14 @@ export default class APIService {
                 await openspace.unzipFile(absPath["1"], scenePath["1"], true);
                 await openspace.asset.add(scenePath["1"] + noextension);
                 await openspace.setPropertyValueSingle("Modules.CefWebGui.Reload", null)
-                alert("Asset imported successfully");
                 break;
             case 'profile':
                 var absPath = await openspace.absPath('${USER_PROFILES}/' + fileName);
                 await openspace.downloadFile(url, absPath["1"], true);
-                alert("Profile imported successfully");
                 break;
             case 'recording':
                 var absPath = await openspace.absPath('${RECORDINGS}/' + fileName);
                 await openspace.downloadFile(url, absPath["1"], true);
-                alert("Recording imported successfully");
                 break;
             default:
                 console.log('nothing to do')

@@ -3,7 +3,7 @@ import { Form, Button, } from "react-bootstrap";
 import "./../css/login.css";
 import APIService from './APIService';
 
-const UserProfile = ({ user }) => {
+const UserProfile = ({ user, setRedAlertMessage, setGreenAlertMessage }) => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
@@ -20,35 +20,36 @@ const UserProfile = ({ user }) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        alert("Do you want to save the changes?");
-        await APIService.UpdateUser(user.username, name, email, institution)
-            .then(resp => {
-                if (resp.error) {
-                    throw (resp.error);
-                }
-                alert("Profile updated successfully");
-            })
-            .catch(error => {
-                alert("Error: " + error);
-            });
+        let text = "Do you want to save the changes?";
+        if (window.confirm(text) == true) {
+            await APIService.UpdateUser(user.username, name, email, institution)
+                .then(resp => {
+                    if (resp.error) {
+                        throw (resp.error);
+                    }
+                    setGreenAlertMessage("Profile updated successfully");
+                })
+                .catch(error => {
+                    setRedAlertMessage("Error: " + error);
+                });
+        }
     };
 
     const deleteUserProfile = async () => {
-        // ask for yes or no confirmation
         let text = "Do you want to delete your profile? All your hub items and user data will be lost.";
         if (window.confirm(text) == true) {
             await APIService.DeleteUser(user.username)
-            .then(resp => {
-                if (resp.error) {
-                    throw (resp.error);
-                }
-                alert("Profile deleted successfully");
-                localStorage.clear();
-                window.location.href = "/login";
-            })
-            .catch(error => {
-                alert("Error: " + error);
-            });
+                .then(resp => {
+                    if (resp.error) {
+                        throw (resp.error);
+                    }
+                    setGreenAlertMessage("Profile deleted successfully");
+                    localStorage.clear();
+                    window.location.href = "/login";
+                })
+                .catch(error => {
+                    setRedAlertMessage("Error: " + error);
+                });
         }
     }
 
