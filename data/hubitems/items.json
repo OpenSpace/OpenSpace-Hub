@@ -1,281 +1,93 @@
-[{
-  "_id": {
-    "$oid": "65cd31c275d7df75f970c977"
-  },
-  "name": "Extragalactic",
+[
+{
+  "name": "650pc GalaxyMap",
   "type": "asset",
-  "description": "Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys.",
+  "description": "3D map of dust and star density within a 650pc region. The models are rednered without depth culling so that interior regions can be viewed. To change this uncheck 'Disable Depth Test' in each models Renderable menu. These meshes come from Kevin Jardine's Galaxy Map (https://twitter.com/galaxy_map) with original data sources here: https://gruze.org/sn/sources.pdf A rendering can be seen here: https://gruze.org/galaxymap/quartet/wallpapers/wallpaper_0650pc.png",
   "author": {
-    "name": "Morrison Planetarium/Dan Tell",
-    "link": "https://www.calacademy.org/exhibits/morrison-planetarium",
-    "institution": "New York University"
+    "name": "Abhay Garg",
+    "username": "gargabhay1999",
+    "link": "www.example.com"
   },
+  "license": "CC BY",
+  "openspaceVersion": "0.19.0",
   "currentVersion": {
-    "version": "0.19.0",
-    "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic.zip"
+    "version": "4",
+    "url": "users/gargabhay1999/asset/650pc_GalaxyMap/4/galaxymap650pc.zip"
   },
-  "image": "https://raw.githubusercontent.com/OpenSpaceHub/misc/master/extragalactic/screenshot.png",
-  "archives": [
-    {
-      "version": "0.18.0",
-      "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic_0180.zip"
-    },
-    {
-      "version": "0.16.0",
-      "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic_0_16_0.zip"
-    }
-  ],
+  "image": "users/gargabhay1999/asset/650pc_GalaxyMap/4/650pc_GalaxyMap_918.png",
+  "created": "05/22/2024, 16:04:15 GMT-0400",
+  "modified": "05/22/2024, 16:04:15 GMT-0400",
   "favorites": [],
-  "modified": "2024-02-19",
-  "created": "2024-02-19"
+  "required": [],
+  "archives": [],
+  "__v": 0
 },
 {
-  "_id": {
-    "$oid": "65d3cc90a2b7ac3502099498"
-  },
-  "name": "Extragalactic",
-  "type": "asset",
-  "description": "Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys.",
-  "author": {
-    "name": "Morrison Planetarium/Dan Tell",
-    "link": "https://www.calacademy.org/exhibits/morrison-planetarium",
-    "institution": "New York University"
-  },
-  "currentVersion": {
-    "version": "0.19.0",
-    "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic.zip"
-  },
-  "image": "https://raw.githubusercontent.com/OpenSpaceHub/misc/master/extragalactic/screenshot.png",
-  "archives": [
-    {
-      "version": "0.18.0",
-      "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic_0180.zip"
-    },
-    {
-      "version": "0.16.0",
-      "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic_0_16_0.zip"
-    }
-  ],
-  "favorites": [],
-  "modified": "2024-02-19",
-  "created": "2024-02-19"
-},
-{
-  "_id": {
-    "$oid": "65d3cc9aa2b7ac3502099499"
-  },
-  "name": "Extragalactic",
-  "type": "asset",
-  "description": "Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys.",
-  "author": {
-    "name": "Morrison Planetarium/Dan Tell",
-    "link": "https://www.calacademy.org/exhibits/morrison-planetarium",
-    "institution": "New York University"
-  },
-  "currentVersion": {
-    "version": "0.19.0",
-    "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic.zip"
-  },
-  "image": "https://raw.githubusercontent.com/OpenSpaceHub/misc/master/extragalactic/screenshot.png",
-  "archives": [
-    {
-      "version": "0.18.0",
-      "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic_0180.zip"
-    },
-    {
-      "version": "0.16.0",
-      "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic_0_16_0.zip"
-    }
-  ],
-  "favorites": [],
-  "modified": "2024-02-19",
-  "created": "2024-02-19"
-},
-{
-  "_id": {
-    "$oid": "65d3cc9ca2b7ac350209949a"
-  },
-  "name": "Extragalactic",
-  "type": "asset",
-  "description": "Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys.",
-  "author": {
-    "name": "Morrison Planetarium/Dan Tell",
-    "link": "https://www.calacademy.org/exhibits/morrison-planetarium",
-    "institution": "New York University"
-  },
-  "currentVersion": {
-    "version": "0.19.0",
-    "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic.zip"
-  },
-  "image": "https://raw.githubusercontent.com/OpenSpaceHub/misc/master/extragalactic/screenshot.png",
-  "archives": [
-    {
-      "version": "0.18.0",
-      "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic_0180.zip"
-    },
-    {
-      "version": "0.16.0",
-      "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic_0_16_0.zip"
-    }
-  ],
-  "favorites": [],
-  "modified": "2024-02-19",
-  "created": "2024-02-19"
-},
-{
-  "_id": {
-    "$oid": "65d3cc9da2b7ac350209949b"
-  },
-  "name": "Extragalactic",
-  "type": "asset",
-  "description": "Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys. Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys. Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys. Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys. Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys. Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys. Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys.",
-  "author": {
-    "name": "Morrison Planetarium/Dan Tell",
-    "link": "https://www.calacademy.org/exhibits/morrison-planetarium",
-    "institution": "New York University"
-  },
-  "currentVersion": {
-    "version": "0.19.0",
-    "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic.zip"
-  },
-  "image": "https://raw.githubusercontent.com/OpenSpaceHub/misc/master/extragalactic/screenshot.png",
-  "archives": [
-    {
-      "version": "0.18.0",
-      "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic_0180.zip"
-    },
-    {
-      "version": "0.16.0",
-      "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic_0_16_0.zip"
-    }
-  ],
-  "favorites": [],
-  "modified": "2024-02-19",
-  "created": "2024-02-19"
-},
-{
-  "_id": {
-    "$oid": "65d3cc9fa2b7ac350209949c"
-  },
-  "name": "Extragalactic",
-  "type": "asset",
-  "description": "Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys.",
-  "author": {
-    "name": "Morrison Planetarium/Dan Tell",
-    "link": "https://www.calacademy.org/exhibits/morrison-planetarium",
-    "institution": "New York University"
-  },
-  "currentVersion": {
-    "version": "0.19.0",
-    "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic.zip"
-  },
-  "image": "https://raw.githubusercontent.com/OpenSpaceHub/misc/master/extragalactic/screenshot.png",
-  "archives": [
-    {
-      "version": "0.18.0",
-      "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic_0180.zip"
-    },
-    {
-      "version": "0.16.0",
-      "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic_0_16_0.zip"
-    }
-  ],
-  "favorites": [],
-  "modified": "2024-02-19",
-  "created": "2024-02-19"
-},
-{
-  "_id": {
-    "$oid": "65d3cca1a2b7ac350209949d"
-  },
-  "name": "Extragalactic",
-  "type": "asset",
-  "description": "Extragalactic data sets for GAMA and Parkes-H1 Zone of Avoidance (HIZOA) surveys.",
-  "author": {
-    "name": "Morrison Planetarium/Dan Tell",
-    "link": "https://www.calacademy.org/exhibits/morrison-planetarium",
-    "institution": "New York University"
-  },
-  "currentVersion": {
-    "version": "0.19.0",
-    "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic.zip"
-  },
-  "image": "https://raw.githubusercontent.com/OpenSpaceHub/misc/master/extragalactic/screenshot.png",
-  "archives": [
-    {
-      "version": "0.18.0",
-      "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic_0180.zip"
-    },
-    {
-      "version": "0.16.0",
-      "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic_0_16_0.zip"
-    }
-  ],
-  "favorites": [],
-  "modified": "2024-02-19",
-  "created": "2024-02-19"
-},
-{
-  "_id": {
-    "$oid": "65d3cf5ea2b7ac350209949f"
-  },
   "name": "Empty profile",
-  "type": "profiles",
+  "type": "profile",
   "description": "An almost empty scene, that is very close to the minimal scene and still render something",
   "author": {
-    "name": "OpenSpace Team",
-    "link": "http://openspaceproject.com"
+    "name": "Abhay Garg",
+    "username": "gargabhay1999",
+    "link": "www.example.com"
   },
+  "license": "CC BY",
+  "openspaceVersion": "0.20.0",
   "currentVersion": {
-    "version": "0.16.0",
-    "url": "https://raw.githubusercontent.com/OpenSpaceHub/misc/master/empty-profile/empty.profile"
+    "version": "3",
+    "url": "users/gargabhay1999/profile/Empty_profile/3/empty.profile"
   },
-  "image": "https://github.com/OpenSpaceHub/misc/raw/master/empty-profile/empty-profile.png",
-  "archives": [
-    {
-      "version": "0.18.0",
-      "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic_0180.zip"
-    },
-    {
-      "version": "0.16.0",
-      "url": "https://github.com/OpenSpaceHub/misc/raw/master/extragalactic/extragalactic_0_16_0.zip"
-    }
-  ],
+  "image": "users/gargabhay1999/profile/Empty_profile/3/Empty_profile_749.png",
+  "created": "05/22/2024, 16:05:59 GMT-0400",
+  "modified": "05/22/2024, 16:05:59 GMT-0400",
   "favorites": [],
-  "modified": "2021-01-01",
-  "created": "2021-01-01"
+  "required": [],
+  "archives": [],
+  "__v": 0
 },
 {
-  "_id": {
-    "$oid": "65d3d091a2b7ac35020994a1"
-  },
-  "name": "Orbiting the Earth",
-  "type": "recordings",
+  "name": " Orbiting the Earth",
+  "type": "recording",
   "description": "Just a single rotation around the Earth",
   "author": {
-    "name": "OpenSpace Team",
-    "link": "http://openspaceproject.com"
+    "name": "Abhay Garg",
+    "username": "gargabhay1999",
+    "link": "www.example.com"
   },
+  "license": "CC BY",
+  "openspaceVersion": "0.20.0",
   "currentVersion": {
-    "version": "0.16.0",
-    "url": "https://github.com/OpenSpaceHub/misc/raw/master/flight-around-earth/flight-around-earth.osrec"
+    "version": "1",
+    "url": "users/gargabhay1999/recording/_Orbiting_the_Earth/1/flight-around-earth.osrec"
   },
-  "image": "https://github.com/OpenSpaceHub/misc/raw/master/flight-around-earth/flight-around-earth.png",
-  "created": "2021-01-01",
-  "modified": "2021-01-01"
+  "image": "users/gargabhay1999/recording/_Orbiting_the_Earth/1/_Orbiting_the_Earth_655.png",
+  "created": "05/22/2024, 15:52:55 GMT-0400",
+  "modified": "05/22/2024, 15:52:55 GMT-0400",
+  "favorites": [],
+  "required": [],
+  "archives": [],
+  "__v": 0
 },
 {
-  "_id": {
-    "$oid": "65d3d360a2b7ac35020994a6"
-  },
   "name": "Insight landing sequence",
-  "type": "videos",
+  "type": "video",
   "description": "Shows the sequence of the landing of Insight",
   "author": {
-    "name": "OpenSpace Team",
-    "link": "http://openspaceproject.com"
+    "name": "Abhay Garg",
+    "username": "gargabhay1999",
+    "link": "www.example.com"
   },
-  "link": "https://www.youtube.com/watch?v=vWA0LbCuzho",
-  "created": "2021-01-01",
-  "modified": "2021-01-01"
+  "license": "CC BY",
+  "openspaceVersion": "0.20.0",
+  "currentVersion": {
+    "version": "1",
+    "url": "https://www.youtube.com/watch?v=vWA0LbCuzho"
+  },
+  "image": "../video-default.jpg",
+  "created": "05/22/2024, 15:48:18 GMT-0400",
+  "modified": "05/22/2024, 15:48:18 GMT-0400",
+  "favorites": [],
+  "required": [],
+  "archives": [],
+  "__v": 0
 }]

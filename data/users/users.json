@@ -1,13 +1,15 @@
-[
-    {
-        "name": "Morrison Planetarium/Dan Tell",
-        "thumbnail": "/path/to/thumbnail.jpg",
-        "link": "https://www.calacademy.org/exhibits/morrison-planetarium",
-        "institution": "New York University",
-        "favorites": [
-            "65ca6ba396f833b982d64096"
-        ],
-        "username": "abcdef",
-        "password": "password"
-    }
-]
+{
+    "name": "Abhay Garg",
+    "email": "gargabhay1999@gmail.com",
+    "username": "gargabhay1999",
+    "password": "$2a$10$wz0ELTverzjPSWmMOror6./YAh/XtJzrlbDorUo30zHXNCxgqpkIa",
+    "thumbnail": "https://lh3.googleusercontent.com/a/ACg8ocKNdccHwskYTzrP18Gbr8JVMv2hs57mwpcsJPZyrXTGrcqNpE6x_g=s96-c",
+    "domain": "google",
+    "link": "www.example.com",
+    "institution": "OpenSpace",
+    "role": "admin",
+    "created": "05/22/2024, 15:50:58 GMT-0400",
+    "modified": "05/22/2024, 15:50:58 GMT-0400",
+    "favorites": [],
+    "__v": 0
+  }

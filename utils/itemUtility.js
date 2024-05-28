@@ -131,6 +131,11 @@ exports.resizeImage = async (file) => {
 }
 
 checkZipFile = async (type, file, dir) => {
+    console.log(file);
+    if (type === 'asset' && file.originalname.split('.').pop() === 'asset') {
+        fs.renameSync(file.path, `${dir}/${file.originalname}`);
+        return Promise.resolve();
+    }
     if (file.mimetype === 'application/zip') {
         originalItemname = file.originalname.split('.')[0];
         await new Promise((resolve, reject) => {
@@ -283,7 +288,7 @@ exports.uploadItem = async (req, user, update = false) => {
         this.validateImageFileSize(imageFile);
         let resizedFile = await this.resizeImage(imageFile);
         let imageFileName = resizedFile.originalname.split('.');
-        imageFileName[0] = itemName + "_" + Math.floor(Math.random() * 1000);
+        imageFileName[0] = itemName + "_" + parseInt(Math.floor(Math.random() * 1000));
         resizedFile.originalname = imageFileName.join('.');
         await this.uploadImageFileToServer(resizedFile, uploadDirectory);
         imagePath = path.relative('uploads', `${dir}/${resizedFile.originalname}`)
@@ -351,7 +356,7 @@ exports.updateImage = async (req, user) => {
     this.validateImageFileSize(imageFile);
     let resizedFile = await this.resizeImage(imageFile);
     let imageFileName = resizedFile.originalname.split('.');
-    imageFileName[0] = itemName + "_" + Math.floor(Math.random() * 1000);
+    imageFileName[0] = itemName + "_" + parseInt(Math.floor(Math.random() * 1000));
     resizedFile.originalname = imageFileName.join('.');
     await this.uploadImageFileToServer(resizedFile, uploadDirectory);
 

@@ -19,6 +19,7 @@ const cors = require("cors");
 
 const http = require('http');
 const https = require('https');
+const seed = require('./config/seed');
 
 const keyCertDir = path.join(__dirname, 'uploads', 'certs', 'server.key');
 const certCertDir = path.join(__dirname, 'uploads', 'certs', 'server.crt');
@@ -62,6 +63,7 @@ secureApp.use(cors());
 secureApp.use(morgan('combined', { stream: accessLogStream }));
 secureApp.use(errorHandler);
 mongo()
+seed()
 
 app.use('/api', routes);
 app.use('/auth', authRoutes);
