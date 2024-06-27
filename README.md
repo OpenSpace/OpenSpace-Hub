@@ -1,12 +1,10 @@
 Openspace-Hub
 =============
 
-Note: To-Dos are moved to [TODO.md](TODO.md) file
-
-server for hub.openspaceproject.com
+Welcome to the OpenSpace Hub. Here you will find items (assets, profiles, recordings, webpanels, videos, configs, packages) built by the community. Download them or use the Import button when OpenSpace is running to have OpenSpace download them for you.
 
 
-Local deployment
+Setup Instructions
 ====================================
 
 To deploy the system locally using docker-compose, follow those step:
@@ -35,3 +33,12 @@ docker-compose up
 
 Note:
 If you are running on a non-standard architecture (such as ARM), then you need to use bcryptjs instead of bcrypt.
+
+
+Access the server on http://localhost:9000/
+
+
+![Dashboard](public/defaults/images/dashboard.png)
+![UploadItem](public/defaults/images/uploadItem.png)
+
+Old Server: [https://hub.openspaceproject.com](https://hub.openspaceproject.com/)
