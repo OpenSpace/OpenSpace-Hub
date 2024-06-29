@@ -1,3 +1,5 @@
+import { auth } from '../firebase';
+
 export default class APIService {
 
     static async GetItems({ type = 'all', search = '', page = 1,  sort = 'modified,desc', limit = 6, username = ''}) {
@@ -15,7 +17,7 @@ export default class APIService {
             'method': 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Authorization': `Bearer ${auth.currentUser.accessToken}`
             }
         });
         return await resp.json();
@@ -31,23 +33,12 @@ export default class APIService {
         return await resp.json();
     }
 
-    static async Login(email, password) {
-        const resp = await fetch(`/auth/login`, {
-            'method': 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({email, password})
-        });
-        return await resp.json();
-    }
-
     static async DeleteUser(username) {
         const resp = await fetch(`/auth/deleteUser/${username}`, {
             'method': 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Authorization': `Bearer ${auth.currentUser.accessToken}`
             }
         });
         return await resp.json();
@@ -58,30 +49,19 @@ export default class APIService {
             'method': 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${auth.currentUser.accessToken}`
             },
         });
         return await resp.json();
     }
 
-    static async Register(name, email, password, cnfPassword) {
-        const resp = await fetch(`/auth/register`, {
-            'method': 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({name, email, password, cnfPassword})
-        });
-        return await resp.json();
-    }
-
-    static async SocialMediaLogin(name, accessToken, email, domain, pictureUrl) {
+    static async SocialMediaLogin() {
         const resp = await fetch(`/auth/social-media-login`, {
             'method': 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${auth.currentUser.accessToken}`
             },
-            body: JSON.stringify({name, accessToken, email, domain, pictureUrl})
         });
         return await resp.json();
     }
@@ -91,7 +71,7 @@ export default class APIService {
             'method': 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Authorization': `Bearer ${auth.currentUser.accessToken}`
             },
             body: JSON.stringify({name, email, institution})
         });
@@ -103,7 +83,7 @@ export default class APIService {
         const resp = await fetch(`/api/upload`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Authorization': `Bearer ${auth.currentUser.accessToken}`
             },
             body: formData
         });
@@ -114,7 +94,7 @@ export default class APIService {
         const resp = await fetch(`/api/validateItemName/${name}`, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Authorization': `Bearer ${auth.currentUser.accessToken}`
             }
         });
         return await resp.json();
@@ -124,7 +104,7 @@ export default class APIService {
         const resp = await fetch(`/api/updateItem/${id}`, {
             method: 'PUT',
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Authorization': `Bearer ${auth.currentUser.accessToken}`
             },
             body: formData
         });
@@ -137,7 +117,7 @@ export default class APIService {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Authorization': `Bearer ${auth.currentUser.accessToken}`
             }
         });
         return await resp.json();
@@ -148,7 +128,7 @@ export default class APIService {
             'method': 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Authorization': `Bearer ${auth.currentUser.accessToken}`
             }
         });
         return await resp.json();

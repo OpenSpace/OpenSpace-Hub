@@ -15,17 +15,9 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    password: {
-        type: String,
-        required: true
-    },
     thumbnail: {
         type: String,
         default: "defaults/images/user-icon.jpg"
-    },
-    domain: {
-        type: String,
-        required: true
     },
     link: {
         type: String,

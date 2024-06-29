@@ -1,70 +1,74 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import "./../css/login.css";
-import { useGoogleLogin } from '@react-oauth/google';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import { useLinkedIn } from 'react-linkedin-login-oauth2';
-import linkedin from 'react-linkedin-login-oauth2/assets/linkedin.png';
-import axios from "axios";
 import APIService from './APIService';
+
+//Firebase auth
+import { signInWithPopup, GoogleAuthProvider, GithubAuthProvider, onAuthStateChanged } from "firebase/auth";
+import { auth } from '../firebase';
+
 
 const SignIn = ({ config }) => {
     const [ageVerified, setAgeVerified] = useState(false);
-    useEffect(
-        () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                APIService.VerifyToken(token)
-                    .then(resp => {
-                        if (resp.error) {
-                            throw (resp.error);
-                        }
-                        redirectToHome();
-                    })
-                    .catch(error => {
-                        localStorage.clear();
-                        console.log("Error: " + error);
-                    });
+    const provider = new GoogleAuthProvider();
+
+    const redirectToSignin = () => {
+        window.location.href = "/signin";
+    };
+
+    useEffect(() => {
+        const isloggedin = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                redirectToHome(user, auth);
+            } else {
+                console.log("User is not logged in.");
             }
-        },
-        []
-    );
+        });
+
+        return () => isloggedin();
+    }, []);
 
     // google login
-    const googleLogin = useGoogleLogin({
-        onSuccess: async (response) => {
-            await axios.get(
-                `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${response.access_token}`, {
-                headers: {
-                    Authorization: `Bearer ${response.access_token}`,
-                    Accept: 'application/json'
-                }
-            }).then(async (res) => {
-                await APIService.SocialMediaLogin(
-                    res.data['given_name'] + " " + res.data['family_name'],
-                    response.access_token,
-                    res.data['email'],
-                    "google", // domain
-                    res.data['picture'],
-                ).then(resp => {
+    const googleLogin = async () => {
+        await signInWithPopup(auth, provider)
+            .then(async(result) => {
+                const user = result.user;
+                await APIService.SocialMediaLogin().then(resp => {
+                    redirectToHome();
+                }).catch((err) => console.log(err));
+            }).catch((error) => {
+                console.log(error);
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                const email = error.customData.email;
+                const credential = GoogleAuthProvider.credentialFromError(error);
+            });
+    }
+
+    // github login
+    const githubLogin = async () => {
+        await signInWithPopup(auth, provider)
+            .then(async(result) => {
+                const user = result.user;
+                await APIService.SocialMediaLogin().then(resp => {
                     localStorage.setItem('token', resp.token);
                     redirectToHome();
                 }).catch((err) => console.log(err));
-            }).catch((err) => console.log(err));
-        },
-        onError: (error) => console.log('Login Failed:', error)
-    });
+            }).catch((error) => {
+                console.log(error);
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                const email = error.customData.email;
+                const credential = GoogleAuthProvider.credentialFromError(error);
+            });
+    }
 
 
     // Facebook login
     const responseFacebook = async (response) => {
-        await APIService.SocialMediaLogin(
-            response.name,
-            response.accessToken,
-            response.email,
-            "facebook", // domain
-            response.picture.data.url,
-        ).then(resp => {
+        await APIService.SocialMediaLogin().then(resp => {
             localStorage.setItem('token', resp.token);
             console.log(resp)
             redirectToHome();
@@ -147,7 +151,7 @@ const SignIn = ({ config }) => {
     // };
 
 
-    const redirectToHome = () => {
+    const redirectToHome = (user, auth) => {
         window.location.href = "/";
     };
 
@@ -177,6 +181,9 @@ const SignIn = ({ config }) => {
                         </Form.Group>
                         <div className="d-grid gap-2 mt-2">
                             <Button variant="outline-primary" size="lg" onClick={googleLogin} disabled={!ageVerified}>Sign in with Google 🚀 </Button>
+                        </div>
+                        <div className="d-grid gap-2 mt-2">
+                            <Button variant="outline-primary" size="lg" onClick={githubLogin} disabled={!ageVerified}>Sign in with Github 🚀 </Button>
                         </div>
 
                         <FacebookLogin

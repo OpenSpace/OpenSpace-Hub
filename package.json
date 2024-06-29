@@ -19,6 +19,7 @@
     "express-fileupload": "^1.4.3",
     "express-paginate": "^1.0.2",
     "express-validator": "^7.0.1",
+    "firebase-admin": "^12.2.0",
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.30.1",
     "mongo-seeding": "^4.0.0",

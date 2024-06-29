@@ -64,15 +64,13 @@ exports.getHashedPassword = async(password) => {
         throw new Error(error.message);
     }
 }
-exports.createNewUser = async (name, email, domain, pictureUrl, password) => {
+exports.createNewUser = async (user) => {
     try{
         const newUser = new User({ 
-            name: name,
-            email: email,
-            username: await this.generateUsername(email),
-            password: await this.getHashedPassword(password),
-            thumbnail: pictureUrl ? pictureUrl : null,
-            domain: domain,
+            name: user.name,
+            email: user.email,
+            username: await this.generateUsername(user.email),
+            thumbnail: user.picture ? user.picture : null,
             created: getFormattedDate(new Date()),
             modified: getFormattedDate(new Date()),
             role: 'user',
@@ -85,52 +83,13 @@ exports.createNewUser = async (name, email, domain, pictureUrl, password) => {
     }
 }
 
-exports.verifySocialMediaToken = async(domain, accessToken) => {
-    let isVerified = false;
-    switch (domain) {
-        case 'google':
-            isVerified = this.verifyGoogleToken(accessToken);
-            break;
-        case 'facebook':
-            isVerified = this.verifyFacebookToken(accessToken);
-            break;
-        default:
-            throw new Error('Invalid domain');
-    }
-    return isVerified;
-}
-
-exports.createJWTToken = async (user) => {
-    try{
-        const token = jwt.sign( {userId : user._id }, process.env.SECRET_KEY, { expiresIn: '1h', });
-        return token;
-    } catch (error) {
-        console.log(error);
-        throw new Error(error.message);
-    }
-}
-
-exports.validatePassword = (password, cnfPassword) => {
-    if (password !== cnfPassword) {
-        throw new Error('Password and confirm password do not match');
-    }
-    if (password.length < 8) {
-        throw new Error('Password must be at least 8 characters long');
-    }
-    if (!password.match(/[a-z]/) || !password.match(/[A-Z]/) || !password.match(/[0-9]/)) {
-        throw new Error('Password must contain at least one lowercase letter, one uppercase letter, and one number');
-    }
-}
-
-exports.getUserResponse = async(user, jwtToken) => {
+exports.getUserResponse = async(user) => {
     try{
         return {
             name: user.name,
             email: user.email,
             username: user.username,
-            token: jwtToken,
             thumbnail: user.thumbnail,
-            domain: user.domain,
             link: user.link,
             institution: user.institution,
             favorites: user.favorites,
@@ -142,8 +101,7 @@ exports.getUserResponse = async(user, jwtToken) => {
     }
 }
 
-exports.getUserInfo = async(jwtToken) => {
-    const decoded = jwt.verify(jwtToken, process.env.SECRET_KEY)
-    const user = await User.findById(decoded.userId);
-    return user;
+exports.getUserInfo = async(user) => {
+    const userInfo = await User.findOne({ email : user.email });
+    return userInfo;
 }
