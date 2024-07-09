@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Form, Button, } from "react-bootstrap";
 import "./../css/login.css";
 import APIService from './APIService';
+import { deleteUser, signOut } from "firebase/auth";
+import { auth } from "../firebase";
 
 const UserProfile = ({ user, setRedAlertMessage, setGreenAlertMessage }) => {
     const [name, setName] = useState("");
@@ -43,6 +45,7 @@ const UserProfile = ({ user, setRedAlertMessage, setGreenAlertMessage }) => {
                     if (resp.error) {
                         throw (resp.error);
                     }
+                    deleteUser(auth.currentUser);
                     setGreenAlertMessage("Profile deleted successfully");
                     localStorage.clear();
                     window.location.href = "/login";
