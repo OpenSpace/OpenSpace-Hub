@@ -17,6 +17,11 @@ cd frontend
 cp .env.default .env
 ```
 
+Upload folder and Firebase service account
+--------------------
+create the folders `OpenSpace-Hub/uploads/firebase-admin`
+Go to `Firebase -> Project Settings -> Service Accounts -> Generate new private key`. It will download a .json file. Rename the file to `authentication-4b8de-firebase-adminsdk.json`. Save this file to the location `OpenSpace-Hub/uploads/firebase-admin`
+
 Build the containers
 --------------------
 Navigate to the root directory of the repository (OpenSpace-Hub folder) and build docker-compose.yaml file.
@@ -42,3 +47,7 @@ Access the server on http://localhost:9000/
 ![UploadItem](public/defaults/images/uploadItem.png)
 
 Old Server: [https://hub.openspaceproject.com](https://hub.openspaceproject.com/)
+
+Privacy URL: [http://files.openspace.amnh.org/static/web/privacy.html] (http://files.openspace.amnh.org/static/web/privacy.html)
+
+T&C URL: [http://files.openspace.amnh.org/static/web/terms.html] (http://files.openspace.amnh.org/static/web/terms.html)
