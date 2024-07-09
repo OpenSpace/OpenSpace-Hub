@@ -6,13 +6,16 @@ import { useLinkedIn } from 'react-linkedin-login-oauth2';
 import APIService from './APIService';
 
 //Firebase auth
-import { signInWithPopup, GoogleAuthProvider, GithubAuthProvider, onAuthStateChanged } from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider, GithubAuthProvider, FacebookAuthProvider, TwitterAuthProvider, onAuthStateChanged, fetchSignInMethodsForEmail, linkWithCredential } from "firebase/auth";
 import { auth } from '../firebase';
 
 
 const SignIn = ({ config }) => {
     const [ageVerified, setAgeVerified] = useState(false);
-    const provider = new GoogleAuthProvider();
+    const googleAuthprovider = new GoogleAuthProvider();
+    const githubAuthprovider = new GithubAuthProvider();
+    const facebookAuthprovider = new FacebookAuthProvider();
+    const twitterAuthprovider = new TwitterAuthProvider();
 
     const redirectToSignin = () => {
         window.location.href = "/signin";
@@ -32,8 +35,8 @@ const SignIn = ({ config }) => {
 
     // google login
     const googleLogin = async () => {
-        await signInWithPopup(auth, provider)
-            .then(async(result) => {
+        await signInWithPopup(auth, googleAuthprovider)
+            .then(async (result) => {
                 const user = result.user;
                 await APIService.SocialMediaLogin().then(resp => {
                     redirectToHome();
@@ -49,11 +52,62 @@ const SignIn = ({ config }) => {
 
     // github login
     const githubLogin = async () => {
-        await signInWithPopup(auth, provider)
-            .then(async(result) => {
+        await signInWithPopup(auth, githubAuthprovider)
+            .then(async (result) => {
+                const user = result.user;
+                console.log("user is: ", user);
+                await APIService.SocialMediaLogin().then(resp => {
+                    redirectToHome();
+                }).catch((err) => console.log(err));
+            }).catch(async(error) => {
+                if (error.code === 'auth/account-exists-with-different-credential') {
+                    // call a new function to handle this error
+                    const email = error.customData.email;
+                    const credential = GithubAuthProvider.credentialFromError(error);
+                    // Get the existing sign-in methods
+                    console.log("email is: ", email);
+                    console.log("auth is: ", auth);
+                    const methods = await fetchSignInMethodsForEmail(auth, email);
+                    console.log(methods);
+                    switch (methods[0]) {
+                        case 'google.com':
+                            const googleProvider = new GoogleAuthProvider();
+                            const googleResult = await signInWithPopup(auth, googleProvider);
+                            await linkWithCredential(googleResult.user, credential);
+                            redirectToHome();
+                            break;
+                        case 'github.com':
+                            const githubProvider = new GithubAuthProvider();
+                            const githubResult = await signInWithPopup(auth, githubProvider);
+                            await linkWithCredential(githubResult.user, credential);
+                            redirectToHome();
+                            break;
+                        case 'facebook.com':
+                            console.log("Facebook provider");
+                            break;
+                        case 'twitter.com':
+                            console.log("Twitter provider");
+                            break;
+                        
+                        default:
+                            console.log("No other providers");
+                    }
+                } else {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    const email = error.customData.email;
+                    const credential = GithubAuthProvider.credentialFromError(error);
+                    console.log(error, errorCode, errorMessage, email, credential);
+                }
+            });
+    }
+
+    // facebook login
+    const facebookLogin = async () => {
+        await signInWithPopup(auth, facebookAuthprovider)
+            .then(async (result) => {
                 const user = result.user;
                 await APIService.SocialMediaLogin().then(resp => {
-                    localStorage.setItem('token', resp.token);
                     redirectToHome();
                 }).catch((err) => console.log(err));
             }).catch((error) => {
@@ -61,31 +115,51 @@ const SignIn = ({ config }) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
                 const email = error.customData.email;
-                const credential = GoogleAuthProvider.credentialFromError(error);
+                const credential = FacebookAuthProvider.credentialFromError(error);
+            });
+    }
+
+    const twitterLogin = async () => {
+        await signInWithPopup(auth, twitterAuthprovider)
+            .then(async (result) => {
+                const user = result.user;
+                await APIService.SocialMediaLogin().then(resp => {
+                    redirectToHome();
+                }
+                ).catch((err) => console.log(err));
+            }).catch((error) => {
+                console.log(error);
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                const email = error.customData.email;
+                const credential = TwitterAuthProvider.credentialFromError(error);
             });
     }
 
 
-    // Facebook login
-    const responseFacebook = async (response) => {
-        await APIService.SocialMediaLogin().then(resp => {
-            localStorage.setItem('token', resp.token);
-            console.log(resp)
-            redirectToHome();
-        }).catch((err) => console.log(err));
-    }
 
-    // linkedin login
-    const { linkedInLogin } = useLinkedIn({
-        clientId: process.env.REACT_APP_LINKEDIN_CLIENT_ID,
-        redirectUri: `${window.location.origin}`,
-        onSuccess: (code) => {
-            console.log(code);
-        },
-        onError: (error) => {
-            console.log(error);
-        },
-    });
+
+
+    // // Facebook login
+    // const responseFacebook = async (response) => {
+    //     await APIService.SocialMediaLogin().then(resp => {
+    //         localStorage.setItem('token', resp.token);
+    //         console.log(resp)
+    //         redirectToHome();
+    //     }).catch((err) => console.log(err));
+    // }
+
+    // // linkedin login
+    // const { linkedInLogin } = useLinkedIn({
+    //     clientId: process.env.REACT_APP_LINKEDIN_CLIENT_ID,
+    //     redirectUri: `${window.location.origin}`,
+    //     onSuccess: (code) => {
+    //         console.log(code);
+    //     },
+    //     onError: (error) => {
+    //         console.log(error);
+    //     },
+    // });
 
     // useEffect(() => {
     //     const handleGitHubCallback = async () => {
@@ -185,8 +259,14 @@ const SignIn = ({ config }) => {
                         <div className="d-grid gap-2 mt-2">
                             <Button variant="outline-primary" size="lg" onClick={githubLogin} disabled={!ageVerified}>Sign in with Github 🚀 </Button>
                         </div>
+                        <div className="d-grid gap-2 mt-2">
+                            <Button variant="outline-primary" size="lg" onClick={twitterLogin} disabled={!ageVerified}>Sign in with Twitter 🚀 </Button>
+                        </div>
+                        <div className="d-grid gap-2 mt-2">
+                            <Button variant="outline-primary" size="lg" onClick={facebookLogin} disabled={!ageVerified}>Sign in with Facebook 🚀 </Button>
+                        </div>
 
-                        <FacebookLogin
+                        {/* <FacebookLogin
                             appId={process.env.REACT_APP_FACEBOOK_APP_ID}
                             autoLoad={false}
                             fields="name, email, picture"
@@ -201,7 +281,7 @@ const SignIn = ({ config }) => {
 
                         <div className="d-grid gap-2 mt-2">
                             <Button variant="outline-primary" size="lg" onClick={linkedInLogin} disabled={!ageVerified}>Sign in with LinkedIn 🚀 </Button>
-                        </div>
+                        </div> */}
 
                         {/* <div className="d-grid gap-2 mt-2">
                             <Button variant="outline-primary" size="lg" onClick={githubLogin} disabled={!ageVerified}>Sign in with Github 🚀 </Button>

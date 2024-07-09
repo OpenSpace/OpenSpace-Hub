@@ -86,7 +86,9 @@ router.post('/social-media-login', verifyToken, async (req, res) => {
         }
         
         let user = await User.findOne({ email: req.user.email });
+        console.log("social-media-login: ", user);
         if (!user) {
+            console.log("new social-media-login: ", req.user);
             user = await authUtility.createNewUser(req.user);
         }
         const userResponse = await authUtility.getUserResponse(user);
@@ -129,7 +131,6 @@ router.get('/getUser', verifyToken, async (req, res) => {
             return res.status(401).json({ error: 'Unauthorized request' });
         }
         const resp = await authUtility.getUserResponse(user);
-        console.log("getUser: ", resp, req.user);
         res.status(200).json(resp);
     } catch (error) {
         console.log(error)
@@ -177,8 +178,6 @@ router.put('/updateUser/:username', verifyToken, async (req, res) => {
             return res.status(400).json({ errors: errors.array() });
         }
         const user = await authUtility.getUserInfo(req.user);
-        console.log("updateUser: ", user);
-        console.log("updateUser: ", req.user);
         if (!user || user.username !== req.params.username) {
             return res.status(401).json({ error: 'Unauthorized request' });
         }
