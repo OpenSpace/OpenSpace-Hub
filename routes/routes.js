@@ -6,8 +6,8 @@ const multer = require('multer');
 const path = require('path');
 const itemUtility = require('../utils/itemUtility');
 const authUtility = require('../utils/authUtility');
-const jwt = require('jsonwebtoken')
 const { body, validationResult } = require('express-validator');
+const verifyToken = require('../middleware/authMiddleware');
 
 
 const router = express.Router()
@@ -206,14 +206,8 @@ router.get('/getItem/:id', async (req, res) => {
  *          500:
  *              description: Internal server error.
  */
-router.get('/getUserItems/:username', async (req, res) => {
+router.get('/getUserItems/:username', verifyToken, async (req, res) => {
     try {
-        const token = req.headers['authorization'].split(' ')[1];
-        if (!token || token === 'null') {
-            console.log('Unauthorized request');
-            return res.status(401).json({ error: 'Unauthorized request' });
-        }
-        jwt.verify(token, process.env.SECRET_KEY);
         const data = await Model.find({ 'author.username': req.params.username });
         res.status(200).json(data);
     } catch (error) {
@@ -270,7 +264,7 @@ router.post('/addItem', async (req, res) => {
 
 /**
  * @swagger
- * /api/uploadItem:
+ * /api/upload:
  *  post:
  *      summary: Upload an item.
  *      consumes:
@@ -290,14 +284,13 @@ router.post('/addItem', async (req, res) => {
  *          500:
  *              description: Internal server error.
  */
-router.post('/upload', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'file', maxCount: 1 }]), async (req, res) => {
+router.post('/upload', verifyToken, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'file', maxCount: 1 }]), async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
-        const jwtToken = req.headers['authorization'].split(' ')[1];
-        const user = await authUtility.getUserInfo(jwtToken);
+        const user = await authUtility.getUserInfo(req.user);
         if (req.body && req.body.video && req.body.video !== '') {
             await itemUtility.validateInputFields(req.body);
             const data = await itemUtility.uploadVideo(req, user);
@@ -338,10 +331,9 @@ router.post('/upload', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'f
  *          500:
  *              description: Internal server error.
  */
-router.get('/validateItemName/:name', async (req, res) => {
+router.get('/validateItemName/:name', verifyToken, async (req, res) => {
     try {
-        const jwtToken = req.headers['authorization'].split(' ')[1];
-        const user = await authUtility.getUserInfo(jwtToken);
+        const user = await authUtility.getUserInfo(req.user);
         const data = await Model.findOne({ name: req.params.name });
         if (!data) {
             return res.status(200).json({ message: 'Item name is available' });
@@ -371,19 +363,13 @@ router.get('/validateItemName/:name', async (req, res) => {
  *          500:
  *              description: Internal server error.
  */
-router.put('/updateItem/:id', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'file', maxCount: 1 }]), async (req, res) => {
+router.put('/updateItem/:id', verifyToken, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'file', maxCount: 1 }]), async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
-        const jwtToken = req.headers['authorization'].split(' ')[1];
-        const user = await authUtility.getUserInfo(jwtToken);
-        if (!jwtToken || jwtToken === 'null') {
-            console.log('Unauthorized request');
-            return res.status(401).json({ error: 'Unauthorized request' });
-        }
-        jwt.verify(jwtToken, process.env.SECRET_KEY);
+        const user = await authUtility.getUserInfo(req.user);
 
         let item = await Model.findById(req.params.id);
         if (req.files && req.files['file']) {
@@ -424,14 +410,8 @@ router.put('/updateItem/:id', upload.fields([{ name: 'image', maxCount: 1 }, { n
  *          500:
  *              description: Internal server error.
  */
-router.delete('/deleteItem/:id', async (req, res) => {
+router.delete('/deleteItem/:id', verifyToken, async (req, res) => {
     try {
-        const token = req.headers['authorization'].split(' ')[1];
-        if (!token || token === 'null') {
-            console.log('Unauthorized request');
-            return res.status(401).json({ error: 'Unauthorized request' });
-        }
-        jwt.verify(token, process.env.SECRET_KEY);
         const data = await Model.findOneAndDelete({ _id: req.params.id });
         if (!data) {
             return res.status(404).json({ message: 'Item not found' });

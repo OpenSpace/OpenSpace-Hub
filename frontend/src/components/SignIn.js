@@ -1,21 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import "./../css/login.css";
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import { useLinkedIn } from 'react-linkedin-login-oauth2';
 import APIService from './APIService';
 
 //Firebase auth
-import { signInWithPopup, GoogleAuthProvider, GithubAuthProvider, FacebookAuthProvider, TwitterAuthProvider, onAuthStateChanged, fetchSignInMethodsForEmail, linkWithCredential } from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider, GithubAuthProvider, TwitterAuthProvider, onAuthStateChanged, fetchSignInMethodsForEmail, linkWithCredential } from "firebase/auth";
 import { auth } from '../firebase';
 
 
 const SignIn = ({ config }) => {
     const [ageVerified, setAgeVerified] = useState(false);
-    const googleAuthprovider = new GoogleAuthProvider();
-    const githubAuthprovider = new GithubAuthProvider();
-    const facebookAuthprovider = new FacebookAuthProvider();
-    const twitterAuthprovider = new TwitterAuthProvider();
 
     const providers = {
         google: {
@@ -25,10 +20,6 @@ const SignIn = ({ config }) => {
         github: {
             provider: new GithubAuthProvider(),
             credentialFromError: GithubAuthProvider.credentialFromError,
-        },
-        facebook: {
-            provider: new FacebookAuthProvider(),
-            credentialFromError: FacebookAuthProvider.credentialFromError,
         },
         twitter: {
             provider: new TwitterAuthProvider(),
@@ -40,8 +31,7 @@ const SignIn = ({ config }) => {
         const { provider, credentialFromError } = providers[providerKey];
 
         try {
-            const result = await signInWithPopup(auth, provider);
-            const user = result.user;
+            await signInWithPopup(auth, provider);
             await APIService.SocialMediaLogin().then(resp => {
                 redirectToHome();
             }).catch((err) => console.log(err));
@@ -66,14 +56,10 @@ const SignIn = ({ config }) => {
         }
     };
 
-    // const redirectToSignin = () => {
-    //     window.location.href = "/signin";
-    // };
-
     useEffect(() => {
         const isloggedin = onAuthStateChanged(auth, (user) => {
             if (user) {
-                redirectToHome(user, auth);
+                redirectToHome();
             } else {
                 console.log("User is not logged in.");
             }
@@ -82,13 +68,9 @@ const SignIn = ({ config }) => {
         return () => isloggedin();
     }, []);
 
-    const redirectToHome = (user, auth) => {
+    const redirectToHome = () => {
         window.location.href = "/";
     };
-
-    function delay(ms) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-    }
 
     return (
         <div className="sign-in__wrapper">
