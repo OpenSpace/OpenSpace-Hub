@@ -5,7 +5,7 @@ Welcome to the OpenSpace Hub. Here you will find items (assets, profiles, record
 
 
 Setup Instructions
-====================================
+------------------
 
 To deploy the system locally using docker-compose, follow those step:
 
@@ -16,6 +16,10 @@ Copy env.default to .env inside frontend folder and update the variables there.
 cd frontend
 cp .env.default .env
 ```
+
+The Database
+------------------
+To reset the database or to load the sample hubitems, configs, users collections, run `num run seed`
 
 Upload folder and Firebase service account
 --------------------

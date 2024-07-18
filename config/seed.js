@@ -21,6 +21,6 @@ const seed = async () => {
         console.error(error)
     }
 }
-// seed();
+seed();
 
 module.exports = seed
