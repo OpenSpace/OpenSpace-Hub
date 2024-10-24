@@ -18,13 +18,13 @@ const accessLogStream = fs.createWriteStream(path.join(__dirname,
 const cors = require("cors");
 
 const http = require('http');
-const https = require('https');
+// const https = require('https');
 
-const keyCertDir = path.join(__dirname, 'uploads', 'certs', 'server.key');
-const certCertDir = path.join(__dirname, 'uploads', 'certs', 'server.crt');
+// const keyCertDir = path.join(__dirname, 'uploads', 'certs', 'server.key');
+// const certCertDir = path.join(__dirname, 'uploads', 'certs', 'server.crt');
 const options = {
-  key: fs.readFileSync(keyCertDir),
-  cert: fs.readFileSync(certCertDir)
+  // key: fs.readFileSync(keyCertDir),
+  // cert: fs.readFileSync(certCertDir)
 };
 
 

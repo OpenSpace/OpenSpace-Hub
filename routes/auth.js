@@ -34,18 +34,18 @@ const verifyToken = require('../middleware/authMiddleware');
  *              description: Internal server error.
  */
 router.delete('/deleteUser/:username', verifyToken, async (req, res) => {
-    try {
-        const user = await authUtility.getUserInfo(req.user);
-        if (!user || user.username !== req.params.username) {
-            return res.status(401).json({ error: 'Unauthorized request' });
-        }
-        await Model.deleteMany({ "author.username": user.username });
-        await User.deleteOne({ username: user.username });
-        res.status(200).json({ message: 'User deleted successfully' });
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ error: error.message });
+  try {
+    const user = await authUtility.getUserInfo(req.user);
+    if (!user || user.username !== req.params.username) {
+      return res.status(401).json({ error: 'Unauthorized request' });
     }
+    await Model.deleteMany({ "author.username": user.username });
+    await User.deleteOne({ username: user.username });
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: error.message });
+  }
 });
 
 /**
