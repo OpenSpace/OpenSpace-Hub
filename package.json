@@ -31,5 +31,8 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "unzipper": "^0.10.14"
+  },
+  "devDependencies": {
+    "ajv": "^7.2.4"
   }
 }
