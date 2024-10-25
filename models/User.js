@@ -10,28 +10,28 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  username:{
+  username: {
     type: String,
     required: true,
     unique: true
   },
   thumbnail: {
     type: String,
-    default: "defaults/images/user-icon.jpg"
+    default: 'defaults/images/user-icon.jpg'
   },
   link: {
     type: String,
-    default: "www.example.com",
+    default: 'www.example.com',
     required: true
   },
   institution: {
     type: String,
-    default: "OpenSpace",
+    default: 'OpenSpace',
     required: true
   },
   role: {
     type: String,
-    default: "user",
+    default: 'user',
     required: true
   },
   created: {
@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema({
   },
   favorites: {
     type: [ObjectId]
-  },
+  }
 });
 
-module.exports = mongoose.model('User', userSchema)
+module.exports = mongoose.model('User', userSchema);

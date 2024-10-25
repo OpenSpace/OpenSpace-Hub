@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
-const AlertMessages = ({ redAlertMessage, greenAlertMessage, clearRedAlertMessage, clearGreenAlertMessage }) => {
+const AlertMessages = ({
+  redAlertMessage,
+  greenAlertMessage,
+  clearRedAlertMessage,
+  clearGreenAlertMessage
+}) => {
   const [showRedAlert, setShowRedAlert] = useState(redAlertMessage !== '');
   const [showGreenAlert, setShowGreenAlert] = useState(greenAlertMessage !== '');
   useEffect(() => {
@@ -39,6 +44,6 @@ const AlertMessages = ({ redAlertMessage, greenAlertMessage, clearRedAlertMessag
       )}
     </div>
   );
-}
+};
 
 export default AlertMessages;

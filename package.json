@@ -4,9 +4,10 @@
   "description": "OpenSpace Hub",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "seed": "node ./config/seed.js"
+    "seed": "node ./config/seed.js",
+    "lint": "npx prettier . --check",
+    "lint-fix": "npx prettier . --write"
   },
   "author": "Abhay Garg",
   "license": "ISC",

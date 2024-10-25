@@ -1,23 +1,32 @@
 import { auth } from '../firebase';
 
 export default class APIService {
-
-  static async GetItems({ type = 'all', search = '', page = 1,  sort = 'modified,desc', limit = 6, username = ''}) {
-    const resp = await fetch(`/api/items?type=${type}&search=${search}&sort=${sort}&limit=${limit}&page=${page}&username=${username}`, {
-      'method': 'GET',
-      headers: {
-        'Content-Type': 'application/json'
+  static async GetItems({
+    type = 'all',
+    search = '',
+    page = 1,
+    sort = 'modified,desc',
+    limit = 6,
+    username = ''
+  }) {
+    const resp = await fetch(
+      `/api/items?type=${type}&search=${search}&sort=${sort}&limit=${limit}&page=${page}&username=${username}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
       }
-    });
+    );
     return await resp.json();
   }
 
   static async GetUserItems(username) {
     const resp = await fetch(`/api/getUserItems/${username}`, {
-      'method': 'GET',
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${auth.currentUser.accessToken}`
+        Authorization: `Bearer ${auth.currentUser.accessToken}`
       }
     });
     return await resp.json();
@@ -25,7 +34,7 @@ export default class APIService {
 
   static async GetConfig() {
     const resp = await fetch(`/api/config`, {
-      'method': 'GET',
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json'
       }
@@ -35,10 +44,10 @@ export default class APIService {
 
   static async DeleteUser(username) {
     const resp = await fetch(`/auth/deleteUser/${username}`, {
-      'method': 'DELETE',
+      method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${auth.currentUser.accessToken}`
+        Authorization: `Bearer ${auth.currentUser.accessToken}`
       }
     });
     return await resp.json();
@@ -46,34 +55,34 @@ export default class APIService {
 
   static async VerifyToken(token) {
     const resp = await fetch(`/auth/verify-token`, {
-      'method': 'POST',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${auth.currentUser.accessToken}`
-      },
+        Authorization: `Bearer ${auth.currentUser.accessToken}`
+      }
     });
     return await resp.json();
   }
 
   static async SocialMediaLogin() {
     const resp = await fetch(`/auth/social-media-login`, {
-      'method': 'POST',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${auth.currentUser.accessToken}`
-      },
+        Authorization: `Bearer ${auth.currentUser.accessToken}`
+      }
     });
     return await resp.json();
   }
 
   static async UpdateUser(username, name, email, institution) {
     const resp = await fetch(`/auth/updateUser/${username}`, {
-      'method': 'PUT',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${auth.currentUser.accessToken}`
+        Authorization: `Bearer ${auth.currentUser.accessToken}`
       },
-      body: JSON.stringify({name, email, institution})
+      body: JSON.stringify({ name, email, institution })
     });
     return await resp.json();
   }
@@ -82,7 +91,7 @@ export default class APIService {
     const resp = await fetch(`/api/upload`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${auth.currentUser.accessToken}`
+        Authorization: `Bearer ${auth.currentUser.accessToken}`
       },
       body: formData
     });
@@ -93,7 +102,7 @@ export default class APIService {
     const resp = await fetch(`/api/validateItemName/${name}`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${auth.currentUser.accessToken}`
+        Authorization: `Bearer ${auth.currentUser.accessToken}`
       }
     });
     return await resp.json();
@@ -103,7 +112,7 @@ export default class APIService {
     const resp = await fetch(`/api/updateItem/${id}`, {
       method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${auth.currentUser.accessToken}`
+        Authorization: `Bearer ${auth.currentUser.accessToken}`
       },
       body: formData
     });
@@ -116,7 +125,7 @@ export default class APIService {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${auth.currentUser.accessToken}`
+        Authorization: `Bearer ${auth.currentUser.accessToken}`
       }
     });
     return await resp.json();
@@ -124,10 +133,10 @@ export default class APIService {
 
   static async GetUser() {
     const resp = await fetch(`/auth/getUser`, {
-      'method': 'GET',
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${auth.currentUser.accessToken}`
+        Authorization: `Bearer ${auth.currentUser.accessToken}`
       }
     });
     return await resp.json();
@@ -136,7 +145,7 @@ export default class APIService {
   static SendImportToOpenSpaceCommand = async (url, type) => {
     var openspace = window.openspace;
     if (!openspace) {
-      console.log("Connect to OpenSpace first!!");
+      console.log('Connect to OpenSpace first!!');
       return;
     }
     var fileName = url.substr(url.lastIndexOf('/') + 1);
@@ -144,25 +153,25 @@ export default class APIService {
     switch (type) {
       case 'asset':
         var noextension = fileName.substr(0, fileName.indexOf('.'));
-        var absPath = await openspace.absPath('${TEMPORARY}/' + fileName)
-        var pathString = '${USER_ASSETS}/' + noextension + "/";
-        var scenePath = await openspace.absPath(pathString)
-        await openspace.downloadFile(url, absPath["1"], true);
-        await openspace.unzipFile(absPath["1"], scenePath["1"], true);
-        await openspace.asset.add(scenePath["1"] + noextension);
-        await openspace.setPropertyValueSingle("Modules.CefWebGui.Reload", null)
+        var absPath = await openspace.absPath('${TEMPORARY}/' + fileName);
+        var pathString = '${USER_ASSETS}/' + noextension + '/';
+        var scenePath = await openspace.absPath(pathString);
+        await openspace.downloadFile(url, absPath['1'], true);
+        await openspace.unzipFile(absPath['1'], scenePath['1'], true);
+        await openspace.asset.add(scenePath['1'] + noextension);
+        await openspace.setPropertyValueSingle('Modules.CefWebGui.Reload', null);
         break;
       case 'profile':
         var absPath = await openspace.absPath('${USER_PROFILES}/' + fileName);
-        await openspace.downloadFile(url, absPath["1"], true);
+        await openspace.downloadFile(url, absPath['1'], true);
         break;
       case 'recording':
         var absPath = await openspace.absPath('${RECORDINGS}/' + fileName);
-        await openspace.downloadFile(url, absPath["1"], true);
+        await openspace.downloadFile(url, absPath['1'], true);
         break;
       default:
-        console.log('nothing to do')
+        console.log('nothing to do');
         break;
     }
-  }
+  };
 }

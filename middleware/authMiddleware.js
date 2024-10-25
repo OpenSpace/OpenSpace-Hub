@@ -8,11 +8,11 @@ const verifyToken = async (req, res, next) => {
 
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
-    console.log("verifyToken: decodedToken: ", decodedToken);
+    console.log('verifyToken: decodedToken: ', decodedToken);
     req.user = decodedToken;
     next();
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(401).send('Unauthorized');
   }
 };

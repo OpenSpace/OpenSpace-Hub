@@ -1,13 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { Form, Button, Alert } from "react-bootstrap";
-import "./../css/login.css";
+import React, { useState, useEffect } from 'react';
+import { Form, Button, Alert } from 'react-bootstrap';
+import './../css/login.css';
 import { useLinkedIn } from 'react-linkedin-login-oauth2';
 import APIService from './APIService';
 
 //Firebase auth
-import { signInWithPopup, GoogleAuthProvider, GithubAuthProvider, TwitterAuthProvider, onAuthStateChanged, fetchSignInMethodsForEmail, linkWithCredential } from "firebase/auth";
+import {
+  signInWithPopup,
+  GoogleAuthProvider,
+  GithubAuthProvider,
+  TwitterAuthProvider,
+  onAuthStateChanged,
+  fetchSignInMethodsForEmail,
+  linkWithCredential
+} from 'firebase/auth';
 import { auth } from '../firebase';
-
 
 const SignIn = ({ config }) => {
   const [ageVerified, setAgeVerified] = useState(false);
@@ -15,16 +22,16 @@ const SignIn = ({ config }) => {
   const providers = {
     google: {
       provider: new GoogleAuthProvider(),
-      credentialFromError: GoogleAuthProvider.credentialFromError,
+      credentialFromError: GoogleAuthProvider.credentialFromError
     },
     github: {
       provider: new GithubAuthProvider(),
-      credentialFromError: GithubAuthProvider.credentialFromError,
+      credentialFromError: GithubAuthProvider.credentialFromError
     },
     twitter: {
       provider: new TwitterAuthProvider(),
-      credentialFromError: TwitterAuthProvider.credentialFromError,
-    },
+      credentialFromError: TwitterAuthProvider.credentialFromError
+    }
   };
 
   const handleLogin = async (providerKey) => {
@@ -32,9 +39,11 @@ const SignIn = ({ config }) => {
 
     try {
       await signInWithPopup(auth, provider);
-      await APIService.SocialMediaLogin().then(resp => {
-        redirectToHome();
-      }).catch((err) => console.log(err));
+      await APIService.SocialMediaLogin()
+        .then((resp) => {
+          redirectToHome();
+        })
+        .catch((err) => console.log(err));
     } catch (error) {
       if (error.code === 'auth/account-exists-with-different-credential') {
         const email = error.customData.email;
@@ -48,10 +57,10 @@ const SignIn = ({ config }) => {
           await linkWithCredential(linkedResult.user, credential);
           redirectToHome();
         } else {
-          console.log("No other providers");
+          console.log('No other providers');
         }
       } else {
-        console.error("Error:", error);
+        console.error('Error:', error);
       }
     }
   };
@@ -61,7 +70,7 @@ const SignIn = ({ config }) => {
       if (user) {
         redirectToHome();
       } else {
-        console.log("User is not logged in.");
+        console.log('User is not logged in.');
       }
     });
 
@@ -69,7 +78,7 @@ const SignIn = ({ config }) => {
   }, []);
 
   const redirectToHome = () => {
-    window.location.href = "/";
+    window.location.href = '/';
   };
 
   return (
@@ -94,22 +103,20 @@ const SignIn = ({ config }) => {
             </Form.Group>
             {Object.keys(providers).map((key) => (
               <div className="d-grid gap-2 mt-2">
-              <Button
-                key={key}
-                variant="outline-primary"
-                size="lg"
-                disabled={!ageVerified}
-                onClick={() => handleLogin(key)}
-              >
-                Sign in with {key.charAt(0).toUpperCase() + key.slice(1)} 🚀
-              </Button>
+                <Button
+                  key={key}
+                  variant="outline-primary"
+                  size="lg"
+                  disabled={!ageVerified}
+                  onClick={() => handleLogin(key)}
+                >
+                  Sign in with {key.charAt(0).toUpperCase() + key.slice(1)} 🚀
+                </Button>
               </div>
             ))}
           </>
         ) : (
-          <Alert variant="danger">
-            Sign in is disabled by the administrator
-          </Alert>
+          <Alert variant="danger">Sign in is disabled by the administrator</Alert>
         )}
       </Form>
     </div>

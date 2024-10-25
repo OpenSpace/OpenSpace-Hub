@@ -1,15 +1,15 @@
-const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerJsdoc = require('swagger-jsdoc');
 
 const options = {
   definition: {
-    openapi: "3.0.0", // OpenAPI version
+    openapi: '3.0.0', // OpenAPI version
     info: {
-      title: "OpenSpace Hub APIs",
-      version: "1.0.0",
-      description: "APIs for OpenSpace Hub",
-    },
+      title: 'OpenSpace Hub APIs',
+      version: '1.0.0',
+      description: 'APIs for OpenSpace Hub'
+    }
   },
-  apis: ["./routes/*.js", './index.js'], // API route files
+  apis: ['./routes/*.js', './index.js'] // API route files
 };
 
 const swaggerSpec = swaggerJsdoc(options);

@@ -15,7 +15,17 @@ const configSchema = new mongoose.Schema({
   versions: {
     type: Array,
     required: true,
-    default: ['0.20.0', '0.19.2', '0.19.1', '0.19.0', '0.18.2', '0.18.1', '0.18.0', '0.17.2']
+    default: [
+      '0.20.1',
+      '0.20.0',
+      '0.19.2',
+      '0.19.1',
+      '0.19.0',
+      '0.18.2',
+      '0.18.1',
+      '0.18.0',
+      '0.17.2'
+    ]
   },
   itemTypes: {
     type: Array,
@@ -25,8 +35,22 @@ const configSchema = new mongoose.Schema({
   licenses: {
     type: Array,
     required: true,
-    default: ['CC BY', 'CC BY-SA', 'CC BY-NC', 'CC BY-NC-SA', 'CC BY-ND', 'CC BY-NC-ND', 'CC0', 'MIT', 'Apache', 'GPL', 'LGPL', 'BSD', 'Proprietary']
-  },
+    default: [
+      'CC BY',
+      'CC BY-SA',
+      'CC BY-NC',
+      'CC BY-NC-SA',
+      'CC BY-ND',
+      'CC BY-NC-ND',
+      'CC0',
+      'MIT',
+      'Apache',
+      'GPL',
+      'LGPL',
+      'BSD',
+      'Proprietary'
+    ]
+  }
 });
 
-module.exports = mongoose.model('configs', configSchema)
+module.exports = mongoose.model('configs', configSchema);

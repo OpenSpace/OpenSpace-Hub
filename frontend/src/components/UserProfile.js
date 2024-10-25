@@ -1,60 +1,59 @@
-import React, { useState, useEffect } from "react";
-import { Form, Button, } from "react-bootstrap";
-import "./../css/login.css";
+import React, { useState, useEffect } from 'react';
+import { Form, Button } from 'react-bootstrap';
+import './../css/login.css';
 import APIService from './APIService';
-import { deleteUser, signOut } from "firebase/auth";
-import { auth } from "../firebase";
+import { deleteUser, signOut } from 'firebase/auth';
+import { auth } from '../firebase';
 
 const UserProfile = ({ user, setRedAlertMessage, setGreenAlertMessage }) => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [institution, setInstitution] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [institution, setInstitution] = useState('');
 
-  useEffect(
-    () => {
-      setName(user.name);
-      setEmail(user.email);
-      setUsername(user.username);
-      setInstitution(user.institution);
-    }, [user]
-  );
+  useEffect(() => {
+    setName(user.name);
+    setEmail(user.email);
+    setUsername(user.username);
+    setInstitution(user.institution);
+  }, [user]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    let text = "Do you want to save the changes?";
+    let text = 'Do you want to save the changes?';
     if (window.confirm(text) == true) {
       await APIService.UpdateUser(user.username, name, email, institution)
-        .then(resp => {
+        .then((resp) => {
           if (resp.error) {
-            throw (resp.error);
+            throw resp.error;
           }
-          setGreenAlertMessage("Profile updated successfully");
+          setGreenAlertMessage('Profile updated successfully');
         })
-        .catch(error => {
-          setRedAlertMessage("Error: " + error);
+        .catch((error) => {
+          setRedAlertMessage('Error: ' + error);
         });
     }
   };
 
   const deleteUserProfile = async () => {
-    let text = "Do you want to delete your profile? All your hub items and user data will be lost.";
+    let text =
+      'Do you want to delete your profile? All your hub items and user data will be lost.';
     if (window.confirm(text) == true) {
       await APIService.DeleteUser(user.username)
-        .then(resp => {
+        .then((resp) => {
           if (resp.error) {
-            throw (resp.error);
+            throw resp.error;
           }
           deleteUser(auth.currentUser);
-          setGreenAlertMessage("Profile deleted successfully");
+          setGreenAlertMessage('Profile deleted successfully');
           localStorage.clear();
-          window.location.href = "/login";
+          window.location.href = '/login';
         })
-        .catch(error => {
-          setRedAlertMessage("Error: " + error);
+        .catch((error) => {
+          setRedAlertMessage('Error: ' + error);
         });
     }
-  }
+  };
 
   return (
     <div className="sign-in__wrapper">
@@ -104,11 +103,11 @@ const UserProfile = ({ user, setRedAlertMessage, setGreenAlertMessage }) => {
         </Form.Group>
         <Button className="w-100" variant="primary" type="submit">
           Edit Profile
-        </Button> &nbsp;
+        </Button>{' '}
+        &nbsp;
         <Button className="w-100" variant="danger" onClick={deleteUserProfile}>
           Delete Profile
         </Button>
-
       </Form>
     </div>
   );

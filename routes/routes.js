@@ -1,7 +1,7 @@
 const express = require('express');
 const Model = require('../models/Model');
 const Config = require('../models/Config');
-const utility = require('./../utils/utility')
+const utility = require('./../utils/utility');
 const multer = require('multer');
 const path = require('path');
 const itemUtility = require('../utils/itemUtility');
@@ -9,13 +9,12 @@ const authUtility = require('../utils/authUtility');
 const { body, validationResult } = require('express-validator');
 const verifyToken = require('../middleware/authMiddleware');
 
-
-const router = express.Router()
+const router = express.Router();
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const destination = file.fieldname === 'file' ? 'uploads/' : 'uploads/images/';
-    cb(null, destination)
+    cb(null, destination);
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname);
@@ -42,7 +41,7 @@ router.get('/health', (req, res) => {
     uptime: process.uptime(),
     message: 'Ok',
     date: new Date()
-  }
+  };
   res.status(200).send(data);
 });
 
@@ -90,12 +89,20 @@ router.get('/items', async (req, res) => {
     const search = req.query.search || '';
     let sort = req.query.sort || 'modified';
     let type = req.query.type || '';
-    const itemOptions = ['asset', 'profile', 'recording', 'webpanel', 'video', 'config', 'package'];
+    const itemOptions = [
+      'asset',
+      'profile',
+      'recording',
+      'webpanel',
+      'video',
+      'config',
+      'package'
+    ];
     const username = req.query.username || '';
 
-    type === 'all' ? (type = [...itemOptions]) : (type = req.query.type.split(","));
+    type === 'all' ? (type = [...itemOptions]) : (type = req.query.type.split(','));
 
-    req.query.sort ? (sort = req.query.sort.split(",")) : (sort = [sort]);
+    req.query.sort ? (sort = req.query.sort.split(',')) : (sort = [sort]);
 
     let sortBy = {};
     if (sort[1]) {
@@ -112,7 +119,7 @@ router.get('/items', async (req, res) => {
             { description: { $regex: search, $options: 'i' } },
             { 'author.name': { $regex: search, $options: 'i' } },
             { license: { $regex: search, $options: 'i' } },
-            { type: { $regex: search, $options: 'i' } },
+            { type: { $regex: search, $options: 'i' } }
           ]
         },
         { type: { $in: type } }
@@ -120,10 +127,7 @@ router.get('/items', async (req, res) => {
     };
 
     let queryForToal = {
-      $and: [
-        { name: { $regex: search, $options: 'i' } },
-        { type: { $in: type } },
-      ],
+      $and: [{ name: { $regex: search, $options: 'i' } }, { type: { $in: type } }]
     };
 
     if (username !== '') {
@@ -145,14 +149,14 @@ router.get('/items', async (req, res) => {
       page: page + 1,
       limit: limit,
       types: itemOptions,
-      items: items,
+      items: items
     };
     res.status(200).json(response);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
-})
+});
 
 /**
  * @swagger
@@ -183,7 +187,7 @@ router.get('/getItem/:id', async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-})
+});
 
 /**
  * @swagger
@@ -211,12 +215,12 @@ router.get('/getUserItems/:username', verifyToken, async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-})
+});
 
 //Update by ID Method
 router.patch('/update/:id', (req, res) => {
-  res.send('Update by ID API')
-})
+  res.send('Update by ID API');
+});
 
 /**
  * @swagger
@@ -248,17 +252,16 @@ router.post('/addItem', async (req, res) => {
     image: req.body.image,
     archives: req.body.archives,
     created: utility.getFormattedDate(new Date()),
-    modified: utility.getFormattedDate(new Date()),
-  })
+    modified: utility.getFormattedDate(new Date())
+  });
 
   try {
     const dataToSave = await data.save();
-    res.status(200).json(dataToSave)
+    res.status(200).json(dataToSave);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
-  catch (error) {
-    res.status(400).json({ message: error.message })
-  }
-})
+});
 
 /**
  * @swagger
@@ -282,33 +285,47 @@ router.post('/addItem', async (req, res) => {
  *          500:
  *              description: Internal server error.
  */
-router.post('/upload', verifyToken, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'file', maxCount: 1 }]), async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    const user = await authUtility.getUserInfo(req.user);
-    if (req.body && req.body.video && req.body.video !== '') {
+router.post(
+  '/upload',
+  verifyToken,
+  upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'file', maxCount: 1 }
+  ]),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      const user = await authUtility.getUserInfo(req.user);
+      if (req.body && req.body.video && req.body.video !== '') {
+        await itemUtility.validateInputFields(req.body);
+        const data = await itemUtility.uploadVideo(req, user);
+        const message = 'Uploaded successfully on server';
+        return res.status(200).json({ message: message, data: data });
+      }
+
+      if (
+        !req.files ||
+        (!req.files['image'] && !req.body.itemType === 'config') ||
+        !req.files['file']
+      ) {
+        return res
+          .status(400)
+          .json({ error: 'Both image and hub-item file are required' });
+      }
+
       await itemUtility.validateInputFields(req.body);
-      const data = await itemUtility.uploadVideo(req, user);
-      const message = "Uploaded successfully on server";
-      return res.status(200).json({ message: message, data: data });
+      let data = await itemUtility.uploadItem(req, user);
+      const message = 'Uploaded successfully on server';
+      res.status(200).json({ message: message, data: data });
+    } catch (error) {
+      console.log(`Error: ${error.message}`);
+      res.status(400).json({ error: error.message });
     }
-
-    if (!req.files || (!req.files['image'] && !req.body.itemType === 'config') || !req.files['file']) {
-      return res.status(400).json({ error: 'Both image and hub-item file are required' });
-    }
-
-    await itemUtility.validateInputFields(req.body);
-    let data = await itemUtility.uploadItem(req, user);
-    const message = "Uploaded successfully on server";
-    res.status(200).json({ message: message, data: data });
-  } catch (error) {
-    console.log(`Error: ${error.message}`);
-    res.status(400).json({ error: error.message });
   }
-})
+);
 
 /**
  * @swagger
@@ -340,7 +357,7 @@ router.get('/validateItemName/:name', verifyToken, async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-})
+});
 
 /**
  * @swagger
@@ -361,33 +378,43 @@ router.get('/validateItemName/:name', verifyToken, async (req, res) => {
  *          500:
  *              description: Internal server error.
  */
-router.put('/updateItem/:id', verifyToken, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'file', maxCount: 1 }]), async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    const user = await authUtility.getUserInfo(req.user);
+router.put(
+  '/updateItem/:id',
+  verifyToken,
+  upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'file', maxCount: 1 }
+  ]),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      const user = await authUtility.getUserInfo(req.user);
 
-    let item = await Model.findById(req.params.id);
-    if (req.files && req.files['file']) {
-      item = await itemUtility.uploadItem(req, user, true);
-    }
+      let item = await Model.findById(req.params.id);
+      if (req.files && req.files['file']) {
+        item = await itemUtility.uploadItem(req, user, true);
+      }
 
-    if (req.files && req.files['image']) {
-      item = await itemUtility.updateImage(req, user);
-    }
+      if (req.files && req.files['image']) {
+        item = await itemUtility.updateImage(req, user);
+      }
 
-    item = await Model.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
-    if (!item) {
-      return res.status(404).json({ message: 'Item not found' });
+      item = await Model.findOneAndUpdate({ _id: req.params.id }, req.body, {
+        new: true
+      });
+      if (!item) {
+        return res.status(404).json({ message: 'Item not found' });
+      }
+      const message = 'Uploaded successfully on server';
+      res.status(200).json({ message: message, item: item });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
-    const message = "Uploaded successfully on server";
-    res.status(200).json({ message: message, item: item });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
   }
-})
+);
 
 /**
  * @swagger
@@ -418,7 +445,7 @@ router.delete('/deleteItem/:id', verifyToken, async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-})
+});
 
 /**
  * @swagger
@@ -438,14 +465,13 @@ router.get('/config', async (req, res) => {
     const response = {
       error: false,
       message: 'Configs fetched successfully',
-      config,
+      config
     };
     res.status(200).json(response);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-})
-
+});
 
 router.post('/config', async (req, res) => {
   const data = new Config();
@@ -455,9 +481,8 @@ router.post('/config', async (req, res) => {
       return res.status(400).json({ message: 'Config already exists' });
     }
     const dataToSave = await data.save();
-    res.status(200).json(dataToSave)
-  }
-  catch (error) {
-    res.status(400).json({ message: error.message })
+    res.status(200).json(dataToSave);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 });

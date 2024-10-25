@@ -12,7 +12,7 @@ root.render(
     {/* StrictMode is a development tool that helps identify issues in an application. 
     The components will re-render an extra time to find bugs caused by impure rendering */}
     {/* <React.StrictMode>  */}
-      <App />
+    <App />
     {/* </React.StrictMode> */}
   </GoogleOAuthProvider>
 );

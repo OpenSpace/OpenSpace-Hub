@@ -6,19 +6,19 @@ import AlertMessages from './AlertMessages';
 
 const Functions = () => {
   const [isConnected, setIsConnected] = useState(false);
-  const connectToOpenSpace = async() => {
+  const connectToOpenSpace = async () => {
     // setup the api params
-    const host = "127.0.0.1";
+    const host = '127.0.0.1';
     const api = openspaceApi(host, 4682);
     var retry = 0;
     // notify users on disconnect
     api.onDisconnect(() => {
       if (retry < 2) {
-        console.log("count: ", retry);
+        console.log('count: ', retry);
         api.connect();
         retry++;
       } else {
-        alert("Connection Error! Please start OpenSpace software and try again.");
+        alert('Connection Error! Please start OpenSpace software and try again.');
         setIsConnected(false);
         window.openspace = null;
       }
@@ -29,10 +29,10 @@ const Functions = () => {
       window.openspace = await api.library();
       setIsConnected(true);
       retry = 0;
-    })
+    });
     // connect
     api.connect();
-  }
+  };
 
   useEffect(() => {
     // connectToOpenSpace();
@@ -40,20 +40,21 @@ const Functions = () => {
 
   return (
     <>
-      {isConnected ?
-        (
-          <div>
-            <Button disable variant="success">Connected</Button>{' '}
-          </div>
-        ) :
-        (
-          <div>
-            <Button onClick={connectToOpenSpace} variant="danger">Click here to Connect</Button>{' '}
-          </div>
-        )
-      }
+      {isConnected ? (
+        <div>
+          <Button disable variant="success">
+            Connected
+          </Button>{' '}
+        </div>
+      ) : (
+        <div>
+          <Button onClick={connectToOpenSpace} variant="danger">
+            Click here to Connect
+          </Button>{' '}
+        </div>
+      )}
     </>
   );
-}
+};
 
 export default Functions;

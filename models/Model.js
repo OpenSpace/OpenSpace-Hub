@@ -5,17 +5,17 @@ const authorSchema = new mongoose.Schema({
   name: String,
   username: String,
   link: String,
-  institution: String,
+  institution: String
 });
 
 const versionSchema = new mongoose.Schema({
   version: String,
-  url: String,
+  url: String
 });
 
 const archiveSchema = new mongoose.Schema({
   version: String,
-  url: String,
+  url: String
 });
 
 const itemSchema = new mongoose.Schema({
@@ -65,7 +65,7 @@ const itemSchema = new mongoose.Schema({
     required: true
   },
   favorites: {
-    type: [ObjectId],
+    type: [ObjectId]
     // required: true
   },
   required: {
@@ -73,4 +73,4 @@ const itemSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('hubitems', itemSchema)
+module.exports = mongoose.model('hubitems', itemSchema);
