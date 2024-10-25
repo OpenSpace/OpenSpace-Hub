@@ -3,10 +3,9 @@ const Model = require('../models/Model');
 const Config = require('../models/Config');
 const utility = require('./../utils/utility');
 const multer = require('multer');
-const path = require('path');
 const itemUtility = require('../utils/itemUtility');
 const authUtility = require('../utils/authUtility');
-const { body, validationResult } = require('express-validator');
+const { validationResult } = require('express-validator');
 const verifyToken = require('../middleware/authMiddleware');
 
 const router = express.Router();

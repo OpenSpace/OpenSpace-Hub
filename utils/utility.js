@@ -1,5 +1,3 @@
-const fs = require('fs');
-const unzipper = require('unzipper');
 const moment = require('moment');
 
 exports.getFormattedDate = (date) => {

@@ -1,4 +1,3 @@
-const { ObjectId } = require('mongodb');
 const mongoose = require('mongoose');
 
 const configSchema = new mongoose.Schema({

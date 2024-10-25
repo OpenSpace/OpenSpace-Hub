@@ -4,7 +4,6 @@ import { Button } from 'react-bootstrap';
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
 import APIService from './APIService';
-import AlertMessages from './AlertMessages';
 
 const UploadItem = ({ config }) => {
   const [showModal, setShowModal] = useState();

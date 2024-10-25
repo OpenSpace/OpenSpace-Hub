@@ -7,7 +7,6 @@ import APIService from './APIService';
 import { Form } from 'react-bootstrap';
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
-import AlertMessages from './AlertMessages';
 
 function ItemList({
   user,

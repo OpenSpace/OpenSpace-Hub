@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import './../css/login.css';
-import { useLinkedIn } from 'react-linkedin-login-oauth2';
 import APIService from './APIService';
 
 //Firebase auth
