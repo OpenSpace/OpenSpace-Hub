@@ -26,14 +26,14 @@ module.exports = router;
 /**
  * @swagger
  * /api/health:
- *  get:
- *      summary: Health Check
- *      description: Check if server is up.
- *      responses:
- *          200:
- *              description: Successful response with data.
- *          500:
- *              description: Internal server error.
+ *   get:
+ *     summary: Health Check
+ *     description: Check if server is up.
+ *     responses:
+ *       200:
+ *         description: Successful response with data.
+ *       500:
+ *         description: Internal server error.
  */
 router.get('/health', (req, res) => {
   const data = {
@@ -47,39 +47,39 @@ router.get('/health', (req, res) => {
 /**
  * @swagger
  * /api/items:
- *  get:
- *      summary: Get items.
- *      description: Retrieve the items from the database.
- *      parameters:
- *          - in : query
- *            name : page
- *            required : false
- *            description: Page number
- *          - in : query
- *            name : limit
- *            required : false
- *            description: Number of items per page
- *          - in : query
- *            name : search
- *            required : false
- *            description: Search string
- *          - in : query
- *            name : sort
- *            required : false
- *            description: Sort by field
- *          - in : query
- *            name : itemType
- *            required : false
- *            description: Type of the item
- *      responses:
- *          200:
- *              description: Successful response with data.
- *          500:
- *              description: Internal server error.
- *          404:
- *              description: Item not found
- *          401:
- *              description: Unauthorized request
+ *   get:
+ *     summary: Get items.
+ *     description: Retrieve the items from the database.
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         description: Number of items per page
+ *       - in: query
+ *         name: search
+ *         required: false
+ *         description: Search string
+ *       - in: query
+ *         name: sort
+ *         required: false
+ *         description: Sort by field
+ *       - in: query
+ *         name: itemType
+ *         required : false
+ *         description: Type of the item
+ *     responses:
+ *       200:
+ *         description: Successful response with data.
+ *       401:
+ *         description: Unauthorized request.
+ *       404:
+ *         description: Item not found.
+ *       500:
+ *         description: Internal server error.
  */
 router.get('/items', async (req, res) => {
   try {
@@ -99,9 +99,19 @@ router.get('/items', async (req, res) => {
     ];
     const username = req.query.username || '';
 
-    type === 'all' ? (type = [...itemOptions]) : (type = req.query.type.split(','));
+    if (type === 'all') {
+      type = [...itemOptions];
+    }
+    else {
+      type = req.query.type.split(',');
+    }
 
-    req.query.sort ? (sort = req.query.sort.split(',')) : (sort = [sort]);
+    if (req.query.sort) {
+      sort = req.query.sort.split(',');
+    }
+    else {
+      sort = [sort];
+    }
 
     let sortBy = {};
     if (sort[1]) {
@@ -160,21 +170,21 @@ router.get('/items', async (req, res) => {
 /**
  * @swagger
  * /api/getItem/{id}:
- *  get:
- *      summary: Get item by id.
- *      description: Retrieve the item using id from the database.
- *      parameters:
- *          - in : path
- *            name : itemId
- *            required : true
- *            description: ID of the item to get
- *      responses:
- *          200:
- *              description: Successful response with data.
- *          404:
- *              description: Item not found
- *          500:
- *              description: Internal server error.
+ *   get:
+ *     summary: Get item by id.
+ *     description: Retrieve the item using id from the database.
+ *     parameters:
+ *       - in: path
+ *         name: itemId
+ *         required: true
+ *         description: ID of the item to get
+ *     responses:
+ *       200:
+ *         description: Successful response with data.
+ *       404:
+ *         description: Item not found.
+ *       500:
+ *         description: Internal server error.
  */
 router.get('/getItem/:id', async (req, res) => {
   try {
@@ -191,21 +201,21 @@ router.get('/getItem/:id', async (req, res) => {
 /**
  * @swagger
  * /api/getUserItems/{username}:
- *  get:
- *      summary: Get user items.
- *      description: Retrieve the items using username from the database.
- *      parameters:
- *          - in : path
- *            name : username
- *            required : true
- *            description: Username of the user to get items
- *      responses:
- *          200:
- *              description: Successful response with data.
- *          404:
- *              description: Item not found
- *          500:
- *              description: Internal server error.
+ *   get:
+ *     summary: Get user items.
+ *     description: Retrieve the items using username from the database.
+ *     parameters:
+ *       - in: path
+ *         name: username
+ *         required: true
+ *         description: Username of the user to get items
+ *     responses:
+ *       200:
+ *         description: Successful response with data.
+ *       404:
+ *         description: Item not found.
+ *       500:
+ *         description: Internal server error.
  */
 router.get('/getUserItems/:username', verifyToken, async (req, res) => {
   try {
@@ -216,7 +226,7 @@ router.get('/getUserItems/:username', verifyToken, async (req, res) => {
   }
 });
 
-//Update by ID Method
+// Update by ID Method
 router.patch('/update/:id', (req, res) => {
   res.send('Update by ID API');
 });
@@ -224,16 +234,16 @@ router.patch('/update/:id', (req, res) => {
 /**
  * @swagger
  * /api/addItem:
- *  post:
- *      summary: Add a new item.
- *      description: Add a new hub item.
- *      responses:
- *          200:
- *              description: Successful response with data.
- *          404:
- *              description: Item not found
- *          500:
- *              description: Internal server error.
+ *   post:
+ *     summary: Add a new item.
+ *     description: Add a new hub item.
+ *     responses:
+ *       200:
+ *         description: Successful response with data.
+ *       404:
+ *         description: Item not found.
+ *       500:
+ *         description: Internal server error.
  */
 router.post('/addItem', async (req, res) => {
   const errors = validationResult(req);
@@ -265,24 +275,23 @@ router.post('/addItem', async (req, res) => {
 /**
  * @swagger
  * /api/upload:
- *  post:
- *      summary: Upload an item.
- *      consumes:
- *         - multipart/form-data
- *      parameters:
- *        - in: formData
- *          name: file
- *          required: true
- *          type: file
- *
- *      description: Upload an item to the database.
- *      responses:
- *          200:
- *              description: Successful response with data.
- *          400:
- *              description: Bad request.
- *          500:
- *              description: Internal server error.
+ *   post:
+ *     summary: Upload an item.
+ *     consumes:
+ *       - multipart/form-data
+ *     parameters:
+ *       - in: formData
+ *         name: file
+ *         required: true
+ *         type: file
+ *     description: Upload an item to the database.
+ *     responses:
+ *       200:
+ *         description: Successful response with data.
+ *       400:
+ *         description: Bad request.
+ *       500:
+ *         description: Internal server error.
  */
 router.post(
   '/upload',
@@ -329,21 +338,21 @@ router.post(
 /**
  * @swagger
  * /api/validateItemName/{name}:
- *  get:
- *      summary: Validate item name.
- *      description: Validate the item name from the database.
- *      parameters:
- *          - in : path
- *            name : name
- *            required : true
- *            description: Name of the item to validate
- *      responses:
- *          200:
- *              description: Successful response with data.
- *          400:
- *              description: Item name already exists
- *          500:
- *              description: Internal server error.
+ *   get:
+ *     summary: Validate item name.
+ *     description: Validate the item name from the database.
+ *     parameters:
+ *       - in: path
+ *         name: name
+ *         required: true
+ *         description: Name of the item to validate
+ *     responses:
+ *       200:
+ *         description: Successful response with data.
+ *       400:
+ *         description: Item name already exists.
+ *       500:
+ *         description: Internal server error.
  */
 router.get('/validateItemName/:name', verifyToken, async (req, res) => {
   try {
@@ -361,21 +370,21 @@ router.get('/validateItemName/:name', verifyToken, async (req, res) => {
 /**
  * @swagger
  * /api/updateItem/{id}:
- *  put:
- *      summary: Update item by id.
- *      description: Update the item using id from the database.
- *      parameters:
- *          - in : path
- *            name : itemId
- *            required : true
- *            description: ID of the item to update
- *      responses:
- *          200:
- *              description: Successful response with data.
- *          404:
- *              description: Item not found
- *          500:
- *              description: Internal server error.
+ *   put:
+ *     summary: Update item by id.
+ *     description: Update the item using id from the database.
+ *     parameters:
+ *       - in: path
+ *         name: itemId
+ *         required: true
+ *         description: ID of the item to update
+ *     responses:
+ *       200:
+ *         description: Successful response with data.
+ *       404:
+ *         description: Item not found.
+ *       500:
+ *         description: Internal server error.
  */
 router.put(
   '/updateItem/:id',
@@ -418,21 +427,21 @@ router.put(
 /**
  * @swagger
  * /api/deleteItem/{id}:
- *  delete:
- *      summary: Delete item by id.
- *      description: Delete the item using id from the database.
- *      parameters:
- *          - in : path
- *            name : itemId
- *            required : true
- *            description: ID of the item to delete
- *      responses:
- *          200:
- *              description: Successful response with data.
- *          404:
- *              description: Item not found
- *          500:
- *              description: Internal server error.
+ *   delete:
+ *     summary: Delete item by id.
+ *     description: Delete the item using id from the database.
+ *     parameters:
+ *       - in: path
+ *         name: itemId
+ *         required: true
+ *         description: ID of the item to delete
+ *     responses:
+ *       200:
+ *         description: Successful response with data.
+ *       404:
+ *         description: Item not found.
+ *       500:
+ *         description: Internal server error.
  */
 router.delete('/deleteItem/:id', verifyToken, async (req, res) => {
   try {
@@ -449,14 +458,14 @@ router.delete('/deleteItem/:id', verifyToken, async (req, res) => {
 /**
  * @swagger
  * /api/config:
- *  get:
- *      summary: Get configs.
- *      description: Retrieve the configs from the database.
- *      responses:
- *          200:
- *              description: Successful response with data.
- *          500:
- *              description: Internal server error.
+ *   get:
+ *     summary: Get configs.
+ *     description: Retrieve the configs from the database.
+ *     responses:
+ *       200:
+ *         description: Successful response with data.
+ *       500:
+ *         description: Internal server error.
  */
 router.get('/config', async (req, res) => {
   try {
