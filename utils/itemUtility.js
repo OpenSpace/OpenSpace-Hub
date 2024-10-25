@@ -136,7 +136,9 @@ checkZipFile = async (type, file, dir) => {
     fs.renameSync(file.path, `${dir}/${file.originalname}`);
     return Promise.resolve();
   }
-  if (file.mimetype === 'application/zip') {
+  if (file.mimetype === 'application/zip' ||
+      file.mimetype === "application/x-zip-compressed")
+  {
     originalItemname = file.originalname.split('.')[0];
     await new Promise((resolve, reject) => {
       fs.createReadStream(file.path)
