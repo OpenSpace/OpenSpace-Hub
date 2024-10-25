@@ -42,8 +42,9 @@ function createAuthor(user) {
 exports.isValidFileType = (type, file) => {
   const fileName = file.originalname;
   const fileExtension = fileName.split('.').pop();
-  badType = false;
-  messageType = '';
+
+  let badType = false;
+  let messageType = '';
   switch (type) {
     case 'profile': {
       if (fileExtension !== 'profile') {
@@ -89,7 +90,7 @@ exports.isValidFileType = (type, file) => {
   }
   if (badType) {
     unlinkUploadedfile(file);
-    throw new Error('Invalid file type. Please upload a ' + messageType + ' file.');
+    throw new Error(`Invalid file type. Please upload a ${messageType} file.`);
   }
 };
 
@@ -403,11 +404,11 @@ exports.uploadVideo = async (req, user) => {
   const author = createAuthor(user);
 
   const currentVersion = {
-    version: `1`,
+    version: '1',
     url: req.body.video
   };
 
-  let defaultImage = `video-default.jpg`;
+  let defaultImage = 'video-default.jpg';
   let imagePath = path.relative('uploads', defaultImage);
 
   const existingItem = await Model.findOne({
@@ -451,7 +452,7 @@ exports.updateVideo = async (req, user) => {
   }
 
   const currentVersion = {
-    version: `1`,
+    version: '1',
     url: req.body.video
   };
 

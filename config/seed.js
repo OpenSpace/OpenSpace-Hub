@@ -12,7 +12,7 @@ const seed = async () => {
     });
     console.log(`mongodb connected: ${seeder.connection.host}`);
     const collections = seeder.readCollectionsFromPath(
-      path.resolve(__dirname + '/../data')
+      path.resolve(`${__dirname}/../data`)
     );
     await seeder.import(collections);
 

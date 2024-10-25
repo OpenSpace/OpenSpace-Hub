@@ -11,25 +11,25 @@ const verifyToken = require('../middleware/authMiddleware');
  * @swagger
  * /auth/deleteUser/{username}:
  *  delete:
- *      summary: Deletes a user
- *      description: Delete a user
- *      consumes:
- *          - application/json
- *      parameters:
- *          - in: path
- *            name: username
- *            description: The username to delete.
- *            schema:
- *              type: string
- *            required:
- *              - username
- *      responses:
- *          200:
- *              description: User deleted successfully.
- *          401:
- *              description: Unauthorized request.
- *          500:
- *              description: Internal server error.
+ *    summary: Deletes a user
+ *    description: Delete a user
+ *    consumes:
+ *      - application/json
+ *    parameters:
+ *      - in: path
+ *        name: username
+ *        description: The username to delete.
+ *        schema:
+ *          type: string
+ *        required:
+ *          - username
+ *    responses:
+ *      200:
+ *        description: User deleted successfully.
+ *      401:
+ *        description: Unauthorized request.
+ *      500:
+ *        description: Internal server error.
  */
 router.delete('/deleteUser/:username', verifyToken, async (req, res) => {
   try {
@@ -50,26 +50,26 @@ router.delete('/deleteUser/:username', verifyToken, async (req, res) => {
  * @swagger
  * /auth/social-media-register:
  *  post:
- *      summary: Creates a new user
- *      description: Register a new user
- *      consumes:
- *          - application/json
- *      parameters:
- *          - in: body
- *            name: user
- *            description: The user to create.
- *            schema:
- *              type: object
- *            required:
- *              - email
- *            properties:
- *              email:
- *                  type: string
- *      responses:
- *          201:
- *              description: User registered successfully.
- *          500:
- *              description: error message (User already exists / Password and confirm password do not match).
+ *    summary: Creates a new user
+ *    description: Register a new user
+ *    consumes:
+ *      - application/json
+ *    parameters:
+ *      - in: body
+ *        name: user
+ *        description: The user to create.
+ *        schema:
+ *          type: object
+ *        required:
+ *          - email
+ *        properties:
+ *          email:
+ *            type: string
+ *    responses:
+ *      201:
+ *        description: User registered successfully.
+ *      500:
+ *        description: error message (User already exists / Password and confirm password do not match).
  */
 router.post('/social-media-login', verifyToken, async (req, res) => {
   try {
@@ -113,13 +113,13 @@ router.post('/verify-token', verifyToken, async (req, res) => {
  * @swagger
  * /api/getUser:
  *  get:
- *      summary: Get User Info
- *      description: Retrieve user info.
- *      responses:
- *          200:
- *              description: Successful response with data.
- *          500:
- *              description: Internal server error.
+ *    summary: Get User Info
+ *    description: Retrieve user info.
+ *    responses:
+ *      200:
+ *        description: Successful response with data.
+ *      500:
+ *        description: Internal server error.
  */
 router.get('/getUser', verifyToken, async (req, res) => {
   try {
@@ -139,34 +139,34 @@ router.get('/getUser', verifyToken, async (req, res) => {
  * @swagger
  * /api/updateUser:
  *  put:
- *      summary: Update User Info
- *      description: Update user info.
- *      consumes:
- *          - application/json
- *      parameters:
- *          - in: body
- *            name: user
- *            description: The user to update.
- *            schema:
- *              type: object
- *            required:
- *              - name
- *              - email
- *              - institution
- *            properties:
- *              name:
- *                  type: string
- *              email:
- *                  type: string
- *              institution:
- *                  type: string
- *      responses:
- *          200:
- *              description: User updated successfully.
- *          401:
- *              description: Unauthorized request.
- *          500:
- *              description: Internal server error.
+ *    summary: Update User Info
+ *    description: Update user info.
+ *    consumes:
+ *      - application/json
+ *    parameters:
+ *      - in: body
+ *        name: user
+ *        description: The user to update.
+ *        schema:
+ *          type: object
+ *        required:
+ *          - name
+ *          - email
+ *          - institution
+ *        properties:
+ *          name:
+ *              type: string
+ *          email:
+ *              type: string
+ *          institution:
+ *              type: string
+ *    responses:
+ *      200:
+ *        description: User updated successfully.
+ *      401:
+ *        description: Unauthorized request.
+ *      500:
+ *        description: Internal server error.
  */
 router.put('/updateUser/:username', verifyToken, async (req, res) => {
   try {

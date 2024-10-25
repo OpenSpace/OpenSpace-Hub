@@ -10,7 +10,6 @@ services:
       - "9000:9000"
     environment:
       - MONGODB_URL=mongodb://mongo:27017/openspacehub  # Connection URI to MongoDB, mongo is the name of service
-      - SECRET_KEY=secret-key # Secret key for JWT token
       - PORT=9000 # Port on which the server will run
     depends_on:
       - mongo
