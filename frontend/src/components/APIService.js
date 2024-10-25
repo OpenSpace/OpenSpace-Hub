@@ -143,32 +143,34 @@ export default class APIService {
   }
 
   static SendImportToOpenSpaceCommand = async (url, type) => {
-    var openspace = window.openspace;
+    let openspace = window.openspace;
     if (!openspace) {
       console.log('Connect to OpenSpace first!!');
       return;
     }
-    var fileName = url.substr(url.lastIndexOf('/') + 1);
+    let fileName = url.substr(url.lastIndexOf('/') + 1);
     url = window.location + url;
     switch (type) {
       case 'asset':
-        var noextension = fileName.substr(0, fileName.indexOf('.'));
-        var absPath = await openspace.absPath('${TEMPORARY}/' + fileName);
-        var pathString = '${USER_ASSETS}/' + noextension + '/';
-        var scenePath = await openspace.absPath(pathString);
+        let noextension = fileName.substr(0, fileName.indexOf('.'));
+        let absPath = await openspace.absPath('${TEMPORARY}/' + fileName);
+        let pathString = '${USER_ASSETS}/' + noextension + '/';
+        let scenePath = await openspace.absPath(pathString);
         await openspace.downloadFile(url, absPath['1'], true);
         await openspace.unzipFile(absPath['1'], scenePath['1'], true);
         await openspace.asset.add(scenePath['1'] + noextension);
         await openspace.setPropertyValueSingle('Modules.CefWebGui.Reload', null);
         break;
-      case 'profile':
-        var absPath = await openspace.absPath('${USER_PROFILES}/' + fileName);
+      case 'profile': {
+        let absPath = await openspace.absPath('${USER_PROFILES}/' + fileName);
         await openspace.downloadFile(url, absPath['1'], true);
         break;
-      case 'recording':
-        var absPath = await openspace.absPath('${RECORDINGS}/' + fileName);
+      }
+      case 'recording': {
+        let absPath = await openspace.absPath('${RECORDINGS}/' + fileName);
         await openspace.downloadFile(url, absPath['1'], true);
         break;
+      }
       default:
         console.log('nothing to do');
         break;

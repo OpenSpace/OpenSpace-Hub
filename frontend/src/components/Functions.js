@@ -10,7 +10,7 @@ const Functions = () => {
     // setup the api params
     const host = '127.0.0.1';
     const api = openspaceApi(host, 4682);
-    var retry = 0;
+    let retry = 0;
     // notify users on disconnect
     api.onDisconnect(() => {
       if (retry < 2) {

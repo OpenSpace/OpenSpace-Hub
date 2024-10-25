@@ -129,7 +129,7 @@ function ItemList({
 
   const sendImportToOpenSpace = (url, type) => {
     return async () => {
-      var openspace = window.openspace;
+      let openspace = window.openspace;
       if (!openspace) {
         setRedAlertMessage('Connect to OpenSpace first!!');
         return;
