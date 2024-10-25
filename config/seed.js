@@ -1,5 +1,6 @@
 const dotenv = require('dotenv');
 const { Seeder } = require('mongo-seeding');
+
 dotenv.config();
 const MONGODB_URL = process.env.MONGODB_URL;
 
@@ -11,9 +12,7 @@ const seed = async () => {
       dropDatabase: true
     });
     console.log(`mongodb connected: ${seeder.connection.host}`);
-    const collections = seeder.readCollectionsFromPath(
-      path.resolve(`${__dirname}/../data`)
-    );
+    const collections = seeder.readCollectionsFromPath(path.resolve('../data'));
     await seeder.import(collections);
 
     console.log('data imported successfully');
