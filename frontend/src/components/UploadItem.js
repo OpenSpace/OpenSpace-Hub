@@ -120,9 +120,6 @@ const UploadItem = ({ config }) => {
           }
           setShowSuccess(true);
           setSuccess(resp.message);
-          // alert(resp.message);
-          // handleClose();
-          // redirectToHome();
         })
         .catch((err) => {
           setShowError(true);
@@ -174,10 +171,6 @@ const UploadItem = ({ config }) => {
         return;
       }
     }
-  };
-
-  const redirectToHome = () => {
-    //window.location.href = '/';
   };
 
   return (
@@ -400,18 +393,16 @@ const UploadItem = ({ config }) => {
               }}
             >
               <h6>Terms and Conditions</h6>
-              <p>1. You are solely responsible for the content you upload.</p>
-              <p>2. Items can be modified or removed by administrators.</p>
-              <p>3. Ensure all content is original or you have permission to upload.</p>
-              <p>4. Do not upload offensive or illegal content.</p>
-              <p>
-                5. By uploading, you grant us the right to use, modify, and distribute
-                your content.
-              </p>
-              <p>
-                6. These terms may change at any time, and continued use implies
-                acceptance.
-              </p>
+              <ol>
+                <li>You are solely responsible for the content you upload.</li>
+                <li>Items can be modified or removed by administrators.</li>
+                <li>Ensure all content is original or you have permission to upload.</li>
+                <li>Do not upload offensive or illegal content.</li>
+                <li>By uploading, you grant us the right to use, modify, and distribute
+                your content.</li>
+                <li>These terms may change at any time, and continued use implies
+                acceptance.</li>
+              </ol>
             </div>
           </div>
         </Modal.Body>

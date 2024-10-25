@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import './../css/login.css';
 import APIService from './APIService';
-import { deleteUser, signOut } from 'firebase/auth';
+import { deleteUser } from 'firebase/auth';
 import { auth } from '../firebase';
 
 const UserProfile = ({ user, setRedAlertMessage, setGreenAlertMessage }) => {
@@ -21,7 +21,7 @@ const UserProfile = ({ user, setRedAlertMessage, setGreenAlertMessage }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     let text = 'Do you want to save the changes?';
-    if (window.confirm(text) == true) {
+    if (window.confirm(text) === true) {
       await APIService.UpdateUser(user.username, name, email, institution)
         .then((resp) => {
           if (resp.error) {
@@ -38,7 +38,7 @@ const UserProfile = ({ user, setRedAlertMessage, setGreenAlertMessage }) => {
   const deleteUserProfile = async () => {
     let text =
       'Do you want to delete your profile? All your hub items and user data will be lost.';
-    if (window.confirm(text) == true) {
+    if (window.confirm(text) === true) {
       await APIService.DeleteUser(user.username)
         .then((resp) => {
           if (resp.error) {

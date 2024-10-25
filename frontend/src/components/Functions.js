@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import openspaceApi from 'openspace-api-js';
-import AlertMessages from './AlertMessages';
 
 const Functions = () => {
   const [isConnected, setIsConnected] = useState(false);
@@ -24,7 +23,7 @@ const Functions = () => {
       }
     });
 
-    //notify users and map buttons when connected
+    // notify users and map buttons when connected
     api.onConnect(async () => {
       window.openspace = await api.library();
       setIsConnected(true);
@@ -33,10 +32,6 @@ const Functions = () => {
     // connect
     api.connect();
   };
-
-  useEffect(() => {
-    // connectToOpenSpace();
-  });
 
   return (
     <>

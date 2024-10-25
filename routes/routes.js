@@ -101,15 +101,13 @@ router.get('/items', async (req, res) => {
 
     if (type === 'all') {
       type = [...itemOptions];
-    }
-    else {
+    } else {
       type = req.query.type.split(',');
     }
 
     if (req.query.sort) {
       sort = req.query.sort.split(',');
-    }
-    else {
+    } else {
       sort = [sort];
     }
 

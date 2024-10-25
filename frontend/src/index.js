@@ -9,7 +9,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
-    {/* StrictMode is a development tool that helps identify issues in an application. 
+    {/* StrictMode is a development tool that helps identify issues in an application.
     The components will re-render an extra time to find bugs caused by impure rendering */}
     {/* <React.StrictMode>  */}
     <App />

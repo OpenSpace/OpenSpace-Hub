@@ -27,10 +27,6 @@ function App() {
   const [redAlertMessage, setRedAlertMessage] = useState('');
   const [greenAlertMessage, setGreenAlertMessage] = useState('');
 
-  const redirectToSignin = () => {
-    window.location.href = '/signin';
-  };
-
   useEffect(() => {
     const isloggedin = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -59,7 +55,7 @@ function App() {
         setConfig(res);
       })
       .catch((err) => {
-        console.log('Error: ' + err);
+        console.log(`Error: ${err}`);
       });
   }, []);
 

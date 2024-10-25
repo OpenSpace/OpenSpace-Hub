@@ -48,7 +48,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Handles any requests that don't match the ones above
 app.get('*', (req, res) => {
-  res.sendFile('/frontend/build/index.html');
+  res.sendFile('frontend/build/index.html');
 });
 
 http.createServer({}, app).listen(PORT, () => {

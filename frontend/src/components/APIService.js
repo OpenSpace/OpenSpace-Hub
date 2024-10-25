@@ -33,7 +33,7 @@ export default class APIService {
   }
 
   static async GetConfig() {
-    const resp = await fetch(`/api/config`, {
+    const resp = await fetch('/api/config', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -54,7 +54,7 @@ export default class APIService {
   }
 
   static async VerifyToken(token) {
-    const resp = await fetch(`/auth/verify-token`, {
+    const resp = await fetch('/auth/verify-token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ export default class APIService {
   }
 
   static async SocialMediaLogin() {
-    const resp = await fetch(`/auth/social-media-login`, {
+    const resp = await fetch('/auth/social-media-login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -88,7 +88,7 @@ export default class APIService {
   }
 
   static async UploadItem(formData) {
-    const resp = await fetch(`/api/upload`, {
+    const resp = await fetch('/api/upload', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${auth.currentUser.accessToken}`
@@ -145,7 +145,7 @@ export default class APIService {
   static SendImportToOpenSpaceCommand = async (url, type) => {
     let openspace = window.openspace;
     if (!openspace) {
-      console.log('Connect to OpenSpace first!!');
+      console.log('Connect to OpenSpace first');
       return;
     }
     let fileName = url.substr(url.lastIndexOf('/') + 1);

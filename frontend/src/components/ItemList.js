@@ -24,8 +24,6 @@ function ItemList({
   const [showModal, setShowModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [tnCError, setTnCError] = useState('');
-  // const [redAlertMessage, setRedAlertMessage] = useState('');
-  // const [greenAlertMessage, setGreenAlertMessage] = useState('');
 
   const handleClose = () => {
     setShowModal(false);
@@ -50,7 +48,7 @@ function ItemList({
 
   const [openspaceVersions, setOpenspaceVersions] = useState([]);
   useEffect(() => {
-    if (config && config.config && config.config.versions) {
+    if (config?.config?.versions) {
       setOpenspaceVersions(config.config.versions);
     }
   }, [config]);
@@ -59,7 +57,6 @@ function ItemList({
     const delayDebounceFn = setTimeout(() => {
       loadItems();
     }, 300);
-
     return () => clearTimeout(delayDebounceFn);
   }, [currentPage, searchTerm]);
 
@@ -123,7 +120,7 @@ function ItemList({
       setGreenAlertMessage('Item deleted successfully');
     } catch (error) {
       console.log(error);
-      setRedAlertMessage('Error deleting item: ' + error.message);
+      setRedAlertMessage(`Error deleting item: ${error.message}`);
     }
   };
 
@@ -131,18 +128,15 @@ function ItemList({
     return async () => {
       let openspace = window.openspace;
       if (!openspace) {
-        setRedAlertMessage('Connect to OpenSpace first!!');
+        setRedAlertMessage('Connect to OpenSpace first');
         return;
       }
       try {
-        const resp = await APIService.SendImportToOpenSpaceCommand(url, type);
-        // if (resp.error) {
-        //     throw new Error(resp.error);
-        // }
+        await APIService.SendImportToOpenSpaceCommand(url, type);
         setGreenAlertMessage('Item imported successfully');
       } catch (error) {
         console.log(error);
-        setRedAlertMessage('Error importing item: ' + error.message);
+        setRedAlertMessage(`Error importing item: ${error.message}`);
       }
     };
   };
@@ -191,7 +185,7 @@ function ItemList({
           handleClose();
         })
         .catch((err) => {
-          setRedAlertMessage('Error updating item. ' + err.message);
+          setRedAlertMessage(`Error updating item. ${err.message}`);
           console.log(err);
         });
       return;

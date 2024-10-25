@@ -3,7 +3,7 @@ import { Form, Button, Alert } from 'react-bootstrap';
 import './../css/login.css';
 import APIService from './APIService';
 
-//Firebase auth
+// Firebase auth
 import {
   signInWithPopup,
   GoogleAuthProvider,
@@ -39,9 +39,7 @@ const SignIn = ({ config }) => {
     try {
       await signInWithPopup(auth, provider);
       await APIService.SocialMediaLogin()
-        .then((resp) => {
-          redirectToHome();
-        })
+        .then(() => redirectToHome())
         .catch((err) => console.log(err));
     } catch (error) {
       if (error.code === 'auth/account-exists-with-different-credential') {
@@ -91,7 +89,7 @@ const SignIn = ({ config }) => {
           style={{ width: '120px', height: 'auto' }}
         />
         <div className="h4 mb-2 text-center">Sign In</div>
-        {config && config.config.signin ? (
+        {config?.config?.signin ? (
           <>
             <Form.Group className="mb-2" controlId="formBasicCheckbox">
               <Form.Check
