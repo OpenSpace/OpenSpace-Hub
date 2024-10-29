@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import openspaceApi from 'openspace-api-js';
 
-const Functions = () => {
+function Functions() {
   const [isConnected, setIsConnected] = useState(false);
-  const connectToOpenSpace = async () => {
+  async function connectToOpenSpace() {
     // setup the api params
     const host = '127.0.0.1';
     const api = openspaceApi(host, 4682);
@@ -13,7 +13,6 @@ const Functions = () => {
     // notify users on disconnect
     api.onDisconnect(() => {
       if (retry < 2) {
-        console.log('count: ', retry);
         api.connect();
         retry++;
       } else {
@@ -25,31 +24,27 @@ const Functions = () => {
 
     // notify users and map buttons when connected
     api.onConnect(async () => {
-      window.openspace = await api.library();
+      window.openspace = await api.singleReturnLibrary();
       setIsConnected(true);
       retry = 0;
     });
     // connect
     api.connect();
-  };
+  }
 
   return (
     <>
       {isConnected ? (
-        <div>
-          <Button disable variant="success">
-            Connected
-          </Button>{' '}
-        </div>
+        <Button disable variant="success">
+          Connected asd
+        </Button>
       ) : (
-        <div>
-          <Button onClick={connectToOpenSpace} variant="danger">
-            Click here to Connect
-          </Button>{' '}
-        </div>
+        <Button onClick={connectToOpenSpace} variant="danger">
+          Connect to OpenSpace
+        </Button>
       )}
     </>
   );
-};
+}
 
 export default Functions;

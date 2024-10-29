@@ -4,7 +4,7 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 
-const Logout = () => {
+function Logout() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -18,7 +18,7 @@ const Logout = () => {
     return () => unsubscribe();
   }, []);
 
-  const logOut = () => {
+  function logOut() {
     console.log('Logging out', auth.currentUser);
     signOut(auth)
       .then(() => {
@@ -28,11 +28,13 @@ const Logout = () => {
       .catch((error) => {
         console.error(error);
       });
-  };
+  }
 
   const redirectToSignin = () => {
     window.location.href = '/signin';
   };
-};
+
+  return <></>;
+}
 
 export default Logout;

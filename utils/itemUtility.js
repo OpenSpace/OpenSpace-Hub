@@ -120,9 +120,9 @@ exports.validateImageFileSize = (file) => {
 };
 
 exports.resizeImage = async (file) => {
-  let resizedFileName = 'r_' + file.filename;
-  let resizedFilePath = file.destination + resizedFileName;
-  let resizeResult = await sharp(file.path)
+  const resizedFileName = 'r_' + file.filename;
+  const resizedFilePath = file.destination + resizedFileName;
+  const resizeResult = await sharp(file.path)
     .resize(1280, 720)
     .toFile(resizedFilePath)
     .then(() => {
@@ -311,7 +311,7 @@ exports.uploadItem = async (req, user, update = false) => {
     await this.uploadImageFileToServer(resizedFile, uploadDirectory);
     imagePath = path.relative('uploads', `${dir}/${resizedFile.originalname}`);
   } else {
-    let defaultImage = `${itemType}-default.jpg`;
+    const defaultImage = `${itemType}-default.jpg`;
     imagePath = path.relative('uploads', defaultImage);
   }
 
@@ -366,7 +366,7 @@ exports.updateImage = async (req, user) => {
   const itemName = req.body.name.replace(/ /g, '_');
   const itemType = req.body.itemType;
   let dir = `uploads/users/${user.username}/${itemType}/${itemName}`;
-  let version = getCurrentVersionNum(dir) - 1;
+  const version = getCurrentVersionNum(dir) - 1;
   dir = `${dir}/${version}`;
   let uploadDirectory = this.createUserDirectory(dir, itemType);
 
@@ -408,8 +408,8 @@ exports.uploadVideo = async (req, user) => {
     url: req.body.video
   };
 
-  let defaultImage = 'video-default.jpg';
-  let imagePath = path.relative('uploads', defaultImage);
+  const defaultImage = 'video-default.jpg';
+  const imagePath = path.relative('uploads', defaultImage);
 
   const existingItem = await Model.findOne({
     name: req.body.name,

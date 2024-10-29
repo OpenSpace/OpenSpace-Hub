@@ -5,34 +5,12 @@ import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
 import APIService from './APIService';
 
-const UploadItem = ({ config }) => {
+function UploadItem({ config }) {
   const [showModal, setShowModal] = useState();
-
-  const handleClose = () => setShowModal(false);
-  const handleShowModal = () => setShowModal(true);
-
   const [itemType, setItemType] = useState('');
-
-  const handleItemTypeSelect = (e) => {
-    setItemType(e);
-  };
-
   const [description, setDescription] = useState('');
-
-  const handleDescription = (e) => {
-    setDescription(e.target.value);
-  };
-
   const [file, setFile] = useState(null);
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
-
   const [image, setImage] = useState(null);
-  const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
-  };
-
   const [name, setName] = useState('');
   const [nameError, setNameError] = useState('');
 
@@ -41,6 +19,25 @@ const UploadItem = ({ config }) => {
 
   const [showSuccess, setShowSuccess] = useState(false);
   const [success, setSuccess] = useState('');
+
+  const handleClose = () => setShowModal(false);
+  const handleShowModal = () => setShowModal(true);
+
+  const handleItemTypeSelect = (e) => {
+    setItemType(e);
+  };
+
+  const handleDescription = (e) => {
+    setDescription(e.target.value);
+  };
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
 
   const handleNameChange = (e) => {
     setName(e.target.value);
@@ -398,10 +395,14 @@ const UploadItem = ({ config }) => {
                 <li>Items can be modified or removed by administrators.</li>
                 <li>Ensure all content is original or you have permission to upload.</li>
                 <li>Do not upload offensive or illegal content.</li>
-                <li>By uploading, you grant us the right to use, modify, and distribute
-                your content.</li>
-                <li>These terms may change at any time, and continued use implies
-                acceptance.</li>
+                <li>
+                  By uploading, you grant us the right to use, modify, and distribute your
+                  content.
+                </li>
+                <li>
+                  These terms may change at any time, and continued use implies
+                  acceptance.
+                </li>
               </ol>
             </div>
           </div>
@@ -417,6 +418,6 @@ const UploadItem = ({ config }) => {
       </Modal>
     </>
   );
-};
+}
 
 export default UploadItem;

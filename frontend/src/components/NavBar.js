@@ -8,7 +8,7 @@ import UploadItem from './UploadItem';
 import Function from './Functions';
 import AlertMessages from './AlertMessages';
 
-const NavBar = ({
+function NavBar({
   user,
   showLogin,
   config,
@@ -16,7 +16,7 @@ const NavBar = ({
   greenAlertMessage,
   clearRedAlertMessage,
   clearGreenAlertMessage
-}) => {
+}) {
   return (
     <>
       <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
@@ -97,6 +97,6 @@ const NavBar = ({
       <Footer />
     </>
   );
-};
+}
 
 export default NavBar;

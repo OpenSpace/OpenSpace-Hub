@@ -4,7 +4,7 @@ import ItemList from './ItemList';
 function UserItems({ user, config, setRedAlertMessage, setGreenAlertMessage }) {
   return (
     <>
-      {user?.username ? (
+      {user?.username && (
         <ItemList
           user={user}
           type="all"
@@ -13,8 +13,6 @@ function UserItems({ user, config, setRedAlertMessage, setGreenAlertMessage }) {
           setRedAlertMessage={setRedAlertMessage}
           setGreenAlertMessage={setGreenAlertMessage}
         />
-      ) : (
-        <div></div>
       )}
     </>
   );

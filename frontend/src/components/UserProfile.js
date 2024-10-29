@@ -20,7 +20,7 @@ const UserProfile = ({ user, setRedAlertMessage, setGreenAlertMessage }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    let text = 'Do you want to save the changes?';
+    const text = 'Do you want to save the changes?';
     if (window.confirm(text) === true) {
       await APIService.UpdateUser(user.username, name, email, institution)
         .then((resp) => {
@@ -36,7 +36,7 @@ const UserProfile = ({ user, setRedAlertMessage, setGreenAlertMessage }) => {
   };
 
   const deleteUserProfile = async () => {
-    let text =
+    const text =
       'Do you want to delete your profile? All your hub items and user data will be lost.';
     if (window.confirm(text) === true) {
       await APIService.DeleteUser(user.username)

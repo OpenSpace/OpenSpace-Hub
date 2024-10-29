@@ -77,7 +77,7 @@ router.post('/social-media-login', verifyToken, async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    let config = await Config.findOne();
+    const config = await Config.findOne();
     if (!config.signin) {
       throw new Error('Login disabled');
     }

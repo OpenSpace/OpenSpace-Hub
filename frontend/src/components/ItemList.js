@@ -24,34 +24,12 @@ function ItemList({
   const [showModal, setShowModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [tnCError, setTnCError] = useState('');
-
-  const handleClose = () => {
-    setShowModal(false);
-    setSelectedItem(null);
-    setTnCError('');
-  };
-
-  const [name, setName] = useState('');
-  const handleNameChange = (e) => {
-    setSelectedItem({ ...selectedItem, name: e.target.value });
-  };
-  const [description, setDescription] = useState('');
-  const handleDescription = (e) => {
-    setSelectedItem({ ...selectedItem, description: e.target.value });
-  };
-
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [openspaceVersion, setOpenspaceVersion] = useState('');
-  const handleOpenSpaceVersionSelect = (e) => {
-    setOpenspaceVersion(e);
-    setSelectedItem({ ...selectedItem, openspaceVersion: e });
-  };
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
 
-  const [openspaceVersions, setOpenspaceVersions] = useState([]);
-  useEffect(() => {
-    if (config?.config?.versions) {
-      setOpenspaceVersions(config.config.versions);
-    }
-  }, [config]);
+  const openspaceVersions = config?.config?.versions ?? [];
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -60,7 +38,25 @@ function ItemList({
     return () => clearTimeout(delayDebounceFn);
   }, [currentPage, searchTerm]);
 
-  const loadItems = async () => {
+  function handleClose() {
+    setShowModal(false);
+    setSelectedItem(null);
+    setTnCError('');
+  }
+
+  function handleNameChange(e) {
+    setSelectedItem({ ...selectedItem, name: e.target.value });
+  }
+  function handleDescription(e) {
+    setSelectedItem({ ...selectedItem, description: e.target.value });
+  }
+
+  function handleOpenSpaceVersionSelect(e) {
+    setOpenspaceVersion(e);
+    setSelectedItem({ ...selectedItem, openspaceVersion: e });
+  }
+
+  async function loadItems() {
     try {
       let username = '';
       if (filterByUsername) {
@@ -78,34 +74,33 @@ function ItemList({
       console.log(`Error loading items: `, error);
       setRedAlertMessage(`Error loading items: ${error.message}`);
     }
-  };
+  }
 
-  const handleSearchChange = (e) => {
+  function handleSearchChange(e) {
     setSearchTerm(e.target.value);
-  };
+  }
 
-  const handleImageChange = (e) => {
+  function handleImageChange(e) {
     setSelectedItem({ ...selectedItem, image: e.target.files[0] });
-  };
+  }
 
-  const handleFileChange = (e) => {
+  function handleFileChange(e) {
     setSelectedItem({ ...selectedItem, file: e.target.files[0] });
-  };
+  }
 
-  const [video, setVideo] = useState('');
-  const handleVideoChange = (e) => {
+  function handleVideoChange(e) {
     setSelectedItem({ ...selectedItem, video: e.target.value });
-  };
+  }
 
-  const handlePageChange = (page) => {
+  function handlePageChange(page) {
     setCurrentPage(page);
-  };
+  }
 
-  const isAdminUser = () => {
+  function isAdminUser() {
     return user.role === 'admin';
-  };
+  }
 
-  const deleteItem = async (item) => {
+  async function deleteItem(item) {
     const confirmation = window.confirm('Are you sure you want to delete this item?');
     if (!confirmation) {
       return;
@@ -122,11 +117,11 @@ function ItemList({
       console.log(error);
       setRedAlertMessage(`Error deleting item: ${error.message}`);
     }
-  };
+  }
 
-  const sendImportToOpenSpace = (url, type) => {
+  function sendImportToOpenSpace(url, type) {
     return async () => {
-      let openspace = window.openspace;
+      const openspace = window.openspace;
       if (!openspace) {
         setRedAlertMessage('Connect to OpenSpace first');
         return;
@@ -139,22 +134,21 @@ function ItemList({
         setRedAlertMessage(`Error importing item: ${error.message}`);
       }
     };
-  };
+  }
 
-  const editItem = (item) => {
+  function editItem(item) {
     setSelectedItem(item);
     setName(item.name);
     setDescription(item.description);
     setOpenspaceVersion(item.openspaceVersion);
     setShowModal(true);
-  };
+  }
 
-  const [acceptTerms, setAcceptTerms] = useState(false);
-  const handleAcceptTerms = () => {
+  function handleAcceptTerms() {
     setAcceptTerms(!acceptTerms);
-  };
+  }
 
-  const handleModalSave = async (event) => {
+  async function handleModalSave(event) {
     event.preventDefault();
     if (!acceptTerms) {
       setTnCError('Please accept the terms and conditions.');
@@ -190,34 +184,38 @@ function ItemList({
         });
       return;
     }
-  };
+  }
 
-  const handleModalCancel = () => {
+  function handleModalCancel() {
     setShowModal(false);
     setSelectedItem(null);
     setTnCError('');
-  };
+  }
+
+  function getHeaderPageName(type) {
+    switch (type) {
+      case 'asset':
+        return 'Assets';
+      case 'profile':
+        return 'Profiles';
+      case 'webpanel':
+        return 'Web Panels';
+      case 'config':
+        return 'Configs';
+      case 'video':
+        return 'Videos';
+      case 'package':
+        return 'Packages';
+      default:
+        return 'Hub Items';
+    }
+  }
 
   return (
     <div className="pt-3 px-4">
+      {/*TODO fix this */}
       <div className="text-center fw-bold fs-4">
-        <u>
-          {type === 'asset'
-            ? 'Assets'
-            : type === 'profile'
-              ? 'Profiles'
-              : type === 'webpanel'
-                ? 'Web Panels'
-                : type === 'config'
-                  ? 'Configs'
-                  : type === 'video'
-                    ? 'Videos'
-                    : type === 'recording'
-                      ? 'Recordings'
-                      : type === 'package'
-                        ? 'Packages'
-                        : 'Hub Items'}
-        </u>
+        <h1>{getHeaderPageName(type)}</h1>
       </div>
       {/* <AlertMessages
               redAlertMessage={redAlertMessage}
@@ -353,7 +351,7 @@ function ItemList({
             ) : selectedItem?.type === 'video' ? (
               <>
                 <h5>Video Link</h5>
-                <input type="text" value={video} onChange={handleVideoChange} />
+                <input type="text" onChange={handleVideoChange} />
               </>
             ) : selectedItem?.type === 'config' ? (
               <div style={{ marginBottom: '20px', marginTop: '20px' }}>
