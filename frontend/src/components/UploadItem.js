@@ -100,23 +100,34 @@ function UploadItem({ config }) {
     setAcceptTerms(!acceptTerms);
   };
 
-  const handleUpload = async (event) => {
+  function handleFormSubmit(event) {
+    event.preventDefault();
     const form = event.currentTarget;
-    console.log(form);
-    if (form.checkValidity() === false) {
-      event.preventDefault();
+    if (!form.checkValidity()) {
       event.stopPropagation();
+    } else {
+      handleUpload(event);
     }
     setFormValidated(true);
+  }
 
-    event.preventDefault();
-    if (!acceptTerms) {
-      setShowError(true);
-      setError('Please accept the terms and conditions.');
-      return;
+  async function handleUpload() {
+    function onSuccessfulUpload() {
+      // TODO anden88: Kind of ugly way to reload webpage, ideally we would subscribe to
+      // the database and re-render when there are changes.
+      setTimeout(() => {
+        window.location.reload();
+      }, 750);
     }
 
-    if (video != '') {
+    if (itemType === 'video') {
+      if (!video.trim()) {
+        setError('Video link must not be empty');
+        setShowError(true);
+        setShowSuccess(false);
+        return;
+      }
+      // The backend validates these fields
       const formData = new FormData();
       formData.append('video', video);
       formData.append('name', name);
@@ -130,59 +141,77 @@ function UploadItem({ config }) {
             throw new Error(resp.error);
           }
           setShowSuccess(true);
+          setShowError(false);
           setSuccess(resp.message);
+          onSuccessfulUpload();
         })
         .catch((err) => {
           setShowError(true);
-          setError('Error uploading item. ', err.message);
+          setShowSuccess(false);
+          // TODO: Seems like we're not getting the error message correctly ere
+          setError('Uploading item: ', err.message);
           console.log(err);
+        });
+
+      return;
+    }
+
+    // TODO: We should either do validation for all item types (i.e. video, file, etc) or
+    // do this validation on the backend as well.
+    if (
+      !file ||
+      !name.trim() ||
+      !itemType.trim() ||
+      !license.trim() ||
+      !description.trim()
+    ) {
+      setShowError(true);
+      let errorMessage = '';
+      if (!name.trim()) {
+        errorMessage += 'Name cannot be empty\n';
+      }
+      if (!description) {
+        errorMessage += 'Description cannot be empty\n';
+      }
+      setError(errorMessage);
+      setShowError(true);
+      return;
+    }
+
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('image', image);
+      formData.append('fileName', file.name);
+      formData.append('name', name);
+      formData.append('itemType', itemType.toLowerCase());
+      formData.append('license', license);
+      formData.append('openspaceVersion', openspaceVersion);
+      formData.append('description', description);
+      await APIService.UploadItem(formData)
+        .then((resp) => {
+          if (resp.error) {
+            throw new Error(resp.error);
+          }
+          setShowSuccess(true);
+          setShowError(false);
+          setSuccess(resp.message);
+          onSuccessfulUpload();
+        })
+        .catch((err) => {
+          setShowError(true);
+          setError('Error uploading item. ' + err.message);
+          console.log(err);
+          // Kind of ugly to reload webpage this way, ideally we would
+          // want to for example subscribe to new entries in the database
         });
       return;
     } else {
-      if (
-        !file ||
-        name.trim() === '' ||
-        itemType.trim() === '' ||
-        license.trim() === '' ||
-        description.trim() === ''
-      ) {
-        setShowError(true);
-        setError('Please fill in all fields.');
-        return;
-      }
-      if (file) {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('image', image);
-        formData.append('fileName', file.name);
-        formData.append('name', name);
-        formData.append('itemType', itemType.toLowerCase());
-        formData.append('license', license);
-        formData.append('openspaceVersion', openspaceVersion);
-        formData.append('description', description);
-        await APIService.UploadItem(formData)
-          .then((resp) => {
-            if (resp.error) {
-              throw new Error(resp.error);
-            }
-            setShowSuccess(true);
-            setSuccess(resp.message);
-            handleClose();
-            // refreshHome();
-          })
-          .catch((err) => {
-            setShowError(true);
-            setError('Error uploading item. ' + err.message);
-            console.log(err);
-          });
-        return;
-      } else {
-        setShowError(true);
-        setError('Please select a valid file to upload.');
-        return;
-      }
+      setShowError(true);
+      setError('Please select a valid file to upload.');
+      return;
     }
-  };
+  }
 
   function FormEntriesByAssetType(assetType) {
     if (!assetType) {
@@ -232,7 +261,9 @@ function UploadItem({ config }) {
               placeholder={'Video name'}
               required
             />
-            <Form.Control.Feedback>Enter a valid video url</Form.Control.Feedback>
+            <Form.Control.Feedback type={'invalid'}>
+              Enter a valid video url
+            </Form.Control.Feedback>
           </FloatingLabel>
         );
         break;
@@ -330,7 +361,7 @@ function UploadItem({ config }) {
               Success: {success}.
             </p>
           )}
-          <Form noValidate validated={formValidated} onSubmit={handleUpload}>
+          <Form noValidate validated={formValidated} onSubmit={handleFormSubmit}>
             <FloatingLabel
               controlId={'floatingAssetName'}
               label={'Asset name'}
@@ -356,10 +387,14 @@ function UploadItem({ config }) {
                 as={'textarea'}
                 value={description}
                 onChange={handleDescription}
+                required
                 placeholder={'Description'}
                 rows={5}
                 style={{ height: 125 }}
               />
+              <Form.Control.Feedback type={'invalid'}>
+                Enter a short description
+              </Form.Control.Feedback>
             </FloatingLabel>
             <Row className={'mb-3'}>
               <Col>
@@ -417,37 +452,39 @@ function UploadItem({ config }) {
                 </Form.Control.Feedback>
               </Form.Check>
             </Form.Group>
+
+            <div
+              id="termsAndConditions"
+              style={{
+                maxHeight: 190,
+                overflowY: 'scroll',
+                border: '1px solid #ccc'
+              }}
+            >
+              <span style={{ fontWeight: 'bold' }}>Terms and Conditions</span>
+              <ol>
+                <li>You are solely responsible for the content you upload.</li>
+                <li>Items can be modified or removed by administrators.</li>
+                <li>Ensure all content is original or you have permission to upload.</li>
+                <li>Do not upload offensive or illegal content.</li>
+                <li>
+                  By uploading, you grant us the right to use, modify, and distribute your
+                  content.
+                </li>
+                <li>
+                  These terms may change at any time, and continued use implies
+                  acceptance.
+                </li>
+              </ol>
+            </div>
+            <Button variant="primary" type={'submit'}>
+              Upload
+            </Button>
           </Form>
-          <div
-            id="termsAndConditions"
-            style={{
-              maxHeight: 190,
-              overflowY: 'scroll',
-              border: '1px solid #ccc'
-            }}
-          >
-            <span style={{ fontWeight: 'bold' }}>Terms and Conditions</span>
-            <ol>
-              <li>You are solely responsible for the content you upload.</li>
-              <li>Items can be modified or removed by administrators.</li>
-              <li>Ensure all content is original or you have permission to upload.</li>
-              <li>Do not upload offensive or illegal content.</li>
-              <li>
-                By uploading, you grant us the right to use, modify, and distribute your
-                content.
-              </li>
-              <li>
-                These terms may change at any time, and continued use implies acceptance.
-              </li>
-            </ol>
-          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Close
-          </Button>
-          <Button variant="primary" onClick={handleUpload}>
-            Upload
           </Button>
         </Modal.Footer>
       </Modal>
