@@ -1,6 +1,10 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
-import { Button } from 'react-bootstrap';
+import Col from 'react-bootstrap/Col';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import Row from 'react-bootstrap/Row';
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
 import APIService from './APIService';
@@ -24,7 +28,7 @@ function UploadItem({ config }) {
   const handleShowModal = () => setShowModal(true);
 
   const handleItemTypeSelect = (e) => {
-    setItemType(e);
+    setItemType(e.target.value);
   };
 
   const handleDescription = (e) => {
@@ -64,7 +68,7 @@ function UploadItem({ config }) {
 
   const [license, setLicense] = useState('');
   const handleLicenseChange = (e) => {
-    setLicense(e);
+    setLicense(e.target.value);
   };
 
   const [video, setVideo] = useState('');
@@ -74,7 +78,7 @@ function UploadItem({ config }) {
 
   const [openspaceVersion, setOpenspaceVersion] = useState('');
   const handleOpenSpaceVersionSelect = (e) => {
-    setOpenspaceVersion(e);
+    setOpenspaceVersion(e.target.value);
   };
 
   const [itemTypes, setItemTypes] = useState([]);
@@ -170,13 +174,108 @@ function UploadItem({ config }) {
     }
   };
 
+  function FormEntriesByAssetType(assetType) {
+    if (!assetType) {
+      return <></>;
+    }
+    const fileContent = {
+      label: '',
+      filesAccepted: '',
+      showImageFilebrowser: true,
+      overrideContent: false,
+      content: <></>
+    };
+
+    switch (assetType) {
+      case 'asset':
+        fileContent.label = 'Upload an asset file';
+        fileContent.filesAccepted = '.zip, .asset';
+        break;
+      case 'profile':
+        fileContent.label = 'Upload a profile file';
+        fileContent.filesAccepted = '.profile';
+        break;
+      case 'recording':
+        fileContent.label = 'Upload a recording file';
+        fileContent.filesAccepted = '.osrec, .osrectxt';
+        break;
+      case 'webpanel':
+        fileContent.label = 'Upload a webpanel';
+        fileContent.filesAccepted = '.zip';
+        break;
+      case 'video':
+        fileContent.showImageFilebrowser = false;
+        fileContent.overrideContent = true;
+        fileContent.content = (
+          <FloatingLabel controlId={'videoAssetUpload'} label={'Video link'}>
+            <Form.Control
+              type={'text'}
+              value={video}
+              onChange={handleVideoChange}
+              placeholder={'Video name'}
+            />
+          </FloatingLabel>
+        );
+        break;
+      case 'config':
+        fileContent.showImageFilebrowser = false;
+        fileContent.label = 'Upload a config file';
+        fileContent.filesAccepted = '.json';
+        break;
+      case 'package':
+        fileContent.label = 'Upload a package';
+        fileContent.filesAccepted = '.zip';
+        break;
+      default:
+        console.error('Unhandled asset type', assetType);
+        return <></>;
+    }
+
+    const uploadImageFileBrowser = (
+      <Form.Group controlId={'assetImage'} className={'mb-3'}>
+        <Form.Label className={'d-block mb-0'}>Upload asset image</Form.Label>
+        <Form.Text className={'text-muted'}>
+          accepted formats: .jpg, .jpeg, .png9
+        </Form.Text>
+        <Form.Control
+          type={'file'}
+          accept={'.jpg, .jpeg, .png'}
+          onChange={handleImageChange}
+        />
+      </Form.Group>
+    );
+
+    const content = (
+      <div className={'mb-3'}>
+        {fileContent.showImageFilebrowser && uploadImageFileBrowser}
+        {fileContent.overrideContent ? (
+          fileContent.content
+        ) : (
+          <Form.Group controlId={'fileInput'}>
+            <Form.Label className={'d-block mb-0'}>{fileContent.label} </Form.Label>
+            <Form.Text className={'text-muted'}>
+              accepted formats: {fileContent.filesAccepted}
+            </Form.Text>
+            <Form.Control
+              type={'file'}
+              accept={fileContent.filesAccepted}
+              onChange={handleFileChange}
+            />
+          </Form.Group>
+        )}
+      </div>
+    );
+
+    return content;
+  }
+
   return (
     <>
       <Button onClick={handleShowModal} variant="dark">
         Upload an Item
       </Button>
 
-      <Modal show={showModal} onHide={handleClose}>
+      <Modal show={showModal} onHide={handleClose} size={'xl'}>
         <Modal.Header closeButton>
           <Modal.Title>Upload an Item</Modal.Title>
         </Modal.Header>
@@ -195,216 +294,108 @@ function UploadItem({ config }) {
               Success: {success}.
             </p>
           )}
-          <form style={{ display: 'flex', flexDirection: 'column' }}>
-            <h5>Name</h5>
-            <input type="text" value={name} onChange={handleNameChange} />
-            {nameError && <p style={{ color: 'red' }}>{nameError}</p>}
-
-            <h5 style={{ marginTop: '20px' }}>Description</h5>
-            <textarea rows={3} value={description} onChange={handleDescription} />
-
-            <div style={{ marginBottom: '20px', marginTop: '20px' }}>
-              <Dropdown onSelect={handleItemTypeSelect}>
-                <h5>Item Type</h5>
-                <Dropdown.Toggle variant="success" id="dropdown-basic">
-                  {itemType.toUpperCase()}
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  {itemTypes.map((type) => (
-                    <Dropdown.Item key={type} eventKey={type}>
-                      {type.toUpperCase()}
-                    </Dropdown.Item>
-                  ))}
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
-            <div style={{ marginBottom: '20px', marginTop: '20px' }}>
-              <Dropdown onSelect={handleOpenSpaceVersionSelect}>
-                <h5>
-                  OpenSpace Version{' '}
-                  <p style={{ fontSize: '15px' }}>
-                    (Make sure it runs on the selected version)
-                  </p>
-                </h5>
-                <Dropdown.Toggle variant="success" id="dropdown-basic">
-                  {openspaceVersion}
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  {openspaceVersions.map((version) => (
-                    <Dropdown.Item key={version} eventKey={version}>
-                      {version}
-                    </Dropdown.Item>
-                  ))}
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
-            <div style={{ marginBottom: '20px' }}>
-              <Dropdown onSelect={handleLicenseChange}>
-                <h5>
-                  License <p style={{ fontSize: '15px' }}></p>
-                </h5>
-                <Dropdown.Toggle variant="success" id="dropdown-basic">
-                  {license}
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  {licenseTypes.map((license) => (
-                    <Dropdown.Item key={license} eventKey={license}>
-                      {license}
-                    </Dropdown.Item>
-                  ))}
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
-
-            {itemType.toLowerCase() === 'config' ||
-            itemType.toLowerCase() === 'video' ? null : (
-              <div style={{ marginBottom: '20px', marginTop: '20px' }}>
-                <h5>
-                  Upload item-image{' '}
-                  <p style={{ fontSize: '15px' }}>
-                    (accepted formats: .jpg, .jpeg, .png)
-                  </p>
-                </h5>
-                <input
-                  id="imageInput"
-                  type="file"
-                  accept=".jpg, .jpeg, .png"
-                  onChange={handleImageChange}
-                />
-              </div>
-            )}
-
-            {itemType.toLowerCase() === 'asset' ? (
-              <div style={{ marginBottom: '20px', marginTop: '20px' }}>
-                <h5>
-                  Upload a file{' '}
-                  <p style={{ fontSize: '15px' }}>(accepted formats: .zip, .asset)</p>
-                </h5>
-                <input
-                  id="fileInput"
-                  type="file"
-                  accept=".zip, .asset"
-                  onChange={handleFileChange}
-                />
-              </div>
-            ) : itemType.toLowerCase() === 'profile' ? (
-              <div style={{ marginBottom: '20px', marginTop: '20px' }}>
-                <h5>
-                  Upload a file{' '}
-                  <p style={{ fontSize: '15px' }}>(accepted formats: .profile)</p>
-                </h5>
-                <input
-                  id="fileInput"
-                  type="file"
-                  accept=".profile"
-                  onChange={handleFileChange}
-                />
-              </div>
-            ) : itemType.toLowerCase() === 'recording' ? (
-              <div style={{ marginBottom: '20px', marginTop: '20px' }}>
-                <h5>
-                  Upload a file{' '}
-                  <p style={{ fontSize: '15px' }}>
-                    (accepted formats: .osrec, .osrectxt)
-                  </p>
-                </h5>
-                <input
-                  id="fileInput"
-                  type="file"
-                  accept=".osrec, .osrectxt"
-                  onChange={handleFileChange}
-                />
-              </div>
-            ) : itemType.toLowerCase() === 'webpanel' ? (
-              <div style={{ marginBottom: '20px', marginTop: '20px' }}>
-                <h5>
-                  Upload a file{' '}
-                  <p style={{ fontSize: '15px' }}>(accepted formats: .zip)</p>
-                </h5>
-                <input
-                  id="fileInput"
-                  type="file"
-                  accept=".zip"
-                  onChange={handleFileChange}
-                />
-              </div>
-            ) : itemType.toLowerCase() === 'video' ? (
-              <>
-                <h5> Video Link </h5>
-                <input type="text" value={video} onChange={handleVideoChange} />
-              </>
-            ) : itemType.toLowerCase() === 'config' ? (
-              <div style={{ marginBottom: '20px', marginTop: '20px' }}>
-                <h5>
-                  Upload a file{' '}
-                  <p style={{ fontSize: '15px' }}>(accepted formats: .json)</p>
-                </h5>
-                <input
-                  id="fileInput"
-                  type="file"
-                  accept=".json"
-                  onChange={handleFileChange}
-                />
-              </div>
-            ) : itemType.toLowerCase() === 'package' ? (
-              <div style={{ marginBottom: '20px', marginTop: '20px' }}>
-                <h5>
-                  Upload a file{' '}
-                  <p style={{ fontSize: '15px' }}>(accepted formats: .zip)</p>
-                </h5>
-                <input
-                  id="fileInput"
-                  type="file"
-                  accept=".zip"
-                  onChange={handleFileChange}
-                />
-              </div>
-            ) : (
-              <div style={{ marginBottom: '20px', marginTop: '20px' }}>
-                <h5>
-                  Upload a file{' '}
-                  <p style={{ fontSize: '15px' }}>(accepted formats: .zip, .asset)</p>
-                </h5>
-                <input
-                  id="fileInput"
-                  type="file"
-                  accept=".zip, .asset"
-                  onChange={handleFileChange}
-                />
-              </div>
-            )}
-          </form>
-          <div style={{ marginBottom: '20px', marginTop: '20px' }}>
-            <input type="checkbox" checked={acceptTerms} onChange={handleAcceptTerms} />
-            <label htmlFor="acceptTerms">
-              I accept the <a href="#termsAndConditions">terms and conditions</a>
-            </label>
-            <div
-              id="termsAndConditions"
-              style={{
-                maxHeight: '150px',
-                overflowY: 'scroll',
-                marginTop: '10px',
-                padding: '10px',
-                border: '1px solid #ccc'
-              }}
+          <Form>
+            <FloatingLabel
+              controlId={'floatingAssetName'}
+              label={'Asset name'}
+              className={'mb-3'}
             >
-              <h6>Terms and Conditions</h6>
-              <ol>
-                <li>You are solely responsible for the content you upload.</li>
-                <li>Items can be modified or removed by administrators.</li>
-                <li>Ensure all content is original or you have permission to upload.</li>
-                <li>Do not upload offensive or illegal content.</li>
-                <li>
-                  By uploading, you grant us the right to use, modify, and distribute your
-                  content.
-                </li>
-                <li>
-                  These terms may change at any time, and continued use implies
-                  acceptance.
-                </li>
-              </ol>
-            </div>
+              <Form.Control
+                type={'text'}
+                value={name}
+                onChange={handleNameChange}
+                placeholder={'Asset name'}
+              />
+            </FloatingLabel>
+            <FloatingLabel
+              controlId={'floatingDescription'}
+              label={'Asset description'}
+              className={'mb-3'}
+            >
+              <Form.Control
+                as={'textarea'}
+                value={description}
+                onChange={handleDescription}
+                placeholder={'Description'}
+                rows={5}
+                style={{ height: '125px' }}
+              />
+            </FloatingLabel>
+            <Row className={'mb-3'}>
+              <Col>
+                <FloatingLabel
+                  controlId={'floatingSelectType'}
+                  label={'Select asset type'}
+                >
+                  <Form.Select value={itemType} onChange={handleItemTypeSelect}>
+                    {itemTypes.map((type) => (
+                      <option key={type}>{type}</option>
+                    ))}
+                  </Form.Select>
+                </FloatingLabel>
+              </Col>
+              <Col>
+                <FloatingLabel
+                  controlId={'floatingOpenSpaceVersion'}
+                  label={'Select OpenSpace version'}
+                >
+                  <Form.Select
+                    value={openspaceVersion}
+                    onChange={handleOpenSpaceVersionSelect}
+                  >
+                    {openspaceVersions.map((version) => (
+                      <option key={version}>{version}</option>
+                    ))}
+                  </Form.Select>
+                </FloatingLabel>
+              </Col>
+
+              <Col>
+                <FloatingLabel controlId={'floatingLicense'} label={'Select license'}>
+                  <Form.Select value={license} onChange={handleLicenseChange}>
+                    {licenseTypes.map((license) => (
+                      <option key={license}>{license}</option>
+                    ))}
+                  </Form.Select>
+                </FloatingLabel>
+              </Col>
+            </Row>
+            {FormEntriesByAssetType(itemType)}
+            <Form.Group controlId={'termsAndConditions'} className={'mb-3'}>
+              <Form.Check type={'checkbox'}>
+                <Form.Check.Input
+                  type={'checkbox'}
+                  checked={acceptTerms}
+                  onChange={handleAcceptTerms}
+                />
+                <Form.Check.Label>
+                  I accept the <a href={'#termsAndConditions'}> terms and conditions</a>
+                </Form.Check.Label>
+              </Form.Check>
+            </Form.Group>
+          </Form>
+          <div
+            id="termsAndConditions"
+            style={{
+              maxHeight: '190px',
+              overflowY: 'scroll',
+              border: '1px solid #ccc'
+            }}
+          >
+            <span style={{ fontWeight: 'bold' }}>Terms and Conditions</span>
+            <ol>
+              <li>You are solely responsible for the content you upload.</li>
+              <li>Items can be modified or removed by administrators.</li>
+              <li>Ensure all content is original or you have permission to upload.</li>
+              <li>Do not upload offensive or illegal content.</li>
+              <li>
+                By uploading, you grant us the right to use, modify, and distribute your
+                content.
+              </li>
+              <li>
+                These terms may change at any time, and continued use implies acceptance.
+              </li>
+            </ol>
           </div>
         </Modal.Body>
         <Modal.Footer>
