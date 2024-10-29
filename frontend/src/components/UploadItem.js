@@ -27,6 +27,8 @@ function UploadItem({ config }) {
   const handleClose = () => setShowModal(false);
   const handleShowModal = () => setShowModal(true);
 
+  const [formValidated, setFormValidated] = useState(false);
+
   const handleItemTypeSelect = (e) => {
     setItemType(e.target.value);
   };
@@ -99,6 +101,14 @@ function UploadItem({ config }) {
   };
 
   const handleUpload = async (event) => {
+    const form = event.currentTarget;
+    console.log(form);
+    if (form.checkValidity() === false) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    setFormValidated(true);
+
     event.preventDefault();
     if (!acceptTerms) {
       setShowError(true);
@@ -182,6 +192,7 @@ function UploadItem({ config }) {
       label: '',
       filesAccepted: '',
       showImageFilebrowser: true,
+      description: '',
       overrideContent: false,
       content: <></>
     };
@@ -190,22 +201,28 @@ function UploadItem({ config }) {
       case 'asset':
         fileContent.label = 'Upload an asset file';
         fileContent.filesAccepted = '.zip, .asset';
+        fileContent.description = 'TODO asset description';
         break;
       case 'profile':
         fileContent.label = 'Upload a profile file';
         fileContent.filesAccepted = '.profile';
+        fileContent.description =
+          "TODO: long profile description: What is Lorem Ipsum Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum";
         break;
       case 'recording':
         fileContent.label = 'Upload a recording file';
         fileContent.filesAccepted = '.osrec, .osrectxt';
+        fileContent.description = 'TODO';
         break;
       case 'webpanel':
         fileContent.label = 'Upload a webpanel';
         fileContent.filesAccepted = '.zip';
+        fileContent.description = 'TODO';
         break;
       case 'video':
         fileContent.showImageFilebrowser = false;
         fileContent.overrideContent = true;
+        fileContent.description = 'TODO';
         fileContent.content = (
           <FloatingLabel controlId={'videoAssetUpload'} label={'Video link'}>
             <Form.Control
@@ -213,7 +230,9 @@ function UploadItem({ config }) {
               value={video}
               onChange={handleVideoChange}
               placeholder={'Video name'}
+              required
             />
+            <Form.Control.Feedback>Enter a valid video url</Form.Control.Feedback>
           </FloatingLabel>
         );
         break;
@@ -221,10 +240,12 @@ function UploadItem({ config }) {
         fileContent.showImageFilebrowser = false;
         fileContent.label = 'Upload a config file';
         fileContent.filesAccepted = '.json';
+        fileContent.description = 'TODO';
         break;
       case 'package':
         fileContent.label = 'Upload a package';
         fileContent.filesAccepted = '.zip';
+        fileContent.description = 'TODO';
         break;
       default:
         console.error('Unhandled asset type', assetType);
@@ -247,6 +268,19 @@ function UploadItem({ config }) {
 
     const content = (
       <div className={'mb-3'}>
+        <FloatingLabel
+          controlId={'floatingAssetTypeDescription'}
+          label={'Asset typ description'}
+          className={'mb-3'}
+        >
+          <Form.Control
+            as={'textarea'}
+            value={fileContent.description}
+            aria-label={'Asset type description'}
+            readOnly
+            style={{ height: 100 }}
+          />
+        </FloatingLabel>
         {fileContent.showImageFilebrowser && uploadImageFileBrowser}
         {fileContent.overrideContent ? (
           fileContent.content
@@ -260,7 +294,9 @@ function UploadItem({ config }) {
               type={'file'}
               accept={fileContent.filesAccepted}
               onChange={handleFileChange}
+              required
             />
+            <Form.Control.Feedback type={'invalid'}>Missing file</Form.Control.Feedback>
           </Form.Group>
         )}
       </div>
@@ -280,21 +316,21 @@ function UploadItem({ config }) {
           <Modal.Title>Upload an Item</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p style={{ color: 'red', fontWeight: 'bold', fontSize: '18px' }}>
+          <p style={{ color: 'red', fontWeight: 'bold', fontSize: 18 }}>
             Warning: You are responsible for whatever is in it. Item can be modified by
             administrator if required.
           </p>
           {showError && (
-            <p style={{ color: 'red', fontWeight: 'bold', fontSize: '18px' }}>
+            <p style={{ color: 'red', fontWeight: 'bold', fontSize: 18 }}>
               Error: {error}.
             </p>
           )}
           {showSuccess && (
-            <p style={{ color: 'green', fontWeight: 'bold', fontSize: '18px' }}>
+            <p style={{ color: 'green', fontWeight: 'bold', fontSize: 18 }}>
               Success: {success}.
             </p>
           )}
-          <Form>
+          <Form noValidate validated={formValidated} onSubmit={handleUpload}>
             <FloatingLabel
               controlId={'floatingAssetName'}
               label={'Asset name'}
@@ -305,7 +341,11 @@ function UploadItem({ config }) {
                 value={name}
                 onChange={handleNameChange}
                 placeholder={'Asset name'}
+                required
               />
+              <Form.Control.Feedback type={'invalid'}>
+                Asset name is required
+              </Form.Control.Feedback>
             </FloatingLabel>
             <FloatingLabel
               controlId={'floatingDescription'}
@@ -318,7 +358,7 @@ function UploadItem({ config }) {
                 onChange={handleDescription}
                 placeholder={'Description'}
                 rows={5}
-                style={{ height: '125px' }}
+                style={{ height: 125 }}
               />
             </FloatingLabel>
             <Row className={'mb-3'}>
@@ -367,17 +407,21 @@ function UploadItem({ config }) {
                   type={'checkbox'}
                   checked={acceptTerms}
                   onChange={handleAcceptTerms}
+                  required
                 />
                 <Form.Check.Label>
                   I accept the <a href={'#termsAndConditions'}> terms and conditions</a>
                 </Form.Check.Label>
+                <Form.Control.Feedback type={'invalid'}>
+                  You must agree before submitting
+                </Form.Control.Feedback>
               </Form.Check>
             </Form.Group>
           </Form>
           <div
             id="termsAndConditions"
             style={{
-              maxHeight: '190px',
+              maxHeight: 190,
               overflowY: 'scroll',
               border: '1px solid #ccc'
             }}
