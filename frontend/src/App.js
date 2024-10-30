@@ -6,7 +6,6 @@ import Recordings from './components/Recordings';
 import WebPanels from './components/WebPanels';
 import Configs from './components/Configs';
 import Packages from './components/Packages';
-import Videos from './components/Videos';
 import Footer from './components/Footer';
 import SignIn from './components/SignIn';
 import './App.css';
@@ -46,17 +45,20 @@ function App() {
     return () => isloggedin();
   }, []);
 
-  useEffect(async () => {
-    await APIService.GetConfig()
-      .then((res) => {
-        if (res.error) {
-          throw new Error(res.error);
-        }
-        setConfig(res);
-      })
-      .catch((err) => {
-        console.log(`Error: ${err}`);
-      });
+  useEffect(() => {
+    async function fetchConfig() {
+      await APIService.GetConfig()
+        .then((res) => {
+          if (res.error) {
+            throw new Error(res.error);
+          }
+          setConfig(res);
+        })
+        .catch((err) => {
+          console.log(`Error: ${err}`);
+        });
+    }
+    fetchConfig();
   }, []);
 
   return (
@@ -153,17 +155,7 @@ function App() {
               />
             }
           />
-          <Route
-            path="videos"
-            element={
-              <Videos
-                user={user}
-                config={config}
-                setRedAlertMessage={setRedAlertMessage}
-                setGreenAlertMessage={setGreenAlertMessage}
-              />
-            }
-          />
+
           <Route
             path="items"
             element={

@@ -55,9 +55,6 @@ function NavBar({
                 <NavDropdown.Item href="recordings" className="underline-on-active">
                   Recordings
                 </NavDropdown.Item>
-                <NavDropdown.Item href="videos" className="underline-on-active">
-                  Videos
-                </NavDropdown.Item>
               </NavDropdown>
               <Function />
             </Nav>

@@ -93,7 +93,6 @@ router.get('/items', async (req, res) => {
       'profile',
       'recording',
       'webpanel',
-      'video',
       'config',
       'package'
     ];
@@ -305,12 +304,6 @@ router.post(
         return res.status(400).json({ errors: errors.array() });
       }
       const user = await authUtility.getUserInfo(req.user);
-      if (req.body && req.body.video && req.body.video !== '') {
-        await itemUtility.validateInputFields(req.body);
-        const data = await itemUtility.uploadVideo(req, user);
-        const message = 'Uploaded successfully on server';
-        return res.status(200).json({ message: message, data: data });
-      }
 
       if (
         !req.files ||

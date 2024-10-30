@@ -6,7 +6,6 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Modal from 'react-bootstrap/Modal';
-import Dropdown from 'react-bootstrap/Dropdown';
 import APIService from './APIService';
 
 function UploadItem({ config }) {
@@ -73,11 +72,6 @@ function UploadItem({ config }) {
     setLicense(e.target.value);
   };
 
-  const [video, setVideo] = useState('');
-  const handleVideoChange = (e) => {
-    setVideo(e.target.value);
-  };
-
   const [openspaceVersion, setOpenspaceVersion] = useState('');
   const handleOpenSpaceVersionSelect = (e) => {
     setOpenspaceVersion(e.target.value);
@@ -118,42 +112,6 @@ function UploadItem({ config }) {
       setTimeout(() => {
         window.location.reload();
       }, 750);
-    }
-
-    if (itemType === 'video') {
-      if (!video.trim()) {
-        setError('Video link must not be empty');
-        setShowError(true);
-        setShowSuccess(false);
-        return;
-      }
-      // The backend validates these fields
-      const formData = new FormData();
-      formData.append('video', video);
-      formData.append('name', name);
-      formData.append('itemType', itemType.toLowerCase());
-      formData.append('license', license);
-      formData.append('description', description);
-      formData.append('openspaceVersion', openspaceVersion);
-      await APIService.UploadItem(formData)
-        .then((resp) => {
-          if (resp.error) {
-            throw new Error(resp.error);
-          }
-          setShowSuccess(true);
-          setShowError(false);
-          setSuccess(resp.message);
-          onSuccessfulUpload();
-        })
-        .catch((err) => {
-          setShowError(true);
-          setShowSuccess(false);
-          // TODO: Seems like we're not getting the error message correctly ere
-          setError('Uploading item: ', err.message);
-          console.log(err);
-        });
-
-      return;
     }
 
     // TODO: We should either do validation for all item types (i.e. video, file, etc) or
@@ -247,25 +205,6 @@ function UploadItem({ config }) {
         fileContent.label = 'Upload a webpanel';
         fileContent.filesAccepted = '.zip';
         fileContent.description = 'TODO';
-        break;
-      case 'video':
-        fileContent.showImageFilebrowser = false;
-        fileContent.overrideContent = true;
-        fileContent.description = 'TODO';
-        fileContent.content = (
-          <FloatingLabel controlId={'videoAssetUpload'} label={'Video link'}>
-            <Form.Control
-              type={'text'}
-              value={video}
-              onChange={handleVideoChange}
-              placeholder={'Video name'}
-              required
-            />
-            <Form.Control.Feedback type={'invalid'}>
-              Enter a valid video url
-            </Form.Control.Feedback>
-          </FloatingLabel>
-        );
         break;
       case 'config':
         fileContent.showImageFilebrowser = false;

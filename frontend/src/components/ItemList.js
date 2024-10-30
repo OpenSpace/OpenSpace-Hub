@@ -89,10 +89,6 @@ function ItemList({
     setSelectedItem({ ...selectedItem, file: e.target.files[0] });
   }
 
-  function handleVideoChange(e) {
-    setSelectedItem({ ...selectedItem, video: e.target.value });
-  }
-
   function handlePageChange(page) {
     setCurrentPage(page);
   }
@@ -163,9 +159,6 @@ function ItemList({
       if (selectedItem && selectedItem.image) {
         formData.append('image', selectedItem.image);
       }
-      if (selectedItem && selectedItem.video) {
-        formData.append('video', selectedItem.video);
-      }
       formData.append('itemType', selectedItem.type);
       formData.append('openspaceVersion', selectedItem.openspaceVersion);
       formData.append('name', selectedItem.name);
@@ -203,8 +196,6 @@ function ItemList({
         return 'Web Panels';
       case 'config':
         return 'Configs';
-      case 'video':
-        return 'Videos';
       case 'package':
         return 'Packages';
       default:
@@ -280,7 +271,7 @@ function ItemList({
                 </Dropdown.Menu>
               </Dropdown>
             </div>
-            {selectedItem?.type === 'config' || selectedItem?.type === 'video' ? null : (
+            {selectedItem?.type === 'config' ? null : (
               <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                 <h5>
                   Upload item-image{' '}
@@ -351,11 +342,6 @@ function ItemList({
                   onChange={handleFileChange}
                 />
               </div>
-            ) : selectedItem?.type === 'video' ? (
-              <>
-                <h5>Video Link</h5>
-                <input type="text" onChange={handleVideoChange} />
-              </>
             ) : selectedItem?.type === 'config' ? (
               <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                 <h5>
@@ -474,18 +460,12 @@ function ItemList({
                 </Card.Text>
               </Card.Body>
               <Card.Footer className={'d-flex gap-1 flex-wrap'}>
-                {item.type === 'video' ? (
-                  <Button variant="outline-primary" href={item.currentVersion.url}>
-                    Link
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={sendImportToOpenSpace(item.currentVersion.url, item.type)}
-                    variant="outline-primary"
-                  >
-                    Import
-                  </Button>
-                )}{' '}
+                <Button
+                  onClick={sendImportToOpenSpace(item.currentVersion.url, item.type)}
+                  variant="outline-primary"
+                >
+                  Import
+                </Button>{' '}
                 {item.currentVersion && (
                   <Button variant={'outline-primary'} href={item.currentVersion.url}>
                     Download

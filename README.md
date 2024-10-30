@@ -1,7 +1,7 @@
 Openspace-Hub
 =============
 
-Welcome to the OpenSpace Hub. Here you will find items (assets, profiles, recordings, webpanels, videos, configs, packages) built by the community. Download them or use the Import button when OpenSpace is running to have OpenSpace download them for you.
+Welcome to the OpenSpace Hub. Here you will find items (assets, profiles, recordings, webpanels, configs, packages) built by the community. Download them or use the Import button when OpenSpace is running to have OpenSpace download them for you.
 
 
 Setup Instructions

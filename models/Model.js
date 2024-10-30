@@ -26,7 +26,7 @@ const itemSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ['asset', 'profile', 'recording', 'webpanel', 'video', 'config', 'package'] // add other types if required
+    enum: ['asset', 'profile', 'recording', 'webpanel', 'config', 'package'] // add other types if required
   },
   description: {
     type: String,
