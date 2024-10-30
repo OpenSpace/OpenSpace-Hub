@@ -23,9 +23,9 @@ function NavBar({
         <Container>
           <Navbar.Brand href="/">
             <img
-              src="openspace-black-transparent.png"
-              width="90"
-              height="50"
+              src="openspace-logo.png"
+              width="75"
+              height="75"
               className="d-inline-block align-top"
               alt="OpenSpaceHub logo"
             />
