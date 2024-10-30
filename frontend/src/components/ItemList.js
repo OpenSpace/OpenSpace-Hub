@@ -7,7 +7,7 @@ import APIService from './APIService';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
-import Badge from 'react-bootstrap/Badge';
+import Ratio from 'react-bootstrap/Ratio';
 
 function ItemList({
   user,
@@ -422,18 +422,20 @@ function ItemList({
           />
         </Form.Group>
       </div>
-      <Row xs={1} sm={2} md={3} lg={4} xl={5} xxl={6} className="g-3">
+      <Row xs={1} sm={2} md={2} lg={3} xl={3} xxl={5} className="g-3">
         {items.map((item) => (
           <Col key={item.id}>
-            <Card style={{ height: 750, overflowY: 'scroll' }}>
+            <Card style={{ height: '100%' }}>
               {item.image && item.image !== 'no-image' && (
-                <Card.Img
-                  variant={'top'}
-                  src={item.image}
-                  style={{ width: '100%', height: 350, objectFit: 'cover' }}
-                />
+                <Ratio aspectRatio={'16x9'}>
+                  <Card.Img
+                    variant={'top'}
+                    src={item.image}
+                    style={{ objectFit: 'cover' }}
+                  />
+                </Ratio>
               )}
-              <Card.Body>
+              <Card.Body className={'d-flex flex-column justify-content-between'}>
                 <Card.Title as={'h3'} style={{ fontWeight: 'bold' }}>
                   {item.name}
                 </Card.Title>
@@ -457,12 +459,6 @@ function ItemList({
                   <b>OpenSpace Version: </b>
                   {item.openspaceVersion}
                 </Card.Text>
-                {item.currentVersion && (
-                  <Card.Text style={{ margin: 0 }}>
-                    <b>Current Version: {item.currentVersion.version} </b>
-                    <Card.Link href={item.currentVersion.url}>Download</Card.Link>
-                  </Card.Text>
-                )}
                 {item.archives && item.archives.length > 0 && (
                   <Card.Text style={{ margin: 0 }}>
                     <b>Other Versions: </b>
@@ -476,20 +472,27 @@ function ItemList({
                 <Card.Text>
                   <b>Last Update: </b> {item.modified}
                 </Card.Text>
+              </Card.Body>
+              <Card.Footer className={'d-flex gap-1 flex-wrap'}>
                 {item.type === 'video' ? (
-                  <Button variant="secondary" href={item.currentVersion.url}>
+                  <Button variant="outline-primary" href={item.currentVersion.url}>
                     Link
                   </Button>
                 ) : (
                   <Button
                     onClick={sendImportToOpenSpace(item.currentVersion.url, item.type)}
-                    variant="secondary"
+                    variant="outline-primary"
                   >
                     Import
                   </Button>
                 )}{' '}
+                {item.currentVersion && (
+                  <Button variant={'outline-primary'} href={item.currentVersion.url}>
+                    Download
+                  </Button>
+                )}{' '}
                 {(item.author.username === user.username || isAdminUser()) && (
-                  <Button onClick={() => editItem(item)} variant="secondary">
+                  <Button onClick={() => editItem(item)} variant="outline-primary">
                     Edit
                   </Button>
                 )}{' '}
@@ -498,18 +501,7 @@ function ItemList({
                     Delete
                   </Button>
                 )}{' '}
-                {/* <Button
-                  onClick={() =>
-                    window.open(
-                      'https://join.slack.com/t/openspacesupport/shared_invite/zt-24uhn3wvo-gCGHgjg2m9tHzKUEb_FyMQ',
-                      '_blank'
-                    )
-                  }
-                  variant="dark"
-                >
-                  Join on Slack
-                </Button> */}
-              </Card.Body>
+              </Card.Footer>
             </Card>
           </Col>
         ))}
