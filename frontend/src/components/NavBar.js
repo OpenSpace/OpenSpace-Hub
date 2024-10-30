@@ -48,9 +48,9 @@ function NavBar({
               <Nav.Link href="configs" className="underline-on-active">
                 Configs
               </Nav.Link>
-              <Nav.Link href="packages" className="underline-on-active">
+              {/* <Nav.Link href="packages" className="underline-on-active">
                 Packages
-              </Nav.Link>
+              </Nav.Link> */}
               <NavDropdown title="Media" id="collapsible-nav-dropdown">
                 <NavDropdown.Item href="recordings" className="underline-on-active">
                   Recordings

@@ -58,6 +58,9 @@ function UploadItem({ config }) {
   }, [name]);
 
   const validateItemName = async () => {
+    if (!name) {
+      return;
+    }
     const resp = await APIService.ValidateItemName(name);
     if (resp.error) {
       setName('');
@@ -212,11 +215,11 @@ function UploadItem({ config }) {
         fileContent.filesAccepted = '.json';
         fileContent.description = 'TODO';
         break;
-      case 'package':
-        fileContent.label = 'Upload a package';
-        fileContent.filesAccepted = '.zip';
-        fileContent.description = 'TODO';
-        break;
+      // case 'package':
+      //   fileContent.label = 'Upload a package';
+      //   fileContent.filesAccepted = '.zip';
+      //   fileContent.description = 'TODO';
+      //   break;
       default:
         console.error('Unhandled asset type', assetType);
         return <></>;
@@ -277,7 +280,7 @@ function UploadItem({ config }) {
 
   return (
     <>
-      <Button onClick={handleShowModal} variant="dark">
+      <Button onClick={handleShowModal} variant="primary">
         Upload an Item
       </Button>
 
@@ -394,6 +397,7 @@ function UploadItem({ config }) {
 
             <div
               id="termsAndConditions"
+              className={'mb-3'}
               style={{
                 maxHeight: 190,
                 overflowY: 'scroll',

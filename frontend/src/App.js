@@ -144,7 +144,7 @@ function App() {
               />
             }
           />
-          <Route
+          {/* <Route
             path="packages"
             element={
               <Packages
@@ -154,7 +154,7 @@ function App() {
                 setGreenAlertMessage={setGreenAlertMessage}
               />
             }
-          />
+          /> */}
 
           <Route
             path="items"
@@ -209,7 +209,10 @@ function App() {
               />
             }
           />
-          <Route path="*" element={<Footer config={config} />} />
+          <Route
+            path="*"
+            element={<h1 style={{ textAlign: 'center' }}>404 Page bot found</h1>}
+          />
         </Route>
       </Routes>
     </BrowserRouter>

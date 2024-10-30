@@ -196,8 +196,8 @@ function ItemList({
         return 'Web Panels';
       case 'config':
         return 'Configs';
-      case 'package':
-        return 'Packages';
+      // case 'package':
+      //   return 'Packages';
       default:
         return 'Hub Items';
     }
@@ -355,20 +355,21 @@ function ItemList({
                   onChange={handleFileChange}
                 />
               </div>
-            ) : selectedItem?.type === 'package' ? (
-              <div style={{ marginBottom: '20px', marginTop: '20px' }}>
-                <h5>
-                  Upload a file{' '}
-                  <p style={{ fontSize: '15px' }}>(accepted formats: .zip, .asset)</p>
-                </h5>
-                <input
-                  id="fileInput"
-                  type="file"
-                  accept=".zip, .asset"
-                  onChange={handleFileChange}
-                />
-              </div>
             ) : (
+              // : selectedItem?.type === 'package' ? (
+              //   <div style={{ marginBottom: '20px', marginTop: '20px' }}>
+              //     <h5>
+              //       Upload a file{' '}
+              //       <p style={{ fontSize: '15px' }}>(accepted formats: .zip, .asset)</p>
+              //     </h5>
+              //     <input
+              //       id="fileInput"
+              //       type="file"
+              //       accept=".zip, .asset"
+              //       onChange={handleFileChange}
+              //     />
+              //   </div>
+              // )
               <div style={{ marginBottom: '20px', marginTop: '20px' }}>
                 <h5>
                   Upload a file{' '}

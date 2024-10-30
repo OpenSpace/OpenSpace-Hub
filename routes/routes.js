@@ -88,14 +88,7 @@ router.get('/items', async (req, res) => {
     const search = req.query.search || '';
     let sort = req.query.sort || 'modified';
     let type = req.query.type || '';
-    const itemOptions = [
-      'asset',
-      'profile',
-      'recording',
-      'webpanel',
-      'config',
-      'package'
-    ];
+    const itemOptions = ['asset', 'profile', 'recording', 'webpanel', 'config'];
     const username = req.query.username || '';
 
     if (type === 'all') {

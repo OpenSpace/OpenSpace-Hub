@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import openspaceApi from 'openspace-api-js';
 
@@ -36,10 +35,10 @@ function Functions() {
     <>
       {isConnected ? (
         <Button disable variant="success">
-          Connected asd
+          Connected
         </Button>
       ) : (
-        <Button onClick={connectToOpenSpace} variant="danger">
+        <Button onClick={connectToOpenSpace} variant="outline-primary">
           Connect to OpenSpace
         </Button>
       )}
