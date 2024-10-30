@@ -4,9 +4,10 @@ import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 import React, { useEffect, useState } from 'react';
 import APIService from './APIService';
-import { Form } from 'react-bootstrap';
+import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
+import Badge from 'react-bootstrap/Badge';
 
 function ItemList({
   user,
@@ -235,6 +236,8 @@ function ItemList({
                 </Alert>
               )}
             </div> */}
+      {/*TODO: rewrite this modal so that its design matches the UploadItems.js,
+       perhaps also to its own component?*/}
       <Modal show={showModal} onHide={handleModalCancel}>
         <Modal.Header closeButton>
           <Modal.Title>Edit Item</Modal.Title>
@@ -419,40 +422,49 @@ function ItemList({
           />
         </Form.Group>
       </div>
-      <Row xs={1} md={3} className="g-4">
+      <Row xs={1} sm={2} md={3} lg={4} xl={5} xxl={6} className="g-3">
         {items.map((item) => (
           <Col key={item.id}>
-            <Card>
+            <Card style={{ height: 750, overflowY: 'scroll' }}>
               {item.image && item.image !== 'no-image' && (
-                <Card.Img variant="top" src={item.image} />
+                <Card.Img
+                  variant={'top'}
+                  src={item.image}
+                  style={{ width: '100%', height: 350, objectFit: 'cover' }}
+                />
               )}
               <Card.Body>
-                <Card.Title>{item.name}</Card.Title>
-                <Card.Text>{item.description}</Card.Text>
-                <Card.Text>
+                <Card.Title as={'h3'} style={{ fontWeight: 'bold' }}>
+                  {item.name}
+                </Card.Title>
+                <hr style={{ marginTop: 0, marginBottom: '0.5rem' }} />
+                <Card.Text style={{ height: 80, overflowY: 'scroll' }}>
+                  {item.description}
+                </Card.Text>
+                <Card.Text style={{ margin: 0 }}>
                   <b>Type: </b>
                   {item.type}
                 </Card.Text>
-                <Card.Text>
+                <Card.Text style={{ margin: 0 }}>
                   <b>Author: </b>
                   <Card.Link href={item.author.link}>{item.author.name}</Card.Link>
                 </Card.Text>
-                <Card.Text>
+                <Card.Text style={{ margin: 0 }}>
                   <b>License: </b>
                   {item.license}
                 </Card.Text>
-                <Card.Text>
+                <Card.Text style={{ margin: 0 }}>
                   <b>OpenSpace Version: </b>
                   {item.openspaceVersion}
                 </Card.Text>
                 {item.currentVersion && (
-                  <Card.Text>
+                  <Card.Text style={{ margin: 0 }}>
                     <b>Current Version: {item.currentVersion.version} </b>
                     <Card.Link href={item.currentVersion.url}>Download</Card.Link>
                   </Card.Text>
                 )}
                 {item.archives && item.archives.length > 0 && (
-                  <Card.Text>
+                  <Card.Text style={{ margin: 0 }}>
                     <b>Other Versions: </b>
                     {item.archives.map((version) => (
                       <Card.Link key={version.version} href={version.url}>
@@ -465,13 +477,13 @@ function ItemList({
                   <b>Last Update: </b> {item.modified}
                 </Card.Text>
                 {item.type === 'video' ? (
-                  <Button variant="primary" href={item.currentVersion.url}>
+                  <Button variant="secondary" href={item.currentVersion.url}>
                     Link
                   </Button>
                 ) : (
                   <Button
                     onClick={sendImportToOpenSpace(item.currentVersion.url, item.type)}
-                    variant="primary"
+                    variant="secondary"
                   >
                     Import
                   </Button>
@@ -486,7 +498,7 @@ function ItemList({
                     Delete
                   </Button>
                 )}{' '}
-                <Button
+                {/* <Button
                   onClick={() =>
                     window.open(
                       'https://join.slack.com/t/openspacesupport/shared_invite/zt-24uhn3wvo-gCGHgjg2m9tHzKUEb_FyMQ',
@@ -496,7 +508,7 @@ function ItemList({
                   variant="dark"
                 >
                   Join on Slack
-                </Button>
+                </Button> */}
               </Card.Body>
             </Card>
           </Col>
