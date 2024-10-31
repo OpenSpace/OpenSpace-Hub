@@ -191,29 +191,28 @@ function UploadItem({ config }) {
       case 'asset':
         fileContent.label = 'Upload an asset file';
         fileContent.filesAccepted = '.zip, .asset';
-        fileContent.description = 'TODO asset description';
+        fileContent.description = 'This type represents either a single asset file or a collection of asset files that are combined into a single .zip file. This .zip file can contain other resource files but must at least contain an asset file with the same name as the .zip file.';
         break;
       case 'profile':
         fileContent.label = 'Upload a profile file';
         fileContent.filesAccepted = '.profile';
-        fileContent.description =
-          "TODO: long profile description: What is Lorem Ipsum Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum";
+        fileContent.description = 'This file type is a profile that can reference other asset files and make up the contents of a complete show. Only a .profile file can be uploaded here.';
         break;
       case 'recording':
         fileContent.label = 'Upload a recording file';
         fileContent.filesAccepted = '.osrec, .osrectxt';
-        fileContent.description = 'TODO';
+        fileContent.description = 'A Session Recording file is a prerecorded flight path that has been created with OpenSpace. In general, Session Recordings are not tied to a specific profile, though the scene graph nodes that are visited during the flight path must be present in the scene. The file uploaded must be an .osrec file for binary session recordings or .osrextxt for ASCII-based session recordings.';
         break;
       case 'webpanel':
         fileContent.label = 'Upload a webpanel';
         fileContent.filesAccepted = '.zip';
-        fileContent.description = 'TODO';
+        fileContent.description = 'A web panel is an external webpage that can be displayed inside the OpenSpace application. Only the upload of a .zip file is allowed which contains all of the necessary files. A .html file with the same name as the .zip file must exist in the zipped archive.';
         break;
       case 'config':
         fileContent.showImageFilebrowser = false;
         fileContent.label = 'Upload a config file';
         fileContent.filesAccepted = '.json';
-        fileContent.description = 'TODO';
+        fileContent.description = 'This type is an window configuration that can be reused by other community members. These can be specific fisheye configurations, equirectangular setting, or anything else that is supported by OpenSpace.';
         break;
       // case 'package':
       //   fileContent.label = 'Upload a package';
