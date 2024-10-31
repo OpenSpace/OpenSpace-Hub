@@ -25,7 +25,7 @@ function NavBar({
             <img
               src="openspace-logo.png"
               width="75"
-              height="75"
+              height="42"
               className="d-inline-block align-top"
               alt="OpenSpaceHub logo"
             />
