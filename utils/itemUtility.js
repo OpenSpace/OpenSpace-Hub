@@ -114,7 +114,7 @@ exports.isValidFileSize = (file) => {
 // 10^6 = 1 MB
 // 10^9 = 1 GB
 exports.validateImageFileSize = (file) => {
-  if (file.size > 5 * Math.pow(10, 6)) {
+  if (file.size > 5 * Math.pow(10, 7)) {
     throw new Error('File size exceeds 5 MB limit');
   }
 };
